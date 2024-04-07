@@ -1,10 +1,13 @@
 //import  game1  from "./game";
 
 let game1 = ()=> `<p>game</p>`;
+
+//lista delle locations
 const routes ={
     "/game":{title:"game",render:game1}
 }
 
+//metodo per il routing: in base all' url cambia il contenuto di "content"
 const router = ()=>{
     let view = routes[location.pathname];
     console.log(view)
@@ -13,6 +16,7 @@ const router = ()=>{
     document.getElementById("content").innerHTML=view.render();
 }
 
+//blocca il comportamento di default degli  anchor tag <a><a/>
 window.addEventListener("click",e =>{
     if(e.target.matches("[data-link]")){
         e.preventDefault();
@@ -21,5 +25,6 @@ window.addEventListener("click",e =>{
     }
 })
 
+//bho 
 window.addEventListener("popstate", router);
 window.addEventListener("DOMContentLoaded", router);
