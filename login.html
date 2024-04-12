@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="module" src="./main.js"></script>
+	<script type="module" src="./login.js"></script>
+<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
+    <div style="display: flex;flex-direction: row;">
+    <div class="container">
+        <form>
+            <div class="mb-3 mt-3">
+                <label for="login" class="form-label">Login:</label>
+                <input type="text" class="form-control" id="login" placeholder="Enter login" name="login">
+            </div>
+            <div class="mb-3">
+                <label for="pwd" class="form-label">Password:</label>
+                <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="container">
+        <h2>Never played before? Register now!</h2>
+        <form>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+</body>
+</html>
