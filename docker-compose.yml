@@ -1,0 +1,29 @@
+version: '3.8'
+
+networks:
+  trancendence:
+    driver: bridge
+
+services:
+  ngnix:
+    build:
+      context: .
+      dockerfile: docker\ngnix\Dockerfile
+    container_name: ngnix
+    ports:
+      - "8080:80"
+    networks:
+      - trancendence
+    restart: always
+
+  db:
+    image: postgres
+    container_name: database
+    environment:
+      POSTGRES_DB: transcend_users_db
+      POSTGRES_USER: transcend_user
+      POSTGRES_PASSWORD: transcend_pwd
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+  
