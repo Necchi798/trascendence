@@ -1,1 +1,0 @@
-export default  game1 = ()=> `<p>game</p>`;

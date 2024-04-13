@@ -1,10 +1,8 @@
-//import  game1  from "./game";
+import  game  from "./pages/game.js";
 
-let game1 = ()=> `<p>game</p>`;
-
-//lista delle locations
 const routes ={
-    "/game":{title:"game",render:game1}
+    "/":{title:"game",render:()=>"welcome"},
+    "/game":{title:"game",render:game}
 }
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"
