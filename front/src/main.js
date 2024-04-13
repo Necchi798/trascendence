@@ -1,7 +1,7 @@
 import  game  from "./pages/game.js";
 
 const routes ={
-    "/":{title:"game",render:()=>"welcome"},
+    //"/":{title:"game",render:()=>"welcome"},
     "/game":{title:"game",render:game}
 }
 
