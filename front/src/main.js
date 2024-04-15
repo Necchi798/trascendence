@@ -1,8 +1,10 @@
 import  game  from "./pages/game.js";
+import "./pages/components/profile_card.js"
 
 const routes ={
-    //"/":{title:"game",render:()=>"welcome"},
-    "/game":{title:"game",render:game}
+    "/index.html":{title:"home",render:()=>"welcome"},
+    "/profile":{title:"profile",render: profile_card},
+    "/game":{title:"game",render:game},
 }
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"
