@@ -12,7 +12,7 @@ export function fetchData() {
     const login = document.getElementById('login').value;
     const password = document.getElementById('pwd').value;
     const data = { login, password };
-    fetch('http://localhost:3000/login', { //sostituire con l'indirizzo del server impostato dal backend oppure testare con "fetch('https://jsonplaceholder.typicode.com/posts'"
+    fetch('https://jsonplaceholder.typicode.com/posts', { //sostituire con l'indirizzo del server impostato dal backend oppure testare con "fetch('https://jsonplaceholder.typicode.com/posts'"
         method: 'POST',
         headers: {
             'Content-Type': 'application/json' // Specifica il tipo di contenuto
