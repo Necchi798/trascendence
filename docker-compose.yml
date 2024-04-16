@@ -25,5 +25,7 @@ services:
       POSTGRES_PASSWORD: transcend_pwd
     ports:
       - "5432:5432"
+    networks:
+      - trancendence
     restart: unless-stopped
   
