@@ -36,7 +36,7 @@ class SidebarElement extends HTMLElement {
 				<a data-link href="/${tmp}" class="p-2 d-inline-flex text-decoration-none" style="color:white">
 					Play
 				</a>
-				<a class="p-2 d-inline-flex text-decoration-none" style="color:white">
+				<a href="/${tmp}_stats" class="p-2 d-inline-flex text-decoration-none" style="color:white">
 					Stats
 				</a>
 			</div> 
