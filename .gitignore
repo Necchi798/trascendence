@@ -1,0 +1,5 @@
+back/test/*
+back/back/__pycache__/*
+
+back/back/migrations/__pycache__
+
