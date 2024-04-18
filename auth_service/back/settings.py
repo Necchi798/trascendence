@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': 'transcend_users_db',
         'USER': 'transcend_user',
         'PASSWORD': 'transcend_pwd',
-        'HOST': 'localhost',  # Poiché PostgreSQL è in esecuzione sullo stesso host del tuo progetto Django
+        'HOST': 'auth_db',  # Poiché PostgreSQL è in esecuzione sullo stesso host del tuo progetto Django
         'PORT': '5432',
     }
 }
