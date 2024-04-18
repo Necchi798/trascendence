@@ -16,7 +16,7 @@ services:
       - trancendence
     restart: always
 
-  db:
+  auth_db:
     image: postgres
     container_name: database
     environment:
@@ -29,3 +29,15 @@ services:
       - trancendence
     restart: unless-stopped
   
+  auth_service:
+    build: 
+      context: .
+      dockerfile: docker\auth\Dockerfile
+    command: sh -c "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth_db
+    networks:
+      - trancendence
