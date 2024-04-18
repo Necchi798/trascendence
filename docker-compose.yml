@@ -4,6 +4,9 @@ networks:
   trancendence:
     driver: bridge
 
+volumes:
+  db_auth_data:
+
 services:
   ngnix:
     build:
@@ -28,6 +31,8 @@ services:
     networks:
       - trancendence
     restart: unless-stopped
+    volumes:
+      - db_auth_data:/var/lib/postgresql/data
   
   auth_service:
     build: 
