@@ -1,5 +1,8 @@
-back/test/*
-back/back/__pycache__/*
+auth_service/back/__pycache__/*
 
-back/back/migrations/__pycache__
+auth_service/back/__pycache__/*
+/back/migrations/__pycache__
 
+auth_service/back/__pycache__/*
+/authenv/*
+auth_service/authenv/*
