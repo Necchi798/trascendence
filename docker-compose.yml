@@ -11,7 +11,7 @@ services:
   ngnix:
     build:
       context: .
-      dockerfile: docker\ngnix\Dockerfile
+      dockerfile: docker/ngnix/Dockerfile
     container_name: ngnix
     ports:
       - "8080:80"
@@ -37,7 +37,7 @@ services:
   auth_service:
     build: 
       context: .
-      dockerfile: docker\auth\Dockerfile
+      dockerfile: docker/auth/Dockerfile
     command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     restart: always
     ports:
