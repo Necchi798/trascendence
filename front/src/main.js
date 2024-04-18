@@ -1,10 +1,12 @@
 import game from "./pages/game.js";
 import home from "./pages/home.js";
+import stats from "./pages/stats.js"
 import { makeGame } from "./2Dpong/game.js";
 const routes = {
-    "/":{title:"home", render: home},
-    //"/profile":{title:"profile",render: profile_card},
-    "/game":{title:"game", render: game,action:makeGame},
+    "/":{title:"home", render: home,action: ()=>{}},
+    "/profile":{title:"profile",render: ()=>{},action: ()=>{}},
+    "/2dpong":{title:"game", render: game,action:makeGame},
+    "/3dpong_stats":{title: "history",render:stats,action: ()=>{}}
 }
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"

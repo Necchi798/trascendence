@@ -32,7 +32,7 @@ services:
   auth_service:
     build: 
       context: .
-      dockerfile: docker\auth\Dockerfile
+      dockerfile: docker/auth/Dockerfile
     command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     restart: always
     ports:

@@ -4,17 +4,18 @@
     <script type="module" src="./src/main.js"></script>
  <link href="./src/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body >
-
+<body style="overflow: hidden;">
+    <!-- <button onclick="fun()">clicco</button> -->
     <div id="content">
-        <button id="1" onclick="fun1"> </button>
     </div>
     <script src="./src/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="./src/main.js"></script>
 </body>
 </html>
 <script>
-const fun1 = ()=>{
-    fetch("localhost:8080/user").then(res=>console.log(res))
-}
+    const fun = ()=>{
+        fetch("http://127.0.0.1:8000/register",
+        {method:"POST"})
+        .then(res=>res.json()).then(res=>console.log(res))
+    }
 </script>
