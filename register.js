@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const registerButton = document.querySelector('.btn.btn-primary.btn-block');
+	const registerButton = document.getElementById('RegisterButton');
 	registerButton.addEventListener('click', (event) => {
 		event.preventDefault();
 		fetchDataRegister();
@@ -8,11 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 export function fetchDataRegister() {
-	const login = document.getElementById('password').value;
-	const password = document.getElementById('email').value;
+	const password = document.getElementById('password').value;
+	const confirmpassword = document.getElementById('confirmpassword').value;
+	const email = document.getElementById('email').value;
 	const nome = document.getElementById('Name').value;
 	const cognome = document.getElementById('Surname').value;
-	const data = { password, email , nome, cognome};
+	const data = { password, email , nome, cognome, confirmpassword};
 	fetch('https://jsonplaceholder.typicode.com/posts', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		headers: {
