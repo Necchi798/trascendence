@@ -1,13 +1,8 @@
 //import  game1  from "./game";
 
-import { handleLogin } from "./login.js";
-import { handleRegister } from "./register.js";
-
 let game1 = ()=> `<p>game</p>`;
 const routes ={
     "/game":{title:"game",render:game1},
-    "/login.html": { title: "Login", render: () => handleLogin() },
-    "/register.html": { title: "Register", render: () => handleRegister() },
 }
 
 const router = ()=>{
@@ -28,5 +23,3 @@ window.addEventListener("click",e =>{
 
 window.addEventListener("popstate", router);
 window.addEventListener("DOMContentLoaded", router);
-window.addEventListener("DOMContentLoaded", handleLogin);
-window.addEventListener("DOMContentLoaded", handleRegister);
