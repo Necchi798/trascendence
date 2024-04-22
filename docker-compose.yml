@@ -11,7 +11,7 @@ services:
   ngnix:
     build:
       context: .
-      dockerfile: docker\ngnix\Dockerfile
+      dockerfile: docker/ngnix/Dockerfile
     container_name: ngnix
     ports:
       - "8080:80"
