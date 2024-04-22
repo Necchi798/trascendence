@@ -13,6 +13,10 @@ COPY ./docker/auth/requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+#copy ssl certificates
+COPY ./docker/auth/private.key /app/
+COPY ./docker/auth/certificate.crt /app/
+
 # Copy the project code into the container
 COPY ./auth_service /app/
 
