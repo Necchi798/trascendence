@@ -8,20 +8,21 @@ volumes:
   db_auth_data:
 
 services:
-  ngnix:
+  nginx:
     build:
       context: .
-      dockerfile: docker/ngnix/Dockerfile
-    container_name: ngnix
+      dockerfile: docker/nginx/Dockerfile
+    container_name: nginx
     ports:
       - "8080:80"
+      - "443:443"
     networks:
       - trancendence
     restart: always
 
   auth_db:
     image: postgres
-    container_name: database
+    container_name: auth_db
     environment:
       POSTGRES_DB: transcend_users_db
       POSTGRES_USER: transcend_user
