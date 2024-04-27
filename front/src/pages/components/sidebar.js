@@ -28,7 +28,7 @@ class Sidebar extends HTMLElement {
 					<ul class="dropdown-menu dropdown-menu-dark text-small shadow">
 						<li><a data-link class="dropdown-item" href="/home">Profile</a></li>
 						<li><hr class="dropdown-divider"></li>
-						<li><a class="dropdown-item" href="#">Sign out</a></li>
+						<li><a data-link class="dropdown-item" href="/login">Sign out</a></li>
 					</ul>
 				</div>
 			</div>
