@@ -117,7 +117,7 @@ export function fetchDataLogin() {
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
 	const data = { name, password, email};
-	fetch('https://jsonplaceholder.typicode.com/posts', { //sostituire con l'indirizzo del server impostato dal backend
+	fetch('http://127.0.0.1:5432/login', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 	headers: {
 		'Content-Type': 'application/json' // Specifica il tipo di contenuto

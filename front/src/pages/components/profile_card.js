@@ -1,7 +1,6 @@
 class ProfileCard extends HTMLElement {
     constructor(){
         super();
-        let name 
         this.innerHTML = /*html*/`
         <div class="card" style=" width: 40rem;display: flex;flex-direction: row;">
                 <image src="./assets/inani.svg"></image>

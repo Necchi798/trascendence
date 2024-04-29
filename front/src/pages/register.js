@@ -125,7 +125,7 @@ export function fetchDataRegister() {
 	const nome = document.getElementById('Name').value;
 	const cognome = document.getElementById('Surname').value;
 	const data = { password, email , nome, cognome, confirmpassword};
-	fetch('https://jsonplaceholder.typicode.com/posts', { //sostituire con l'indirizzo del server impostato dal backend
+	fetch('http://127.0.0.1:5432/register', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json' // Specifica il tipo di contenuto
