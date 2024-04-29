@@ -116,8 +116,8 @@ export function fetchDataLogin() {
 	const name = document.getElementById('Name').value;
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
-	const data = { name, password, email};
-	fetch('http://127.0.0.1:5432/login', { //sostituire con l'indirizzo del server impostato dal backend
+	const data = {  password:password, username:name};
+	fetch('https://127.0.0.1:8000/login', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 	headers: {
 		'Content-Type': 'application/json' // Specifica il tipo di contenuto
