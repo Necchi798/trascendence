@@ -61,3 +61,23 @@ class LogoutView(APIView):
             'message': 'logout success!'
         }
         return response
+
+
+class UpdateUserView(APIView):
+    def patch(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        user = User.objects.filter(id=payload['id']).first()
+
+        serializer = UserSerializer(instance=user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'User updated successfully', 'user': serializer.data})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

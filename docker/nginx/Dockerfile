@@ -18,4 +18,5 @@ RUN openssl genpkey -algorithm RSA -out /etc/nginx/certs/private.key && \
     openssl x509 -req -days 365 -in /etc/nginx/certs/certificate.csr -signkey /etc/nginx/certs/private.key -out /etc/nginx/certs/certificate.crt
 
 # Esponi la porta 80
-EXPOSE 80
+EXPOSE 90
+EXPOSE 4430

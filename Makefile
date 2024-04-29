@@ -1,9 +1,15 @@
-.PHONY: setup
+.PHONY: all enviroment clean
 
-all: setup
-	@docker compose -f ./docker-compose.yml up --build
+all: enviroment up
 
-setup:
+up : 
+	@docker-compose up --build
+
+down : 
+	@docker-compose down
+
+
+enviroment:
 	@echo "Generazione del file .env"
 	@if [ -e .env ]; then \
 		echo "Il file .env esiste già. Non è necessario ricrearlo."; \
@@ -18,3 +24,4 @@ setup:
 clean:
 	@echo "Pulizia sistema Docker"
 	@docker system prune -af
+	@echo "Pulizia sistema Docker effetuata con successo"

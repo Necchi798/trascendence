@@ -14,8 +14,8 @@ services:
       dockerfile: docker/nginx/Dockerfile
     container_name: nginx
     ports:
-      - "8080:80"
-      - "4430:443"
+      - "8080:90"
+      - "4430:4430"
     networks:
       - trancendence
     restart: always
