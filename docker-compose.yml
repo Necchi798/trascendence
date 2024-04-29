@@ -15,7 +15,7 @@ services:
     container_name: nginx
     ports:
       - "8080:80"
-      - "443:443"
+      - "4430:443"
     networks:
       - trancendence
     restart: always
