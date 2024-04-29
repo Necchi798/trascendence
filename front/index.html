@@ -1,21 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./src/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/8ce7501ea2.js" crossorigin="anonymous"></script>
     <script type="module" src="./src/main.js"></script>
- <link href="./src/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="./pages/register.js"></script>
 </head>
-<body style="overflow: hidden;">
-    <!-- <button onclick="fun()">clicco</button> -->
+<body>
     <div id="content">
     </div>
     <script src="./src/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="./src/main.js"></script>
 </body>
 </html>
-<script>
-    const fun = ()=>{
-        fetch("http://127.0.0.1:8000/register",
-        {method:"POST"})
-        .then(res=>res.json()).then(res=>console.log(res))
-    }
-</script>
