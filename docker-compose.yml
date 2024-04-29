@@ -4,37 +4,48 @@ networks:
   trancendence:
     driver: bridge
 
+volumes:
+  db_auth_data:
+
 services:
-  ngnix:
+  nginx:
     build:
       context: .
-      dockerfile: docker/ngnix/Dockerfile
-    container_name: ngnix
+      dockerfile: docker/nginx/Dockerfile
+    container_name: nginx
     ports:
       - "8080:80"
+      - "443:443"
     networks:
       - trancendence
     restart: always
 
+#servizio di autenticazione
   auth_db:
     image: postgres
-    container_name: database
+    container_name: auth_db
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: transcend_users_db
       POSTGRES_USER: transcend_user
-      POSTGRES_PASSWORD: transcend_pwd
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     networks:
       - trancendence
     restart: unless-stopped
+    volumes:
+      - db_auth_data:/var/lib/postgresql/data
   
   auth_service:
     build: 
       context: .
       dockerfile: docker/auth/Dockerfile
-    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && gunicorn back.wsgi:application --bind 0.0.0.0:8000 --keyfile /app/private.key --certfile /app/certificate.crt"
     restart: always
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     depends_on:

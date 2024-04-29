@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nvm+1(5-!d4=i$!hqzg9)f_2g0+7yl8!fqe@qnvz&ejyneh@xq'
+SECRET_KEY = os.environ.get('SECRET_JWT')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'transcend_users_db',
         'USER': 'transcend_user',
-        'PASSWORD': 'transcend_pwd',
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': 'auth_db',  
         'PORT': '5432',
     }
@@ -134,3 +135,9 @@ AUTH_USER_MODEL = 'back.User'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    # Altri hasher se necessario
+]

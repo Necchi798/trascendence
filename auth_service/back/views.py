@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
+from django.conf import settings
 from .serializer import UserSerializer
 from .models import User
 import jwt, datetime
@@ -29,7 +30,7 @@ class LoginView(APIView):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             'iat': datetime.datetime.utcnow()
         }
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
         response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {
@@ -45,10 +46,9 @@ class UserView(APIView):
             raise AuthenticationFailed('Unauthenticated!')
         
         try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Unauthenticated!')
-        
         user = User.objects.filter(id=payload['id']).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
