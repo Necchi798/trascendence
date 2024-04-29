@@ -6,3 +6,4 @@ auth_service/back/__pycache__/*
 auth_service/back/__pycache__/*
 /authenv/*
 auth_service/authenv/*
+.env
