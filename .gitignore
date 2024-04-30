@@ -7,3 +7,7 @@ auth_service/back/__pycache__/*
 /authenv/*
 auth_service/authenv/*
 .env
+venv/*
+twofa/twofa/__pycache__/*
+twofa/twofa/migrations/__pycache__/*
+twofa/db.sqlite3

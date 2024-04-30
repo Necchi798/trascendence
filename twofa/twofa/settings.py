@@ -1,5 +1,5 @@
 from pathlib import Path
-import os, ssl
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_JWT')
+SECRET_KEY = 'django-insecure-ij^e3)6pl3+wle%*n_y)(*^=_+qo9vyv^6tsljf=mqq_!hv3q3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,18 +28,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'back',
+    'twofa',
     'sslserver',
     'drf_yasg',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
-
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Basic': {
-            'type': 'basic'
-        }
-    }
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,10 +43,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+
+    'django_otp.middleware.OTPMiddleware',
+
+
 ]
 
-ROOT_URLCONF = 'back.urls'
+ROOT_URLCONF = 'twofa.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +67,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'back.wsgi.application'
+WSGI_APPLICATION = 'twofa.wsgi.application'
+
 
 
 # Database
@@ -78,12 +76,8 @@ WSGI_APPLICATION = 'back.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'transcend_users_db',
-        'USER': 'transcend_user',
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': 'auth_db',  
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -128,17 +122,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-AUTH_USER_MODEL = 'back.User'
-
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    # Altri hasher se necessario
-]
-
-# Disable SSL certificate verification
-ssl._create_default_https_context = ssl._create_unverified_context
