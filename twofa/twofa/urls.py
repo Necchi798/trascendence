@@ -1,18 +1,8 @@
 from django.contrib import admin
 from django.urls import path
-from django.contrib.auth.models import User
-
-from django_otp.admin import OTPAdminSite
-from django_otp.plugins.otp_totp.models import TOTPDevice
-from django_otp.plugins.otp_totp.admin import TOTPDeviceAdmin
+from .views import QRCodeCreationView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('test/', QRCodeCreationView.as_view()),
 ]
-
-class OTPAdmin(OTPAdminSite):
-   pass
-
-admin_site = OTPAdmin(name='OTPAdmin')
-admin_site.register(User)
-admin_site.register(TOTPDevice, TOTPDeviceAdmin)
