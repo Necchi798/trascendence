@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'back',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +142,5 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     # Altri hasher se necessario
 ]
+
+os.environ['DJANGO_ALLOW_INSICURE_SSL'] = 'true'

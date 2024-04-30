@@ -23,3 +23,4 @@ RUN openssl x509 -req -days 365 -in /app/certificate.csr -signkey /app/private.k
 
 # Copy the project code into the container
 COPY ./auth_service /app/
+
