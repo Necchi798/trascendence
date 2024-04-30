@@ -7,7 +7,16 @@ from .serializer import UserSerializer
 from .models import User
 import jwt, datetime
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 class RegisterView(APIView):
+    @swagger_auto_schema(
+        request_body=UserSerializer,  # Specifica il serializer per il corpo della richiesta
+        responses={200: 'Success', 400: 'Bad Request'},  # Specifica le risposte possibili
+        operation_description="Register a new user"  # Descrivi brevemente l'operazione
+    )
+
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -15,6 +24,24 @@ class RegisterView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class LoginView(APIView):
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.TYPE_STRING)
+            },
+            required=['username', 'password']
+        ),
+        responses={
+            200: 'Success',
+            400: 'Bad Request',
+            401: 'Unauthorized'
+        },
+        operation_description="Login with username and password"
+    )
+
     def post(self, request):
         username = request.data['username']
         password = request.data['password']
@@ -40,6 +67,15 @@ class LoginView(APIView):
         return response
     
 class UserView(APIView):
+    @swagger_auto_schema(
+        responses={
+            200: 'Success',
+            400: 'Bad Request',
+            401: 'Unauthorized'
+        },
+        operation_description="Get user details"
+    )
+
     def get(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
@@ -54,6 +90,15 @@ class UserView(APIView):
         return Response(serializer.data)
 
 class LogoutView(APIView):
+    @swagger_auto_schema(
+        
+        responses={
+            200: 'Success',
+            400: 'Bad Request',
+            401: 'Unauthorized'
+        },
+        operation_description="Logout the user"
+    )
     def post(self, request):
         response = Response()
         response.delete_cookie('jwt')
@@ -64,6 +109,17 @@ class LogoutView(APIView):
 
 
 class UpdateUserView(APIView):
+
+    @swagger_auto_schema(
+        request_body=UserSerializer,
+        responses={
+            200: 'Success',
+            400: 'Bad Request',
+            401: 'Unauthorized'
+        },
+        operation_description="Update user details"
+    )
+
     def patch(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
