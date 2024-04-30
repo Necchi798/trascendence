@@ -126,6 +126,7 @@ export function fetchDataRegister() {
 	const data = { password, email , username:nome,};
 	fetch('https://127.0.0.1:8000/register', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
+		mode:"cors",
 		headers: {
 			'Content-Type': 'application/json' // Specifica il tipo di contenuto
 		},
@@ -133,6 +134,7 @@ export function fetchDataRegister() {
 	})
 	.then(response => response.json()) // Converte la risposta in un oggetto Json
 	.then(data => {
+		
 		console.log('Success:', data);
 	})
 	.catch((error) => {

@@ -20,8 +20,8 @@ const routes = {
 //metodo per il routing: in base all' url cambia il contenuto di "content"
 const router = ()=> {
     let view = routes[location.pathname];
-    console.log(view)
-    console.log(location.pathname)
+    if(localStorage.getItem("jwtToken") == null)
+        view = routes["/login"]
     document.title = view.title;
     if (view.title === "login") {
         document.head.appendChild(loginStyle());

@@ -28,12 +28,13 @@ class Sidebar extends HTMLElement {
 					<ul class="dropdown-menu dropdown-menu-dark text-small shadow">
 						<li><a data-link class="dropdown-item" href="/home">Profile</a></li>
 						<li><hr class="dropdown-divider"></li>
-						<li><a data-link class="dropdown-item" href="/login">Sign out</a></li>
+						<li id="logout" class="dropdown-item" style="cursor: pointer;">Sign out</a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
 		`;
+		document.getElementById("logout").addEventListener("click",()=> {localStorage.removeItem("jwtToken"),window.location="/login"})
 	}
 }
 

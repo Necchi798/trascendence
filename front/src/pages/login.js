@@ -119,6 +119,7 @@ export function fetchDataLogin() {
 	const data = {  password:password, username:name};
 	fetch('https://127.0.0.1:8000/login', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
+		mode:"cors",
 	headers: {
 		'Content-Type': 'application/json' // Specifica il tipo di contenuto
 	},
@@ -127,6 +128,8 @@ export function fetchDataLogin() {
 	.then(response => response.json()) // Converte la risposta in un oggetto Json
 	.then(data => {
 		console.log('Success:', data);
+		localStorage.setItem('jwtToken', data.jwt);
+		window.location = "/"
 	})
 	.catch((error) => {
 		console.error('Error:', error);
