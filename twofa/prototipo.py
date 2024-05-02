@@ -11,5 +11,6 @@ qrcode.make(uri).save("qrcode.png")
 
 totp=pyotp.TOTP(key)
 while True:
+    print(totp.now())
     print(totp.verify(input("Enter the code: ")))
 

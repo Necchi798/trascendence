@@ -13,8 +13,8 @@ from rest_framework.response import Response
 class QRCodeCreationView(APIView):
     def post(self, request):
         # Codifica l'URI come immagine QR
-        key = base64.b32encode(settings.SECRET_KEY.encode())
-        uri = pyotp.totp.TOTP(key).provisioning_uri(name=request.data["username"], issuer_name="Secure App")
+        key = base64.b32encode(settings.SECRET_KEY.encode() + str(request.data["id"]).encode())
+        uri = pyotp.totp.TOTP(key).provisioning_uri(name=request.data["username"], issuer_name="ft_transcendence")
         qrcode_image = qrcode.make(uri)
 
         # Salva l'immagine QR come file temporaneo
@@ -29,8 +29,9 @@ class QRCodeCreationView(APIView):
         try:
             qr_code = QRCode.objects.create(image=image_data, owner_id=request.data["id"])
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
+        print(type(qr_code.image))
+        return Response(status=status.HTTP_201_CREATED, data={"message": "QR code created successfully."})
     
     def get(self, request):
         try:
@@ -39,3 +40,14 @@ class QRCodeCreationView(APIView):
             return HttpResponse(image_data, content_type='image/png')
         except QRCode.DoesNotExist:
             raise NotFound(detail="QR code not found for this user.")
+
+class TOPVerificationView(APIView):
+    def post(self, request):
+        key=base64.b32encode(settings.SECRET_KEY.encode() + str(request.data["id"]).encode())
+        totp = pyotp.TOTP(key)
+#        print(str(totp.now()))
+        if totp.verify(request.data["code"]):
+            return Response(status=status.HTTP_200_OK, data={"message": "Code is valid."})
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Code is invalid."})
+        

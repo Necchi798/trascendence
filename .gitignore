@@ -11,3 +11,4 @@ venv/*
 twofa/twofa/__pycache__/*
 twofa/twofa/migrations/__pycache__/*
 twofa/db.sqlite3
+twofa/mail.py
