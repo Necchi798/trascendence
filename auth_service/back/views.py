@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
+from django.shortcuts import redirect
 from .serializer import UserSerializer
 from .models import User
 import jwt, datetime
@@ -51,6 +52,8 @@ class LoginView(APIView):
             raise AuthenticationFailed('User not found!')
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
+        if user.two_factor == True:
+            return redirect('https://google.it', user_id=user.id)
         
         payload = {
             'id': user.id,

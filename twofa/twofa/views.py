@@ -1,9 +1,6 @@
-import io
-import base64
-import pyotp
-import qrcode
+import io, base64, pyotp, qrcode, jwt, datetime
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -27,7 +24,7 @@ class QRCodeCreationView(APIView):
 
         # Salva i dati binari nel database
         try:
-            qr_code = QRCode.objects.create(image=image_data, owner_id=request.data["id"])
+            qr_code = QRCode.objects.create(image=image_data, owner_id=request.data["id"]
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
         print(type(qr_code.image))
@@ -37,7 +34,13 @@ class QRCodeCreationView(APIView):
         try:
             qr_code = QRCode.objects.get(owner_id=request.data["id"])
             image_data = qr_code.image
-            return HttpResponse(image_data, content_type='image/png')
+            #image_base64 = base64.b64encode(image_data).decode()
+            response_data = {
+            #    "image": image_base64,
+                "content_type": "image/png"
+            }
+            #return JsonResponse(response_data)
+            return HttpResponse(image_data, content_type="image/png")
         except QRCode.DoesNotExist:
             raise NotFound(detail="QR code not found for this user.")
 
@@ -47,7 +50,29 @@ class TOPVerificationView(APIView):
         totp = pyotp.TOTP(key)
 #        print(str(totp.now()))
         if totp.verify(request.data["code"]):
-            return Response(status=status.HTTP_200_OK, data={"message": "Code is valid."})
+            payload = {
+            'id': request.data["id"],
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.utcnow()
+            }
+            token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+            response = Response()
+            response.set_cookie(key='jwt', value=token, secure=True)
+            response.data = {
+            'jwt': token
+            }
+            return response
+        
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Code is invalid."})
+
+class setMail(APIView)
+    def post(self, request):
+        try:
+            qr_code = QRCode.objects.get(owner_id=request.data["id"])
+            qr_code.email = request.data["email"]
+            qr_code.save()
+            return Response(status=status.HTTP_201_CREATED, data={"message": "Email set successfully."})
+        except QRCode.DoesNotExist:
+            raise NotFound(detail="QR code not found for this user.")
         
