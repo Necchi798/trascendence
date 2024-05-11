@@ -125,15 +125,26 @@ export function fetchDataLogin() {
 	},
 	body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
 	})
-	.then(response => response.json()) // Converte la risposta in un oggetto Json
-	.then(data => {
-		console.log('Success:', data);
-		localStorage.setItem('jwtToken', data.jwt);
-		window.location = "/"
+	.then(response => {
+		if(response.ok){
+			console.log("successino")
+			return response.json()
+		}
+		else
+			console.log("errorino")
+	}).then(data=>{
+		if(data){
+			document.cookie= "jwt" + "=" + data.jwt
+			window.location = "/"
+		}
 	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
+	// .then(data => {
+	// 	console.log('Success:', data);
+	// 	data
+	// })
+	// .catch((error) => {
+	// 	console.error('Error:', error);
+	// });
 }
 
 export function actionLogin() {
