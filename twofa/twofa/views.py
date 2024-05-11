@@ -24,7 +24,7 @@ class QRCodeCreationView(APIView):
 
         # Salva i dati binari nel database
         try:
-            qr_code = QRCode.objects.create(image=image_data, owner_id=request.data["id"]
+            qr_code = QRCode.objects.create(image=image_data, owner_id=request.data["id"])
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
         print(type(qr_code.image))
@@ -50,23 +50,12 @@ class TOPVerificationView(APIView):
         totp = pyotp.TOTP(key)
 #        print(str(totp.now()))
         if totp.verify(request.data["code"]):
-            payload = {
-            'id': request.data["id"],
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat': datetime.datetime.utcnow()
-            }
-            token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-            response = Response()
-            response.set_cookie(key='jwt', value=token, secure=True)
-            response.data = {
-            'jwt': token
-            }
-            return response
+            return Response(status=status.HTTP_200_OK, data={"message": "Code is valid."})
         
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"message": "Code is invalid."})
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "Code is invalid."})
 
-class setMail(APIView)
+class setMail(APIView):
     def post(self, request):
         try:
             qr_code = QRCode.objects.get(owner_id=request.data["id"])
