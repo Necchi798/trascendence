@@ -371,7 +371,7 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 
 
-window.onload = function()
+export function makeGame()
 {
 	canvas = document.getElementById("canvas");
 	if (!canvas)
