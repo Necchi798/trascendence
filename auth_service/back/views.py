@@ -6,8 +6,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 from .serializer import UserSerializer
 from .models import User
-import jwt, datetime, requests
-
+import jwt, datetime, pyotp, base64
+import requests
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -54,16 +54,14 @@ class LoginView(APIView):
             raise AuthenticationFailed('Incorrect password!')
 
         if user.two_factor:
-            try:
-                response = requests.request('POST', 'https://0.0.0.0:8001/verify/', data={'id': user.id, 'code': request.data['code']}, headers={'Content-Type': 'application/x-www-form-urlencoded'})
-                if response.status_code == 200:
-                    pass
-                else:
-                    raise AuthenticationFailed('Invalid code!')
-            except:
-                raise AuthenticationFailed('two fa need!')
-
-            
+            key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
+            totp = pyotp.TOTP(key)
+#        print(str(totp.now()))
+        try:
+            if totp.verify(request.data["code"]) != True:
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "Code is invalid."})
+        except:
+            return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "need code."})
         
         payload = {
             'id': user.id,

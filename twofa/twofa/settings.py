@@ -1,5 +1,5 @@
 from pathlib import Path
-import os
+import os, ssl
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +14,17 @@ SECRET_KEY = os.environ.get('SECRET_JWT')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+    'auth_service:8000',
+    'otp_service:8001',
+    'auth_service',
+    'otp_service',
+    'localhost',
+    '0.0.0.0',
+    '0.0.0.0:8000'
+]
+
 
 
 # Application definition
@@ -33,6 +43,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_otp',
     'django_otp.plugins.otp_totp',
+    'urllib3',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +144,6 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:8000",
 ]
+
+ssl._create_default_https_context = ssl._create_unverified_context
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -2,11 +2,16 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import urllib3
+
+
 
 
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'twofa.settings')
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

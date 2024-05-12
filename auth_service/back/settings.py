@@ -14,7 +14,17 @@ SECRET_KEY = os.environ.get('SECRET_JWT')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+    'auth_service:8000',
+    'otp_service:8001',
+    'auth_service',
+    'otp_service',
+    'localhost',
+    '0.0.0.0',
+    '0.0.0.0:8001'
+]
+
 
 
 # Application definition
@@ -31,6 +41,7 @@ INSTALLED_APPS = [
     'back',
     'sslserver',
     'drf_yasg',
+    'urllib3'
 ]
 
 SWAGGER_SETTINGS = {
@@ -142,3 +153,4 @@ PASSWORD_HASHERS = [
 
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
