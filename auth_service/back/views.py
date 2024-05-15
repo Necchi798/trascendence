@@ -139,8 +139,10 @@ class UpdateUserView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def create_tournament(request, x):
-    creator = User.objects.create(username='creator')
-    player = Player.objects.create(user=creator)
+#   creator = User.objects.create(username='creator')
+    creator = request.data['username']
+    player = creator
+#    player = Player.objects.create(user=creator)
 
     for i in range(x):
         user = User.objects.create(username=f'player_{i+1}')

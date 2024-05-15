@@ -52,3 +52,28 @@ services:
       - auth_db
     networks:
       - trancendence
+
+  match_history:
+    image: postgres
+    ports:
+      - "5433:5432"
+
+    depends_on:
+      - nginx
+
+    environment:
+      POSTGRESS_DB: match_history_db
+      POSTGRES_USER: match_history_user
+      POSGRES_PASSWORD: match_history_password
+  
+  matchmaking:
+    build:
+      context: .
+      dockerfile: docker/matchmaking_system/Dockerfile
+    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py"
+    
+    ports:
+      - "8001:8002"
+    
+    depends_on:
+      - match_history
