@@ -7,7 +7,6 @@ var height;
 var canvas;
 var p1Score = 0;
 var p2Score = 0;
-var scale;
 
 // Define variables to keep track of player movements
 let player1Up = false;
@@ -245,8 +244,8 @@ class Ball {
 		{
 			//console.log("before p2: " + this.velX);
 			this.alpha = Math.PI - this.alpha;
-			console.log("p2: " + (player2Down || player2Up));
-			console.log("isAccelerated: " + isAccelerated);
+			//console.log("p2: " + (player2Down || player2Up));
+			//console.log("isAccelerated: " + isAccelerated);
 			if ((player2Down || player2Up) && !isAccelerated)
 			{	
 				this.vel += acceleration;
@@ -313,12 +312,12 @@ function loop()
 		ball.update();
 		ball.collisionDetect();
 	}
-	if (p1Offense)
+	/* if (p1Offense)
 		ball.color = "red";
 	else if (p2Offense)
 		ball.color = "blue";
 	else
-		ball.color = "white";
+		ball.color = "white"; */
 	ball.draw();
 	p1.draw();
 	p2.draw();
