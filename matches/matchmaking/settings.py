@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'matches.urls'
+ROOT_URLCONF = 'matchmaking.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'matches.wsgi.application'
+WSGI_APPLICATION = 'matchmaking.wsgi.application'
 
 
 # Database
@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'matches.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'matchmaking_db',
-        'USER' : 'matchmaking_user',
+        'NAME': 'match_history_db',
+        'USER' : 'match_history_user',
         'PASSWORD' : 'matchmaking_password',
         'HOST' : 'match_history',
-        'PORT' : '5432',
+        'PORT' : '5433',
     } 
 }
 
