@@ -69,12 +69,14 @@ services:
       POSTGRES_PASSWORD: ${MATCH_DB_PWD}
     volumes:
       - db_match_history:/var/lib/postgresql/data
+    networks:
+      - trancendence
 
   matchmaking:
     build:
       context: .
       dockerfile: docker/matchmaking_system/Dockerfile
-    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate "
+   # command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
     
     env_file:
       - .env
@@ -84,4 +86,5 @@ services:
     depends_on:
       match_history:
         condition: service_started
-      
+    networks:
+      - trancendence      
