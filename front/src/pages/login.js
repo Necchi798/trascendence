@@ -1,3 +1,5 @@
+import { router } from "../main.js";
+
 export function loginStyle()
 {
 	const styleElement = document.createElement("style");
@@ -120,6 +122,7 @@ export function fetchDataLogin() {
 	fetch('https://127.0.0.1:8000/login', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		mode:"cors",
+		credentials: 'include',
 	headers: {
 		'Content-Type': 'application/json' // Specifica il tipo di contenuto
 	},
@@ -128,20 +131,13 @@ export function fetchDataLogin() {
 	.then(response => {
 		if(response.ok){
 			console.log("successino")
-			//window.location = "/"
-			//return response.json()
-			
+			window.history.pushState(null,null,"/")
+			router()
+			return response.json()
 		}
 		else
 			console.log("errorino")
 	})
-	// .then(data => {
-	// 	console.log('Success:', data);
-	// 	data
-	// })
-	// .catch((error) => {
-	// 	console.error('Error:', error);
-	// });
 }
 
 export function actionLogin() {

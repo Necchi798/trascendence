@@ -3,11 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
-from django.shortcuts import redirect
 from .serializer import UserSerializer
 from .models import User
-import jwt, datetime, pyotp, base64
-import requests
+import jwt, datetime
+
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -52,16 +51,6 @@ class LoginView(APIView):
             raise AuthenticationFailed('User not found!')
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
-
-        if user.two_factor:
-            key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
-            totp = pyotp.TOTP(key)
-#        print(str(totp.now()))
-        try:
-            if totp.verify(request.data["code"]) != True:
-                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "Code is invalid."})
-        except:
-            return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "need code."})
         
         payload = {
             'id': user.id,
@@ -70,7 +59,7 @@ class LoginView(APIView):
         }
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
-        response.set_cookie('jwt_token', token)
+        response.set_cookie('jwt_token', token, secure=True, samesite='None')
         response.data = {
             'jwt': token
         }
