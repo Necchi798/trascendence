@@ -22,7 +22,7 @@ ALLOWED_HOSTS = [
     'otp_service',
     'localhost',
     '0.0.0.0',
-    '0.0.0.0:8001'
+    '0.0.0.0:8000'
 ]
 
 
@@ -38,19 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'back',
+    'twofa',
     'sslserver',
     'drf_yasg',
-    'urllib3'
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'urllib3',
 ]
-
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Basic': {
-            'type': 'basic'
-        }
-    }
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -60,10 +54,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'django_otp.middleware.OTPMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+
+
 ]
 
-ROOT_URLCONF = 'back.urls'
+ROOT_URLCONF = 'twofa.urls'
 
 TEMPLATES = [
     {
@@ -81,7 +79,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'back.wsgi.application'
+WSGI_APPLICATION = 'twofa.wsgi.application'
+
 
 
 # Database
@@ -93,8 +92,8 @@ DATABASES = {
         'NAME': 'transcend_users_db',
         'USER': 'transcend_user',
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': 'auth_db',  
-        'PORT': '5432',
+        'HOST': 'otp_db',  
+        'PORT': '5432',  # Assicurati che la porta corrisponda a quella esposta dal container del database
     }
 }
 
@@ -123,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Rome'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -140,17 +139,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'back.User'
-
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    # Altri hasher se necessario
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:8000",
 ]
 
-# Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
