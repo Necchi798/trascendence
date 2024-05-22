@@ -128,15 +128,12 @@ export function fetchDataLogin() {
 	.then(response => {
 		if(response.ok){
 			console.log("successino")
-			return response.json()
+			//window.location = "/"
+			//return response.json()
+			
 		}
 		else
 			console.log("errorino")
-	}).then(data=>{
-		if(data){
-			document.cookie= "jwt" + "=" + data.jwt
-			window.location = "/"
-		}
 	})
 	// .then(data => {
 	// 	console.log('Success:', data);

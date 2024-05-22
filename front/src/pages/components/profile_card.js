@@ -42,11 +42,10 @@ class ProfileCard extends HTMLElement {
     async fetchData() {
         const jwt = getCookieValue("jwt")
         try {
-            const response = await fetch("https://127.0.0.1:8000/user",{
-                headers:{
-                    jwt:jwt,
-                    method: "GET"
-                }
+            const response = await fetch("http://127.0.0.1:8000/user",{
+                method: "GET",
+                mode:"cors",
+                credentials:"same-origin"
             });
             console.log(response)
             const data = await response.json();
