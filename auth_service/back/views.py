@@ -57,11 +57,11 @@ class LoginView(APIView):
             key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
             totp = pyotp.TOTP(key)
 #        print(str(totp.now()))
-        try:
-            if totp.verify(request.data["code"]) != True:
-                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "Code is invalid."})
-        except:
-            return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "need code."})
+            try:
+                if totp.verify(request.data["code"]) != True:
+                    return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "Code is invalid."})
+            except:
+                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "need code."})
         
         payload = {
             'id': user.id,
