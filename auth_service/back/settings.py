@@ -154,3 +154,6 @@ PASSWORD_HASHERS = [
 # Disable SSL certificate verification
 ssl._create_default_https_context = ssl._create_unverified_context
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_SECURE = True

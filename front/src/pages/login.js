@@ -119,7 +119,7 @@ export function fetchDataLogin() {
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
 	const data = {  password:password, username:name};
-	fetch('https://127.0.0.1:8000/login', { //sostituire con l'indirizzo del server impostato dal backend
+	fetch('https://127.0.0.1:8000/login/', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		mode:"cors",
 		credentials: 'include',
@@ -136,6 +136,7 @@ export function fetchDataLogin() {
 			return response.json()
 		}
 		else
+			console.log(response)
 			console.log("errorino")
 	})
 }

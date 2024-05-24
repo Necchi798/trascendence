@@ -124,7 +124,7 @@ export function fetchDataRegister() {
 	const nome = document.getElementById('Name').value;
 	const cognome = document.getElementById('Surname').value;
 	const data = { password, email , username:nome,};
-	fetch('https://127.0.0.1:8000/register', { //sostituire con l'indirizzo del server impostato dal backend
+	fetch('https://127.0.0.1:8000/register/', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		mode:"cors",
 		headers: {

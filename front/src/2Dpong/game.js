@@ -7,7 +7,6 @@ var height;
 var canvas;
 var p1Score = 0;
 var p2Score = 0;
-var scale;
 
 // Define variables to keep track of player movements
 let player1Up = false;

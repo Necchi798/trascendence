@@ -55,11 +55,12 @@ class LoginView(APIView):
         payload = {
             'id': user.id,
             'exp': datetime.datetime.now() + datetime.timedelta(minutes=120),
-            'iat': datetime.datetime.now()
+            'iat': datetime.datetime.now(tz=datetime.timezone.utc)
         }
+        print(payload)
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
-        response.set_cookie('jwt_token', token, secure=True, samesite='None')
+        response.set_cookie('jwt', token, secure=True, samesite='None')
         response.data = {
             'jwt': token
         }
@@ -79,11 +80,13 @@ class UserView(APIView):
     def get(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed('Unauthenticated!')
+            raise AuthenticationFailed('Missing jwt')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthenticated!')
+            raise AuthenticationFailed('Expired jwt')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid jwt')
         user = User.objects.filter(id=payload['id']).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
