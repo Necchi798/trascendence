@@ -4,6 +4,7 @@ import stats from "./pages/stats.js"
 import { makeGame } from "./2Dpong/game.js";
 import login, {loginStyle} from "./pages/login.js";
 import register from "./pages/register.js";
+import twofa, {twofaStyle} from "./pages/twofa.js";
 import { actionRegister } from "./pages/register.js";
 import { actionLogin } from "./pages/login.js";
 
