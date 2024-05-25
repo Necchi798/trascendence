@@ -7,6 +7,7 @@ networks:
 volumes:
   db_auth_data:
   db_otp_data:
+  db_api42_data:
 
 services:
   nginx:
@@ -83,6 +84,39 @@ services:
       - "8001:8001"
     depends_on:
       - otp_db
+    networks:
+      - trancendence
+
+#api42
+  api42_db:
+    image: postgres
+    container_name: api42_db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: transcend_users_db
+      POSTGRES_USER: transcend_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5434:5432"
+    networks:
+      - trancendence
+    restart: unless-stopped
+    volumes:
+      - db_api42_data:/var/lib/postgresql/data
+
+  api42_service:
+    build: 
+      context: .
+      dockerfile: docker/api42/Dockerfile
+    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runsslserver --key /app/private.key --certificate /app/certificate.crt 0.0.0.0:8002"
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8002:8002"
+    depends_on:
+      - api42_db
     networks:
       - trancendence
   

@@ -24,6 +24,7 @@ class loginCard extends HTMLElement {
 }
 
 function handleLogin() {
+    console.log("qui")
     const loginButton = document.querySelector('.btn.btn-primary'); // Seleziona il pulsante di submit
     loginButton.addEventListener('click', (event) => {
         event.preventDefault(); // Previene il comportamento predefinito del modulo di login (invio del form)

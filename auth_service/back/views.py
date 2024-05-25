@@ -3,11 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
-from django.shortcuts import redirect
 from .serializer import UserSerializer
 from .models import User
-import jwt, datetime, pyotp, base64
-import requests
+import jwt, datetime
+
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -52,25 +51,16 @@ class LoginView(APIView):
             raise AuthenticationFailed('User not found!')
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
-
-        if user.two_factor:
-            key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
-            totp = pyotp.TOTP(key)
-#        print(str(totp.now()))
-            try:
-                if totp.verify(request.data["code"]) != True:
-                    return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "Code is invalid."})
-            except:
-                return Response(status=status.HTTP_401_UNAUTHORIZED, data={"message": "need code."})
         
         payload = {
             'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat': datetime.datetime.utcnow()
+            'exp': datetime.datetime.now() + datetime.timedelta(minutes=120),
+            'iat': datetime.datetime.now(tz=datetime.timezone.utc)
         }
+        print(payload)
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
-        response.set_cookie(key='jwt', value=token, secure=True)
+        response.set_cookie('jwt', token, secure=True, samesite='None')
         response.data = {
             'jwt': token
         }
@@ -90,12 +80,13 @@ class UserView(APIView):
     def get(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed('Unauthenticated!')
-        
+            raise AuthenticationFailed('Missing jwt')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthenticated!')
+            raise AuthenticationFailed('Expired jwt')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid jwt')
         user = User.objects.filter(id=payload['id']).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)

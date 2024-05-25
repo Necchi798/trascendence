@@ -1,6 +1,4 @@
-import {router} from "../main.js";
-
-export function loginStyle()
+export function twofaStyle()
 {
 	const styleElement = document.createElement("style");
 	styleElement.textContent =`
@@ -33,18 +31,6 @@ export function loginStyle()
 		font-size: 30px;
 		margin-bottom: 30px;
 		position: relative;
-	}
-8
-	.form-box h1::after {
-		content: '';
-		width: 30px;
-		height: 4px;
-		border-radius: 3px;
-		position: absolute;
-		background: #00224D;
-		bottom: -12px;
-		left: 50%;
-		transform: translateX(-50%);
 	}
 
 	.input-group {
@@ -89,19 +75,17 @@ export default  ()=> `
 	<div class="row justify-content-center">
 		<div class="col-12">
 			<div class="form-box">
-				<h1 class="text-center">Login</h1>
-				<form class="was-validated">
-					<div class="mb-3 input-group">
-						<span class="input-group-text"><i class="fas fa-user"></i></span>
-						<input type="text" id="Name" class="form-control" required placeholder="Name">
+				<h1 class="text-center">two factor authentication</h1>
+				<form>
+					<div class="d-flex justify-content-between">
+						<input type="text" id="code" class="form-control" placeholder="code">
+						<button type="button" id="loginButton" class="btn btn-primary mx-2">Login</button>
 					</div>
-					<div class="mb-3 input-group">
-						<span class="input-group-text"><i class="fas fa-lock"></i></span>
-						<input type="password" id="password" class="form-control" required placeholder="Password">
-					</div>
-					<div class="d-flex flex-column justify-content-center align-items-center">
-						<span>Dont have an account? <a data-link href="/register" id="RegisterButton">Sign up</a></span>
-						<button type="submit" id="LoginButton" class="btn btn-primary mx-2">Sign In</button>
+				</form>
+				<hr>
+				<form>
+					<div class="d-flex justify-content-center">
+						<button type="button" id="mailButton" class="btn btn-primary mx-2">Send a mail</button>
 					</div>
 				</form>
 			</div>
@@ -110,13 +94,12 @@ export default  ()=> `
 </div>
 `;
 
-export function fetchDataLogin() {
+/* export function fetchDataLogin() {
 	const name = document.getElementById('Name').value;
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
 	const data = {  password:password, username:name};
-	
-	fetch('https://127.0.0.1:8000/login', { //sostituire con l'indirizzo del server impostato dal backend
+	fetch('https://127.0.0.1:8000/login/', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		mode:"cors",
 		credentials: 'include',
@@ -128,7 +111,7 @@ export function fetchDataLogin() {
 	.then(response => {
 		if(response.ok){
 			console.log("successino")
-			history.pushState({},"","https://localhost:4430/")
+			window.history.pushState(null,null,"/")
 			router()
 			return response.json()
 		}
@@ -136,8 +119,8 @@ export function fetchDataLogin() {
 			console.log(response)
 			console.log("errorino")
 	})
-}
+} */
 
-export function actionLogin() {
+/* export function actionLogin() {
 	document.getElementById('LoginButton').addEventListener('click', fetchDataLogin);
-}
+} */
