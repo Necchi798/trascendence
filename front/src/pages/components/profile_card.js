@@ -49,12 +49,13 @@ class ProfileCard extends HTMLElement {
             });
             console.log(response)
             const data = await response.json();
+            //console.log(data)
             const nameSpan = this.querySelector('#name');
             if (nameSpan) 
-                nameSpan.textContent = data.name;
+                nameSpan.textContent = data.username;
             const mailSpan = this.querySelector('#email')
             if(mailSpan)
-                mailSpan.textContent= data.height
+                mailSpan.textContent= data.email;
         } catch (error) {
             console.error('Error fetching data:', error);
         }
