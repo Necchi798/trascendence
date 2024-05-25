@@ -1,4 +1,4 @@
-import { router } from "../main.js";
+import {router} from "../main.js";
 
 export function loginStyle()
 {
@@ -90,22 +90,18 @@ export default  ()=> `
 		<div class="col-12">
 			<div class="form-box">
 				<h1 class="text-center">Login</h1>
-				<form>
+				<form class="was-validated">
 					<div class="mb-3 input-group">
 						<span class="input-group-text"><i class="fas fa-user"></i></span>
-						<input type="text" id="Name" class="form-control" placeholder="Name">
-					</div>
-					<div class="mb-3 input-group">
-						<span class="input-group-text"><i class="fas fa-envelope"></i></span>
-						<input type="email" id="email" class="form-control" placeholder="Email">
+						<input type="text" id="Name" class="form-control" required placeholder="Name">
 					</div>
 					<div class="mb-3 input-group">
 						<span class="input-group-text"><i class="fas fa-lock"></i></span>
-						<input type="password" id="password" class="form-control" placeholder="Password">
+						<input type="password" id="password" class="form-control" required placeholder="Password">
 					</div>
-					<div class="d-flex justify-content-center">
-						<a data-link href="/register" id="RegisterButton" class="btn btn-primary mx-2">Sign up</a>
-						<button type="button" id="LoginButton" class="btn btn-primary mx-2">Sign In</button>
+					<div class="d-flex flex-column justify-content-center align-items-center">
+						<span>Dont have an account? <a data-link href="/register" id="RegisterButton">Sign up</a></span>
+						<button type="submit" id="LoginButton" class="btn btn-primary mx-2">Sign In</button>
 					</div>
 				</form>
 			</div>
@@ -119,7 +115,8 @@ export function fetchDataLogin() {
 	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
 	const data = {  password:password, username:name};
-	fetch('https://127.0.0.1:8000/login/', { //sostituire con l'indirizzo del server impostato dal backend
+	
+	fetch('https://127.0.0.1:8000/login', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		mode:"cors",
 		credentials: 'include',
@@ -131,7 +128,7 @@ export function fetchDataLogin() {
 	.then(response => {
 		if(response.ok){
 			console.log("successino")
-			window.history.pushState(null,null,"/")
+			history.pushState({},"","https://localhost:4430/")
 			router()
 			return response.json()
 		}
