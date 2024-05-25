@@ -92,8 +92,6 @@ export default  ()=> `
 						<div class="mb-3 input-group">
 							<span class="input-group-text"><i class="fas fa-user"></i></span>
 							<input type="text" id="Name" class="form-control" placeholder="Name">
-							<span class="input-group-text"><i class="fas fa-user"></i></span>
-							<input type="text" id="Surname" class="form-control" placeholder="Surname">
 						</div>
 						<div class="mb-3 input-group">
 							<span class="input-group-text"><i class="fas fa-envelope"></i></span>
@@ -103,13 +101,14 @@ export default  ()=> `
 							<span class="input-group-text"><i class="fas fa-lock"></i></span>
 							<input type="password" id="password" class="form-control" placeholder="Password">
 						</div>
+						<div>
 						<div class="mb-3 input-group">
 							<span class="input-group-text"><i class="fas fa-lock"></i></span>
 							<input type="password" id="confirmpassword" class="form-control" placeholder="Confirm Password">
 						</div>
-						<div class="d-flex justify-content-center">
-							<button type="button" id="RegisterButton" class="btn btn-primary mx-2">Sign up</button>
-							<a data-link href="/login" id="LoginButton" class="btn btn-primary mx-2">Sign In</a>
+						<div class="d-flex flex-column justify-content-center align-items-center">
+						<span>have an account? <a data-link href="/login" >Login</a></span>
+							<button  id="RegisterButton" class="btn btn-primary mx-2">Sgn up</button>
 						</div>
 					</form>
 				</div>

@@ -4,6 +4,7 @@ import stats from "./pages/stats.js"
 import { makeGame } from "./2Dpong/game.js";
 import login, {loginStyle} from "./pages/login.js";
 import register from "./pages/register.js";
+import twofa, {twofaStyle} from "./pages/twofa.js";
 import { actionRegister } from "./pages/register.js";
 import { actionLogin } from "./pages/login.js";
 
@@ -18,11 +19,11 @@ const routes = {
 }
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"
-const router = ()=> {
+export const router = ()=> {
+    // if(document.cookie.includes("jwt_token") && window.location.pathname != "/register") {
+    //     window.history.pushState(null,null,"/login")
+    // }
     let view = routes[location.pathname];
-    if(!document.cookie.includes("jwt") && view.title != "register")
-        view = routes["/login"]
-    console.log(view)
     document.title = view.title;
     if (view.title === "login") {
         document.head.appendChild(loginStyle());
@@ -41,5 +42,6 @@ window.addEventListener("click",e =>{
 })
 
 //bho
+window.addEventListener("pushstate", router);
 window.addEventListener("popstate", router);
 window.addEventListener("DOMContentLoaded", router);
