@@ -43,6 +43,14 @@ class QRCodeCreationView(APIView):
             return HttpResponse(image_data, content_type="image/png")
         except QRCode.DoesNotExist:
             raise NotFound(detail="QR code not found for this user.")
+    
+    def delete(self, request):
+        try:
+            qr_code = QRCode.objects.get(owner_id=request.data["id"])
+            qr_code.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT, data={"message": "QR code deleted successfully."})
+        except QRCode.DoesNotExist:
+            raise NotFound(detail="QR code not found for this user.")
 
 class TOPVerificationView(APIView):
     def post(self, request):

@@ -132,7 +132,6 @@ export function fetchDataRegister() {
 	})
 	.then(response => response.json()) // Converte la risposta in un oggetto Json
 	.then(data => {
-		
 		console.log('Success:', data);
 	})
 	.catch((error) => {

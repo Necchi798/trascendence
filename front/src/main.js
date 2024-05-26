@@ -1,5 +1,5 @@
 import game from "./pages/game.js";
-import home from "./pages/home.js";
+import home, {actionHome} from "./pages/home.js";
 import stats from "./pages/stats.js"
 import { makeGame } from "./2Dpong/game.js";
 import login, {loginStyle} from "./pages/login.js";
@@ -10,7 +10,7 @@ import { actionLogin } from "./pages/login.js";
 
 
 const routes = {
-    "/":{title:"home", render: home,action: ()=>{}},
+    "/":{title:"home", render: home, action: actionHome},
     "/profile":{title:"profile",render: ()=>{},action: ()=>{}},
     "/2dpong":{title:"game", render: game,action:makeGame},
     "/3dpong_stats":{title: "history",render:stats,action: ()=>{}},
