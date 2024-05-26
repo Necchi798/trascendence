@@ -1,8 +1,7 @@
+#serializer.py
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from .models import Player, Match, Tournament
+from .models import Tournament, Player, Match, User
 
-User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,29 +13,31 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
-class PlayerSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
 
+class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['id', 'user', 'nickname', 'tournament']
 
-class MatchSerializer(serializers.ModelSerializer):
-    player1 = PlayerSerializer(read_only=True)
-    player2 = PlayerSerializer(read_only=True)
-    winner = PlayerSerializer(read_only=True)
 
+class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
-        fields = ['id', 'tournament', 'round_number', 'player1', 'player2', 'winner', 'is_completed', 'start_time', 'end_time']
+        fields = ['id', 'player1', 'player2', 'winner', 'tournament', 'round_number', 'start_time', 'end_time', 'is_completed']
+
 
 class TournamentSerializer(serializers.ModelSerializer):
-    creator = UserSerializer(read_only=True)
-    players = PlayerSerializer(many=True, read_only=True)
-
     class Meta:
         model = Tournament
-        fields = ['id', 'creator', 'player_count', 'current_round', 'total_rounds', 'start_time', 'end_time', 'players']
+        fields = ['id', 'creator', 'player_count', 'current_round', 'start_time', 'end_time', 'is_active', 'players']
+
 
 class SubmitMatchResultSerializer(serializers.Serializer):
     winner_id = serializers.IntegerField()
+
+    def validate_winner_id(self, value):
+        # Validate that the winner ID corresponds to an existing player
+        if not Player.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Invalid winner ID.")
+        return value
+
