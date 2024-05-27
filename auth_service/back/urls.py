@@ -29,7 +29,4 @@ urlpatterns = [
     
     path('swagger', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    path('create-tournament/<int:x>/', views.create_tournament, name='create_tournament'),
-    path('add-friend/<int:user_id>/<int:friend_id>/', views.add_friend, name='add_friend'),
-    path('start-tournament/<int:tournament_id>/', views.start_tournament, name='start_tournament'),
 ]

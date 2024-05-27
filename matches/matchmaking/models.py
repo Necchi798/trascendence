@@ -30,6 +30,7 @@ class Player(models.Model):
     tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, related_name='tournament_players')
 
 class Tournament(models.Model):
+    id = models.AutoField(primary_key=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tournament')
     player_count = models.IntegerField()
     current_round = models.IntegerField(default=1)

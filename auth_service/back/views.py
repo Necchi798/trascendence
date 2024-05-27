@@ -138,32 +138,3 @@ class UpdateUserView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def create_tournament(request, x):
-#   creator = User.objects.create(username='creator')
-    creator = request.data['username']
-    player = creator
-#    player = Player.objects.create(user=creator)
-
-    for i in range(x):
-        user = User.objects.create(username=f'player_{i+1}')
-        player = Player.objects.create(user=user)
-
-    tournament = Tournament.objects.create(creator=creator, player_count=x)
-    return Response({'success': True, 'message':f'Tournament created with {x} players'}, status=status.HTTP_200_OK)
-
-def add_friend(request, user_id, friend_id):
-    user = User.objects.get(pk=user_id)
-    friend = User.objects.get(pk=friend_id)
-    user.add_friend(friend)
-    return Response({'success': False, 'message': 'Friend added'}, status=status.HTTP_200_OK)
-
-def start_tournament(request, tournament_id):
-    tournament = Tournament.objects.get(pk=tournament_id)
-
-    if tournament.friends_invited.count() != tournament.player_count:
-        return Response({'success': False, 'message': 'Not All friends have joined yet'}, status=status.HTTP_400_BAD_REQUEST)
-
-    tournament.start_time = time.strftime('%Y-%m-%d %H:%M:%S')
-    tournament.save()
-
-    return Response({'success': True, 'message': 'Tournament started'}, status=status.HTTP_200_OK)
