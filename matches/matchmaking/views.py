@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Tournament, Player, Match, User
 from .serializer import UserSerializer, PlayerSerializer, MatchSerializer, TournamentSerializer, SubmitMatchResultSerializer
-
+import random
 class CreateTournament(APIView):
     def post(self, request):
         creator_username = request.data['username']
@@ -33,8 +33,7 @@ class StartTournament(APIView):
         self._create_matches(tournament, players)
         return Response({'success': True, 'message': 'Tournament started'}, status=status.HTTP_200_OK)
 
-    def _create_matches(self, tournament, players):
-        import random
+    def _create_matches(self, tournament, players):        
         random.shuffle(players)
         matches = []
         while len(players) > 1:

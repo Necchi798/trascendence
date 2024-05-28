@@ -42,8 +42,8 @@ class Match(models.Model):
     id = models.AutoField(primary_key=True)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     round_number = models.IntegerField()
-    player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player1_matches')
-    player2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player2_matches')
+    me='player1_matches')
+    player2 = models.Foreigplayer1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_nanKey(Player, on_delete=models.CASCADE, related_name='player2_matches')
     winner = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='won_matches', null=True, blank=True)
     created_at = models.DateTimeField(null=True, blank=True)
     ended_at = models.DateTimeField

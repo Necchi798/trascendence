@@ -1,24 +1,15 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import redirect
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
 from .models import User42
 import requests
 import jwt, datetime
 
-
-class Enable42(APIView):
-    def post(self, request):
-        payload = {
-            'grant_type': 'authorization_code',
-            'client_id': settings.CLIENT_ID,
-            'client_secret': settings.CLIENT_SECRET,
-            'code': request.data.get('code'),
-            'redirect_uri': settings.REDIRECT_URI
-
-        }
-
+class Api42(APIView):
+    def get(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
             raise AuthenticationFailed('Missing jwt')
@@ -29,6 +20,49 @@ class Enable42(APIView):
         except jwt.ImmatureSignatureError:
             raise AuthenticationFailed('Invalid jwt')
 
+        payload = {
+            'client_id': settings.CLIENT_ID,
+            'redirect_uri': settings.REDIRECT_URI,
+            'response_type': 'code'
+        }
+        return Response(status=status.HTTP_200_OK, data={'url': 'https://api.intra.42.fr/oauth/authorize?' + '&'.join([f'{key}={value}' for key, value in payload.items()])})
+
+
+class Enable42(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Missing jwt')
+        try:
+            jwt_decode = jwt.decode(token, settings.SECRET_JWT, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired jwt')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid jwt')
+
+        user=User42.objects.filter(owner_id=jwt_decode['id']).first()
+        if not user:
+            return Response(status=status.HTTP_200_OK, data={'message': 'User not found'})
+        return Response(status=status.HTTP_200_OK, data={'message': 'User found', 'id_42': user.id_42})
+
+    def post(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Missing jwt')
+        try:
+            jwt_decode = jwt.decode(token, settings.SECRET_JWT, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired jwt')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid jwt')
+
+        payload = {
+            'client_id': settings.CLIENT_ID,
+            'client_secret': settings.CLIENT_SECRET,
+            'code': request.data.get('code'),
+            'redirect_uri': settings.REDIRECT_URI,
+            'grant_type': 'authorization_code'
+        }
         first_step=requests.request("POST", "https://api.intra.42.fr/oauth/token", data=payload)
         if first_step.status_code != 200:
             raise AuthenticationFailed('Invalid code')
@@ -37,8 +71,9 @@ class Enable42(APIView):
             raise AuthenticationFailed('Invalid token')
         user=User42.objects.create(owner_id=jwt_decode['id'], id_42=response.json()['id'])
         user.save()
+        login_name = response.json()['login']
         print(user)
-        return Response(status=status.HTTP_200_OK, data={'message': 'User created'})
+        return Response(status=status.HTTP_200_OK, data={'message': 'User created', 'id_42': user.id_42, 'login': login_name})
 
 class Disable42(APIView):
     def post(self, request):
