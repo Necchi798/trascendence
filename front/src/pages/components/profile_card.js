@@ -1,7 +1,7 @@
 function getCookieValue(cookieName) {
     // Dividi la stringa dei cookie in cookie individuali
     var cookies = document.cookie.split("; ");
-    
+
     // Cerca il cookie desiderato utilizzando Array.find()
     var cookie = cookies.find(function(cookie) {
         // Dividi il cookie in nome e valore
@@ -10,7 +10,7 @@ function getCookieValue(cookieName) {
         // Restituisci il cookie se il nome corrisponde a quello cercato
         return cookieNameTrimmed === cookieName;
     });
-    
+
     // Se il cookie è stato trovato, restituisci il suo valore, altrimenti restituisci null
     return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
 }
@@ -51,7 +51,7 @@ class ProfileCard extends HTMLElement {
             console.log(response)
             const data = await response.json();
             const nameSpan = this.querySelector('#name');
-            if (nameSpan) 
+            if (nameSpan)
                 nameSpan.textContent = data.name;
             const mailSpan = this.querySelector('#email')
             if(mailSpan)
@@ -63,3 +63,4 @@ class ProfileCard extends HTMLElement {
 }
 
 customElements.define("profile-card",ProfileCard);
+

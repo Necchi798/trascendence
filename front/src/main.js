@@ -20,8 +20,8 @@ const routes = {
 //metodo per il routing: in base all' url cambia il contenuto di "content"
 const router = ()=> {
     let view = routes[location.pathname];
-    if(!document.cookie.includes("jwt") && view.title != "register")
-        view = routes["/login"]
+    // if(!document.cookie.includes("jwt") && view.title != "register")
+    //     view = routes["/login"]
     console.log(view)
     document.title = view.title;
     if (view.title === "login") {
@@ -39,6 +39,7 @@ window.addEventListener("click",e =>{
         router();
     }
 })
+
 
 //bho
 window.addEventListener("popstate", router);
