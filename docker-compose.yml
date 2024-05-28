@@ -8,6 +8,7 @@ volumes:
   db_auth_data:
   db_otp_data:
   db_api42_data:
+  db_match_history:
 
 services:
   nginx:
@@ -54,69 +55,38 @@ services:
       - auth_db
     networks:
       - trancendence
-#otp
-  otp_db:
+      
+  match_history:
     image: postgres
-    container_name: otp_db
+    ports:
+      - "5433:5433"
+    command: ["postgres", "-c", "port=5433"]
+    depends_on:
+      - nginx
     env_file:
       - .env
     environment:
-      POSTGRES_DB: transcend_users_db
-      POSTGRES_USER: transcend_user
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5433:5432"
+      POSTGRES_DB: match_history_db
+      POSTGRES_USER: match_history_user
+      POSTGRES_PASSWORD: ${MATCH_DB_PWD}
+    volumes:
+      - db_match_history:/var/lib/postgresql/data
     networks:
       - trancendence
-    restart: unless-stopped
-    volumes:
-      - db_otp_data:/var/lib/postgresql/data
 
-  otp_service:
-    build: 
+  matchmaking:
+    build:
       context: .
-      dockerfile: docker/otp/Dockerfile
-    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runsslserver --key /app/private.key --certificate /app/certificate.crt 0.0.0.0:8001"
-    restart: always
+      dockerfile: docker/matchmaking_system/Dockerfile
+   # command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+    
     env_file:
       - .env
     ports:
       - "8001:8001"
+    
     depends_on:
-      - otp_db
+      match_history:
+        condition: service_started
     networks:
-      - trancendence
-
-#api42
-  api42_db:
-    image: postgres
-    container_name: api42_db
-    env_file:
-      - .env
-    environment:
-      POSTGRES_DB: transcend_users_db
-      POSTGRES_USER: transcend_user
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5434:5432"
-    networks:
-      - trancendence
-    restart: unless-stopped
-    volumes:
-      - db_api42_data:/var/lib/postgresql/data
-
-  api42_service:
-    build: 
-      context: .
-      dockerfile: docker/api42/Dockerfile
-    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runsslserver --key /app/private.key --certificate /app/certificate.crt 0.0.0.0:8002"
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - "8002:8002"
-    depends_on:
-      - api42_db
-    networks:
-      - trancendence
-  
+      - trancendence      
