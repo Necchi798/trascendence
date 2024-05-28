@@ -382,8 +382,42 @@ function getQueryParameter(name) {
 
 
 export function actionHome() {
-	document.getElementById('twofaButton').addEventListener('click', fetchEnabletwofa);
-	document.getElementById('login42Button').addEventListener('click', fetchEnableLogin42);
+	const jwt = getCookieValue("jwt");
+	fetch("https://127.0.0.1:8000/user/",{
+			method: "GET",
+			mode: "cors",
+			credentials: "include"
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.two_factor === true)
+		{
+			document.getElementById('twofaButton').textContent = "Disable 2FA";
+			document.getElementById('twofaButton').removeEventListener('click', fetchEnabletwofa);
+			document.getElementById('twofaButton').addEventListener('click', fetchDisabletwofa);
+		}
+		else
+		{
+			document.getElementById('twofaButton').textContent = "Enable 2FA";
+			document.getElementById('twofaButton').removeEventListener('click', fetchDisabletwofa);
+			document.getElementById('twofaButton').addEventListener('click', fetchEnabletwofa);
+		}
+		if (data.api42 === true)
+		{
+			document.getElementById('login42Button').textContent = "Disable login 42";
+			document.getElementById('login42Button').removeEventListener('click', fetchEnableLogin42);
+			document.getElementById('login42Button').addEventListener('click', fetchDisableLogin42);
+		}
+		else
+		{
+			document.getElementById('login42Button').textContent = "Enable login 42";
+			document.getElementById('login42Button').removeEventListener('click', fetchDisableLogin42);
+			document.getElementById('login42Button').addEventListener('click', fetchEnableLogin42);
+		}
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
 	document.getElementById('delete42Button').addEventListener('click', fetchDisableLogin42Button);
 	document.getElementById('delete2faButton').addEventListener('click', fetchDeleteQRCodeButton);
 	const code = getQueryParameter('code');
