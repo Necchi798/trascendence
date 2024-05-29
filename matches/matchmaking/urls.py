@@ -1,10 +1,22 @@
+# urls.py
+
 from django.urls import path
-from .views import CreateTournament, StartTournament, SubmitMatchResult, MatchHistory, NextMatch
+from .views import (
+    CreateChallenge,
+    GetNextMatch,
+    DeleteHistory,
+    GetHistory,
+    UpdateMatchResult,
+    UpdateTournament,
+    GetNextRound
+)
 
 urlpatterns = [
-    path('create-tournament/', CreateTournament.as_view(), name='create_tournament'),
-    path('start-tournament/<int:tournament_id>/', StartTournament.as_view(), name='start_tournament'),
-    path('submit-match-result/<int:match_id>/', SubmitMatchResult.as_view(), name='submit_match_result'),
-    path('delete-player-history/<int:player_id>/', MatchHistory.as_view(), name='delete_player_history'),
-    path('next-match/', NextMatch.as_view(), name='next_match'),  # New URL pattern
+    path('create-challenge/', CreateChallenge.as_view(), name='create-challenge'),
+    path('get-next-match/<int:index>/', GetNextMatch.as_view(), name='get-next-match'),
+    path('delete-history/', DeleteHistory.as_view(), name='delete-history'),
+    path('get-history/', GetHistory.as_view(), name='get-history'),
+    path('update-match-result/<int:match_id>/', UpdateMatchResult.as_view(), name='update-match-result'),
+    path('update-tournament/<int:tournament_id>/', UpdateTournament.as_view(), name='update-tournament'),
+    path('get-next-round/<int:tournament_id>/', GetNextRound.as_view(), name='get-next-round')
 ]
