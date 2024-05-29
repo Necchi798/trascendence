@@ -4,13 +4,12 @@ export function loginStyle()
 {
 	const styleElement = document.createElement("style");
 	styleElement.textContent =`
-	body {
+	.pippo {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		height: 100vh;
 		background-color: #00224D;
-		background-position: center;
 		background-size: cover;
 		margin: 0;
 		background-position: center;
@@ -18,6 +17,7 @@ export function loginStyle()
 	}
 
 	.container {
+		width:fit-content;
 		background-color: rgba(255, 255, 255, 0.8);
 		border-radius: 15px;
 		box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
@@ -26,25 +26,6 @@ export function loginStyle()
 
 	.form-box {
 		padding: 50px 60px 60px;
-	}
-
-	.form-box h1 {
-		color: #00224D;
-		font-size: 30px;
-		margin-bottom: 30px;
-		position: relative;
-	}
-8
-	.form-box h1::after {
-		content: '';
-		width: 30px;
-		height: 4px;
-		border-radius: 3px;
-		position: absolute;
-		background: #00224D;
-		bottom: -12px;
-		left: 50%;
-		transform: translateX(-50%);
 	}
 
 	.input-group {
@@ -76,21 +57,18 @@ export function loginStyle()
 		background-color: #00172F;
 	}
 
-	p {
-		color: #999;
-		margin-top: 10px;
-	}
 	`;
 	return styleElement;
 }
 
 export default  ()=> `
+<div class="pippo">
 <div class="container">
 	<div class="row justify-content-center">
 		<div class="col-12">
 			<div class="form-box">
 				<h1 class="text-center">Login</h1>
-				<form class="was-validated">
+				<form id="formLogin" class="needs-validation">
 					<div class="mb-3 input-group">
 						<span class="input-group-text"><i class="fas fa-user"></i></span>
 						<input type="text" id="Name" class="form-control" required placeholder="Name">
@@ -101,22 +79,22 @@ export default  ()=> `
 					</div>
 					<div class="d-flex flex-column justify-content-center align-items-center">
 						<span>Dont have an account? <a data-link href="/register" id="RegisterButton">Sign up</a></span>
-						<button type="submit" id="LoginButton" class="btn btn-primary mx-2">Sign In</button>
+						<button type="button" id="LoginButton" class="btn btn-primary mx-2">Sign In</button>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
+</div>
 `;
 
 export function fetchDataLogin() {
 	const name = document.getElementById('Name').value;
-	const email = document.getElementById('email').value;
 	const password = document.getElementById('password').value;
 	const data = {  password:password, username:name};
 	
-	fetch('https://127.0.0.1:8000/login', { //sostituire con l'indirizzo del server impostato dal backend
+	fetch('https://127.0.0.1:8000/login/', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
 		mode:"cors",
 		credentials: 'include',
@@ -128,7 +106,7 @@ export function fetchDataLogin() {
 	.then(response => {
 		if(response.ok){
 			console.log("successino")
-			history.pushState({},"","https://localhost:4430/")
+			history.pushState({},"","/")
 			router()
 			return response.json()
 		}
@@ -139,5 +117,5 @@ export function fetchDataLogin() {
 }
 
 export function actionLogin() {
-	document.getElementById('LoginButton').addEventListener('click', fetchDataLogin);
+	document.getElementById('LoginButton').addEventListener("click",(e)=>{e.preventDefault() ;fetchDataLogin()});
 }
