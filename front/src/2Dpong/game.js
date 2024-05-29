@@ -346,7 +346,7 @@ function drawCanvas()
 	ball.draw();
 }
 
-function resizeCanvas() {
+/* function resizeCanvas() {
 	var tempWidth = window.screen.availWidth < window.innerWidth ? window.screen.availWidth : window.innerWidth;
 	var tempHeight = window.screen.availHeight < window.innerHeight ? window.screen.availHeight : window.innerHeight;
 
@@ -365,9 +365,9 @@ function resizeCanvas() {
 	height = canvas.height;
 
 	drawCanvas();
-}
+} */
 
-window.addEventListener('resize', resizeCanvas);
+//window.addEventListener('resize', resizeCanvas);
 
 
 export function makeGame()
