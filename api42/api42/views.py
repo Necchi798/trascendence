@@ -12,17 +12,13 @@ class Api42(APIView):
     def get(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
-            raise AuthenticationFailed('Missing jwt')
-        try:
-            jwt_decode = jwt.decode(token, settings.SECRET_JWT, algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Expired jwt')
-        except jwt.ImmatureSignatureError:
-            raise AuthenticationFailed('Invalid jwt')
+            redir_uri = settings.REDIRECT_URI + 'login'
+        else:
+            redir_uri = settings.REDIRECT_URI
 
         payload = {
             'client_id': settings.CLIENT_ID,
-            'redirect_uri': settings.REDIRECT_URI,
+            'redirect_uri': redir_uri,
             'response_type': 'code'
         }
         return Response(status=status.HTTP_200_OK, data={'url': 'https://api.intra.42.fr/oauth/authorize?' + '&'.join([f'{key}={value}' for key, value in payload.items()])})
@@ -97,8 +93,7 @@ class login42(APIView):
                 'client_id': settings.CLIENT_ID,
                 'client_secret': settings.CLIENT_SECRET,
                 'code': request.data.get('code'),
-                'redirect_uri': settings.REDIRECT_URI
-
+                'redirect_uri': settings.REDIRECT_URI + 'login'
             }
         first_step=requests.request("POST", "https://api.intra.42.fr/oauth/token", data=payload)
         if first_step.status_code != 200:
@@ -109,13 +104,15 @@ class login42(APIView):
         user=User42.objects.filter(id_42=response.json()['id']).first()
         if not user:
             raise AuthenticationFailed('User not found')
-        
+        else:
+            print("user found")
         payload = {
-        'id': user.id,
+        'id': user.owner_id,
         'exp': datetime.datetime.now() + datetime.timedelta(minutes=120),
         'iat': datetime.datetime.now(tz=datetime.timezone.utc)
         }
-        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+        print(payload)
+        token = jwt.encode(payload, settings.SECRET_JWT, algorithm='HS256')
         response = Response()
         response.set_cookie('jwt', token, secure=True, samesite='None')
         response.data = {

@@ -104,11 +104,33 @@ export default  ()=> `
 						<button type="button" id="LoginButton" class="btn btn-primary mx-2">Sign In</button>
 					</div>
 				</form>
+				<hr></hr>
+				<form id="formLogin42" class="needs-validation">
+					<div class="d-flex flex-column justify-content-center align-items-center">
+						<button type="button" id="Login42Button" class="btn btn-primary mx-2">Login 42</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
 </div>
 `;
+
+function fetchDataLogin42() {
+	fetch("https://127.0.0.1:8002/api-auth/",{
+			method: "GET",
+			mode: "cors",
+			credentials: "include"
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log(data);
+		window.location.href = data.url;
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+}
 
 export function fetchDataLogin() {
 	const name = document.getElementById('Name').value;
@@ -137,6 +159,42 @@ export function fetchDataLogin() {
 	})
 }
 
+function getQueryParameter(name) {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(name);
+}
+
+function searchToken(code) {
+	fetch('https://127.0.0.1:8002/login42/', {
+		method: 'POST',
+		mode:"cors",
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json' // Specifica il tipo di contenuto
+		},
+		body: JSON.stringify({code:code})	// Converte l'oggetto JavaScript in una stringa JSON
+	})
+	.then(response => {
+		if(response.ok){
+			console.log(window.location.href)
+			console.log(response)
+			/* history.pushState({},"","/")
+			router() */
+			return response.json()
+		}
+		else
+			console.log(response)
+			console.log("errorino")
+	})
+}
+
 export function actionLogin() {
 	document.getElementById('LoginButton').addEventListener("click",(e)=>{e.preventDefault() ;fetchDataLogin()});
+	document.getElementById('Login42Button').addEventListener("click",(e)=>{e.preventDefault(); fetchDataLogin42()});
+	const code = getQueryParameter('code');
+	if (code)
+	{
+		console.log(code);
+		searchToken(code);
+	}
 }

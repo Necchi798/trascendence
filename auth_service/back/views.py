@@ -59,6 +59,14 @@ class LoginView(APIView):
         }
         print(payload)
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+        try:
+            new_payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            print(new_payload)
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired jwt')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid jwt')
+        
         response = Response()
         response.set_cookie('jwt', token, secure=True, samesite='None')
         response.data = {
