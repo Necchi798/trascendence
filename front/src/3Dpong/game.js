@@ -328,7 +328,7 @@ function animate() {
 	renderer.render(scene, camera);
 }
 
-export function makeGame() {
+export function makeGame3d() {
 	renderer = new THREE.WebGLRenderer();
 	if (!renderer) {
 		console.log('Failed to create renderer');

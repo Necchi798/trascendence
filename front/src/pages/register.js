@@ -1,3 +1,5 @@
+import {router} from "../main.js";
+
 export default  ()=> `
 <div class="background d-flex" style="		display: flex;
 align-items: center;
@@ -50,16 +52,19 @@ export function fetchDataRegister() {
 			'Content-Type': 'application/json' // Specifica il tipo di contenuto
 		},
 		body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
+	}).then(response => {
+		if(response.ok){
+			console.log("successino")
+			history.pushState({},"","/login")
+			router()
+			return response.json()
+		}
+		else
+			console.log(response)
+			console.log("errorino")
 	})
-	.then(response => response.json()) // Converte la risposta in un oggetto Json
-	.then(data => {
-		console.log('Success:', data);
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
 }
 
 export function actionRegister() {
-	document.getElementById('RegisterButton').addEventListener('click', fetchDataRegister);
+	document.getElementById('RegisterButton').addEventListener('click', (e)=>{e.preventDefault();fetchDataRegister()});
 }
