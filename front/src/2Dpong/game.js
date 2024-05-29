@@ -365,9 +365,9 @@ function drawCanvas()
 	height = canvas.height;
 
 	drawCanvas();
-}
+} */
 
-window.addEventListener('resize', resizeCanvas); */
+//window.addEventListener('resize', resizeCanvas);
 
 
 export function makeGame()

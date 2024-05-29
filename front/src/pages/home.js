@@ -47,6 +47,11 @@ export default  ()=> `
 						<span>Force delete of 2FA</span>
 						<button type="button" id="delete2faButton" class="btn btn-primary">Delete 2FA</button>
 					</div>
+					<hr></hr>
+					<div style="display: flex; justify-content: space-between; align-items: center ">
+						<span>log info of the user</span>
+						<button type="button" id="UserButton" class="btn btn-primary">user</button>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -317,6 +322,7 @@ function fetchCreate42User(userdata, code)
 	.then(data => {
 		console.log(data);
 		fetchUpdateUser("login42", true, userdata);
+		window.location.href = "https://127.0.0.1:4430/";
 	})
 	.catch((error) => {
 		console.error('Error:', error);
@@ -420,6 +426,7 @@ export function actionHome() {
 	});
 	document.getElementById('delete42Button').addEventListener('click', fetchDisableLogin42Button);
 	document.getElementById('delete2faButton').addEventListener('click', fetchDeleteQRCodeButton);
+	document.getElementById('UserButton').addEventListener('click', searchUser);
 	const code = getQueryParameter('code');
 	if (code)
 	{
