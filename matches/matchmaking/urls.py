@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import CreateTournament, StartTournament, SubmitMatchResult, MatchHistory, NextMatch
+from .views import CreateChallenge, GetNextMatch, SubmitMatchResult, DeletePlayerHistory, GetHistory, UpdateTournament
 
 urlpatterns = [
-    path('create-tournament/', CreateTournament.as_view(), name='create_tournament'),
-    path('start-tournament/<int:tournament_id>/', StartTournament.as_view(), name='start_tournament'),
+    path('create-challenge/', CreateChallenge.as_view(), name='create_challenge'),
+    path('get-next-match/<int:index>/', GetNextMatch.as_view(), name='get_next_match'),
     path('submit-match-result/<int:match_id>/', SubmitMatchResult.as_view(), name='submit_match_result'),
-    path('delete-player-history/<int:player_id>/', MatchHistory.as_view(), name='delete_player_history'),
-    path('next-match/', NextMatch.as_view(), name='next_match'),  # New URL pattern
+    path('delete-player-history/<str:username>/', DeletePlayerHistory.as_view(), name='delete_player_history'),
+    path('get-history/', GetHistory.as_view(), name='get_history'),
+    path('update-tournament/<int:tournament_id>/', UpdateTournament.as_view(), name='update_tournament'),
 ]

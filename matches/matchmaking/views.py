@@ -6,58 +6,88 @@ from rest_framework.views import APIView
 from .models import Tournament, Player, Match, User
 from .serializer import UserSerializer, PlayerSerializer, MatchSerializer, TournamentSerializer, SubmitMatchResultSerializer
 
-class CreateTournament(APIView):
+class CreateChallenge(APIView):
     def post(self, request):
-        creator_username = request.data['username']
-        player_count = request.data['players_number']
+        names = request.data.get('names')
+        if not names or len(names) < 2:
+            return Response({'error': 'At least 2 players are required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        creator = get_object_or_404(User, username=creator_username)
-        tournament = Tournament.objects.create(creator=creator, player_count=player_count)
-        Player.objects.create(user=creator, nickname='Player 0', tournament=tournament)
+        players = [name for name in names]
 
-        for i in range(1, player_count + 1):
-            user = User.objects.create(username=f'player_{i}')
-            Player.objects.create(user=user, nickname=f'Player {i}', tournament=tournament)
-
-        return Response({'success': True, 'message': f'Tournament created with {player_count} players'}, status=status.HTTP_200_OK)
-
-class StartTournament(APIView):
-    def post(self, request, tournament_id):
-        tournament = get_object_or_404(Tournament, id=tournament_id)
-
-        if tournament.start_time is None:
-            tournament.start_time = timezone.now()
-            tournament.save()
-
-        players = list(tournament.tournament_players.all())
+        
+        if len(players) == 2:
+            player1 = players[0]
+            player2 = players[1]
+            match = Match.objects.create(
+                player1=Player.objects.get_or_create(user=player1)[0],
+                player2=Player.objects.get_or_create(user=player2)[0],
+                created_at=timezone.now(),
+                direct_match=True
+            )
+            return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id}, status=status.HTTP_200_OK)
+        
+        creator = request.user
+        tournament = Tournament.objects.create(creator=creator, player_count=len(players))
+        
+        for user in players:
+            Player.objects.create(user=user, nickname=user.username, tournament=tournament)
+        
         self._create_matches(tournament, players)
-        return Response({'success': True, 'message': 'Tournament started'}, status=status.HTTP_200_OK)
-
+        
+        return Response({'success': True, 'message': 'Tournament created with multiple players'}, status=status.HTTP_200_OK)
+    
     def _create_matches(self, tournament, players):
         import random
         random.shuffle(players)
-        matches = []
         while len(players) > 1:
             player1 = players.pop()
             player2 = players.pop()
-            match = Match.objects.create(
-                tournament=tournament, round_number=tournament.current_round,
-                player1=player1, player2=player2, created_at=timezone.now()
+            Match.objects.create(
+                tournament=tournament,
+                round_number=tournament.current_round,
+                player1=Player.objects.get(user=player1),
+                player2=Player.objects.get(user=player2),
+                created_at=timezone.now(),
+                direct_match=False
             )
-            matches.append(match)
 
-        if players:
-            player1 = players.pop()
-            match = Match.objects.create(
-                tournament=tournament, round_number=tournament.current_round,
-                player1=player1, created_at=timezone.now()
-            )
-            match.winner = player1
-            match.has_ended = True
-            match.ended_at = timezone.now()
-            match.save()
+class GetNextMatch(APIView):
+    def get(self, request, index):
+        match = get_object_or_404(Match, id=index)
+        serializer = MatchSerializer(match)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return matches
+class DeletePlayerHistory(APIView):
+    def delete(self, request, username):
+        if not username:
+            return Response({'error': 'Username is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = get_object_or_404(User, username=username)
+        
+        Match.objects.filter(player1__user=user).update(player1=None)
+        Match.objects.filter(player2__user=user).update(player2=None)
+        Match.objects.filter(winner__user=user).update(winner=None)
+        
+        Tournament.objects.filter(creator=user).update(creator=None)
+        
+        return Response({'success': True, 'message': 'Player history references removed.'}, status=status.HTTP_200_OK)
+
+class GetHistory(APIView):
+    def get(self, request):
+        user = request.user
+        if not user:
+            return Response({'error': 'User is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tournaments = Tournament.objects.filter(tournament_players__user=user)
+        matches = Match.objects.filter(player1__user=user) | Match.objects.filter(player2__user=user)
+        
+        tournament_serializer = TournamentSerializer(tournaments, many=True)
+        match_serializer = MatchSerializer(matches, many=True)
+        
+        return Response({
+            'tournaments': tournament_serializer.data,
+            'matches': match_serializer.data
+        }, status=status.HTTP_200_OK)
 
 class SubmitMatchResult(APIView):
     def post(self, request, match_id):
@@ -72,42 +102,14 @@ class SubmitMatchResult(APIView):
             match.ended_at = timezone.now()
             match.save()
 
-            if not Match.objects.filter(tournament=match.tournament, round_number=match.round_number, has_ended=False).exists():
-                remaining_players = list(Player.objects.filter(tournament=match.tournament, won_matches__isnull=False).distinct())
-                if len(remaining_players) == 1:
-                    return Response({'success': True, 'message': f'Tournament ended, winner is {remaining_players[0].nickname}'}, status=status.HTTP_200_OK)
-                else:
-                    match.tournament.current_round += 1
-                    match.tournament.save()
-                    self._create_matches(match.tournament, remaining_players)
-
-            return Response({'success': True, 'message': 'Match result submitted'}, status=status.HTTP_200_OK)
+            return Response({'success': True, 'message': 'Match result submitted.'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class MatchHistory(APIView):
-    def delete(self, request, player_id):
-        player = get_object_or_404(Player, id=player_id)
-        user = request.user
-
-        # Overwrite the creator occurrences
-        Tournament.objects.filter(creator=user).update(creator=None)
-
-        Match.objects.filter(player1=player).delete()
-        Match.objects.filter(player2=player).delete()
-        player.delete()
-        return Response({'success': True, 'message': 'Player history deleted and creator references updated'}, status=status.HTTP_200_OK)
-    
-    def get(self, request):
-        player_name = request.data.get('name')
-        player = get_object_or_404(Player, nickname=player_name)
-        matches = Match.objects.filter(player1=player) | Match.objects.filter(player2=player)
-        serializer = MatchSerializer(matches, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class NextMatch(APIView):
-    def get(self, request):
-        next_match = Match.objects.filter(has_ended=False).order_by('created_at').first()
-        if next_match:
-            serializer = MatchSerializer(next_match)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response({'message': 'No upcoming matches found.'}, status=status.HTTP_404_NOT_FOUND)
+class UpdateTournament(APIView):
+    def post(self, request, tournament_id):
+        tournament = get_object_or_404(Tournament, id=tournament_id)
+        serializer = TournamentSerializer(tournament, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success': True, 'message': 'Tournament updated successfully.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
