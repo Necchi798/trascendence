@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
 from .serializer import UserSerializer
 from .models import User
-import jwt, datetime
+import jwt, datetime, pyotp, base64
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -51,6 +51,19 @@ class LoginView(APIView):
             raise AuthenticationFailed('User not found!')
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
+        
+        if user.two_factor:
+            try:
+                if not request.data['otp']:
+                    raise AuthenticationFailed('OTP required!')
+                
+                key=base64.b32encode(settings.SECRET_KEY.encode() + str(request.data["id"]).encode())
+                totp = pyotp.TOTP(key)
+                if not totp.verify(request.data["otp"]):
+                    raise AuthenticationFailed('Invalid OTP!')
+            except KeyError:
+                raise AuthenticationFailed('OTP required!')
+                
         
         payload = {
             'id': user.id,
