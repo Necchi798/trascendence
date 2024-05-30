@@ -8,6 +8,8 @@ class User(AbstractUser):
     two_factor = models.BooleanField(default=False)
     api42 = models.BooleanField(default=False)
 
+    avatar = models.BinaryField()
+
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
     
