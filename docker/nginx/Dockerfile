@@ -9,6 +9,9 @@ COPY front /usr/share/nginx/html
 # Aggiorna il repository dei pacchetti e installa OpenSSL
 RUN apt-get update && apt-get install -y openssl
 
+#aggiorna il fusorario su roma
+RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime
+
 # Crea una cartella per i certificati
 RUN mkdir -p /etc/nginx/certs
 
