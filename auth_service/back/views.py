@@ -112,5 +112,24 @@ class AvatarView(APIView):
         user = User.objects.filter(id=payload['id']).first()
         avatar = user.avatar
         return HttpResponse(avatar, content_type="image/png")
+    
+    def patch(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        user = User.objects.filter(id=payload['id']).first()
+
+        image = request.FILES.get('avatar')
+        if not image:
+            raise AuthenticationFailed('No image provided!')
+
+        user.avatar = image.read()
+        user.save()
+        return Response({'message': 'Avatar updated successfully!'})
         
 
