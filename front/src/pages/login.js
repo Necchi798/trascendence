@@ -1,4 +1,5 @@
 import {router} from "../main.js";
+import { twofaScript } from "./twofa.js";
 
 export function loginStyle()
 {
@@ -146,16 +147,24 @@ export function fetchDataLogin() {
 	},
 	body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
 	})
-	.then(response => {
-		if(response.ok){
-			console.log("successino")
+	.then(response => response.json())
+	.then(response_data => {
+		if(response_data.ok)
+		{
 			history.pushState({},"","/")
-			router()
-			return response.json()
+			router();
 		}
 		else
-			console.log(response)
-			console.log("errorino")
+		{
+			var response_msg = response_data.detail;
+			console.log(response_msg);
+			if (response_msg == "OTP required!")
+			{
+				history.pushState({},"","/twofa")
+				router();
+				twofaScript(data);
+			}
+		}
 	})
 }
 
@@ -178,13 +187,12 @@ function searchToken(code) {
 		if(response.ok){
 			console.log(window.location.href)
 			console.log(response)
-			/* history.pushState({},"","/")
-			router() */
-			return response.json()
+			history.pushState({},"","/")
+			router()
 		}
 		else
 			console.log(response)
-			console.log("errorino")
+			console.log("errorino 1")
 	})
 }
 

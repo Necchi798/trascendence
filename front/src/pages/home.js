@@ -19,42 +19,32 @@ function getCookieValue(cookieName) {
 	return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
 }
 
+import "./components/profile_card.js"
+import "./components/sidebar.js"
+import "./components/friends_card.js"
+import "./components/history_card.js"
+
 export default  ()=> `
 	<div style="display: flex;flex-direction: row;">
 		<side-bar>Trascendence</side-bar>
-		<main id="content" style="width: 100%;height: 100vh;">
-			<div style="width: 100%; height: 100% ;display:flex; flex-direction: column;flex-wrap: wrap;align-content: center;
-					justify-content: space-around;">
+		<main id="content" style="width: 100%;height: 100vh;display:flex; flex-direction: row">
+            <div style="display:flex; flex-direction: column;align-content: center;
+                    width: 60%; padding: 3%; gap: 5%">
 				<profile-card></profile-card>
-				<h2> Settings </h2>
-				<div style="display: flex; justify-content: space-between; align-items: center ">
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>Enable two-factor authentication</span>
-						<button type="button" id="twofaButton" class="btn btn-primary">Enable 2FA</button>
-					</div>
-					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>Enable login with 42</span>
-						<button type="button" id="login42Button" class="btn btn-primary">Enable login 42</button>
-					</div>
-					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>Force delete of 42 User</span>
-						<button type="button" id="delete42Button" class="btn btn-primary">Delete 42 User</button>
-					</div>
-					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>Force delete of 2FA</span>
-						<button type="button" id="delete2faButton" class="btn btn-primary">Delete 2FA</button>
-					</div>
-					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>log info of the user</span>
-						<button type="button" id="UserButton" class="btn btn-primary">user</button>
-					</div>
+                <h2>Settings</h2>
+				<div style="display: flex; flex-direction: row; gap: 5%">
+					<button id="twofaButton">Enable 2FA</button>
+					<button id="login42Button">Enable login 42</button>
+					<button id="delete42Button">Delete login 42</button>
+					<button id="delete2faButton">Delete 2FA</button>
+					<button id="UserButton">Search User</button>
 				</div>
-			</div>
-		</main>
+            </div>
+            <div style="display:flex; flex-direction: column;align-content: center;
+                    width: 40%; padding: 3%; padding-left: 0%">
+				<friends-card><friends-card>
+            </div>
+        </main>
 	</div>
 `;
 

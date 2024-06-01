@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
 from .serializer import UserSerializer
 from .models import User
-import jwt, datetime
+import jwt, datetime, pyotp, base64
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -51,22 +51,25 @@ class LoginView(APIView):
             raise AuthenticationFailed('User not found!')
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
-        
+        if user.two_factor:
+            try:
+                if not request.data['otp']:
+                    raise AuthenticationFailed('OTP required!')
+                else:
+                    print(request.data['otp'])
+                key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
+                totp = pyotp.TOTP(key)
+                if not totp.verify(request.data["otp"]):
+                    raise AuthenticationFailed(totp.now())
+            except KeyError:
+                raise AuthenticationFailed('OTP required!')
         payload = {
             'id': user.id,
             'exp': datetime.datetime.now() + datetime.timedelta(minutes=120),
             'iat': datetime.datetime.now(tz=datetime.timezone.utc)
         }
-        print(payload)
-        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-        try:
-            new_payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-            print(new_payload)
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Expired jwt')
-        except jwt.ImmatureSignatureError:
-            raise AuthenticationFailed('Invalid jwt')
         
+        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
         response.set_cookie('jwt', token, secure=True, samesite='None')
         response.data = {

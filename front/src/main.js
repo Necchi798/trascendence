@@ -4,9 +4,10 @@ import stats from "./pages/stats.js"
 import { makeGame } from "./2Dpong/game.js";
 import login, {loginStyle} from "./pages/login.js";
 import register from "./pages/register.js";
-import twofa, {twofaStyle} from "./pages/twofa.js";
+import twofa from "./pages/twofa.js";
 import { actionRegister } from "./pages/register.js";
 import { actionLogin } from "./pages/login.js";
+import search from "./pages/search.js";
 
 
 const routes = {
@@ -15,7 +16,9 @@ const routes = {
     "/2dpong":{title:"game", render: game,action:makeGame},
     "/3dpong_stats":{title: "history",render:stats,action: ()=>{}},
     "/login":{title:"login",render:login,action:actionLogin},
-    "/register":{title:"register",render:register,action:actionRegister}
+    "/twofa":{title:"twofa",render:twofa,action:()=>{}},
+    "/register":{title:"register",render:register,action:actionRegister},
+    "/search":{title:"search",render:search,action:()=>{}},
 }
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"
