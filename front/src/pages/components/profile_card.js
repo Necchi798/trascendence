@@ -33,11 +33,30 @@ class ProfileCard extends HTMLElement {
                             <span id="name">Loading...</span>
                             <span id="nick-name">Loading...</span>
                         </div>
+                        <button type="button" id="mau" class="btn btn-primary">mau</button>
                     </div>
                 </div>
             </div>
         `
         this.fetchData()
+        
+        document.getElementById("mau").addEventListener("click",this.maufetch)
+    }
+    async maufetch(){
+        
+        let data = {names:["player1","player2","player3","player4"]}
+        try {
+        const response = await fetch("http://127.0.0.1:9001/create-challenge/",{
+            method: "POST",
+            mode: "cors",
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json', // Tipo di contenuto corretto
+              },
+            body:JSON.stringify(data)
+        }).then((res)=>console.log(res));
+        }catch{}
+    
     }
     async fetchData() {
         const jwt = getCookieValue("jwt")
