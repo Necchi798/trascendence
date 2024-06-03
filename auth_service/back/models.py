@@ -10,6 +10,8 @@ class User(AbstractUser):
 
     avatar = models.BinaryField()
 
+    last_fetch = models.DateTimeField(auto_now=True)
+
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
     
