@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g9s!u%gthwr^ehggkl0e+#+-v2hyr#w1lw$r1bkzu(^*jgrgx#'
+SECRET_KEY = os.environ.get('SECRET_JWT')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'matchmaking',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -80,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'match_history_db',
         'USER' : 'match_history_user',
-        'PASSWORD' : os.environ.get('MATCH_DB_PWD'),
+        'PASSWORD' : os.environ.get('DB_PASSWORD'),
         'HOST' : 'match_history',
         'PORT' : '5433',
     } 

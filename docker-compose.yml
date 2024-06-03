@@ -68,7 +68,7 @@ services:
     environment:
       POSTGRES_DB: match_history_db
       POSTGRES_USER: match_history_user
-      POSTGRES_PASSWORD: ${MATCH_DB_PWD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_match_history:/var/lib/postgresql/data
     networks:
@@ -78,13 +78,11 @@ services:
     build:
       context: .
       dockerfile: docker/matchmaking_system/Dockerfile
-   # command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
-    
+    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runsslserver --key /app/private.key --certificate /app/certificate.crt 0.0.0.0:9001"
     env_file:
       - .env
     ports:
       - "9001:9001"
-    
     depends_on:
       match_history:
         condition: service_started
