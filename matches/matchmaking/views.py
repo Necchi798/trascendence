@@ -16,6 +16,7 @@ class CreateChallenge(APIView):
             return Response({'error': 'At least 2 players are required.'}, status=status.HTTP_400_BAD_REQUEST)
         
         players = []
+
         for name in names:
             user, created = User.objects.get_or_create(username=name)
             player, created = Player.objects.get_or_create(user=user, nickname=name)
@@ -26,12 +27,13 @@ class CreateChallenge(APIView):
                 player1=players[0],
                 player2=players[1],
                 created_at=timezone.now(),
-                direct_match=True
+                direct_match=True,
+                round_number=-1
             )
             return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id}, status=status.HTTP_200_OK)
-        
-        creator = request.user
-        tournament = Tournament.objects.create(creator=creator, player_count=len(players), n_rounds=len(players) - 1)
+
+        creator = players[0].user
+        tournament = Tournament.objects.create(creator=creator, player_count=len(players), n_rounds=0)
         
         for player in players:
             player.tournament = tournament
@@ -53,7 +55,7 @@ class CreateChallenge(APIView):
                 player1=player1,
                 player2=player2,
                 created_at=timezone.now(),
-                direct_match=False
+                direct_match=False,
             )
             matches.append(match)
         

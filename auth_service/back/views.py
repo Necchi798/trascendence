@@ -3,20 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
+from django.http import HttpResponse
 from .serializer import UserSerializer
 from .models import User
-import jwt, datetime
-
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+import jwt, datetime, pyotp, base64
 
 class RegisterView(APIView):
-    @swagger_auto_schema(
-        request_body=UserSerializer,  # Specifica il serializer per il corpo della richiesta
-        responses={200: 'Success', 400: 'Bad Request'},  # Specifica le risposte possibili
-        operation_description="Register a new user"  # Descrivi brevemente l'operazione
-    )
-
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -24,24 +16,6 @@ class RegisterView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 class LoginView(APIView):
-
-    @swagger_auto_schema(
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'username': openapi.Schema(type=openapi.TYPE_STRING),
-                'password': openapi.Schema(type=openapi.TYPE_STRING)
-            },
-            required=['username', 'password']
-        ),
-        responses={
-            200: 'Success',
-            400: 'Bad Request',
-            401: 'Unauthorized'
-        },
-        operation_description="Login with username and password"
-    )
-
     def post(self, request):
         username = request.data['username']
         password = request.data['password']
@@ -51,6 +25,20 @@ class LoginView(APIView):
             raise AuthenticationFailed('User not found!')
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
+        
+        if user.two_factor:
+            try:
+                if not request.data['otp']:
+                    raise AuthenticationFailed('OTP required!')
+                
+                key=base64.b32encode(settings.SECRET_KEY.encode() + str(request.data["id"]).encode())
+                totp = pyotp.TOTP(key)
+                if not totp.verify(request.data["otp"]):
+                    raise AuthenticationFailed(totp.now())
+                
+            except KeyError:
+                raise AuthenticationFailed('OTP required!')
+                
         
         payload = {
             'id': user.id,
@@ -68,15 +56,6 @@ class LoginView(APIView):
         return response
     
 class UserView(APIView):
-    @swagger_auto_schema(
-        responses={
-            200: 'Success',
-            400: 'Bad Request',
-            401: 'Unauthorized'
-        },
-        operation_description="Get user details"
-    )
-
     def get(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
@@ -92,15 +71,6 @@ class UserView(APIView):
         return Response(serializer.data)
 
 class LogoutView(APIView):
-    @swagger_auto_schema(
-        
-        responses={
-            200: 'Success',
-            400: 'Bad Request',
-            401: 'Unauthorized'
-        },
-        operation_description="Logout the user"
-    )
     def post(self, request):
         response = Response()
         response.delete_cookie('jwt')
@@ -111,17 +81,6 @@ class LogoutView(APIView):
 
 
 class UpdateUserView(APIView):
-
-    @swagger_auto_schema(
-        request_body=UserSerializer,
-        responses={
-            200: 'Success',
-            400: 'Bad Request',
-            401: 'Unauthorized'
-        },
-        operation_description="Update user details"
-    )
-
     def patch(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
@@ -139,4 +98,38 @@ class UpdateUserView(APIView):
             return Response({'message': 'User updated successfully', 'user': serializer.data})
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class AvatarView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        user = User.objects.filter(id=payload['id']).first()
+        avatar = user.avatar
+        return HttpResponse(avatar, content_type="image/png")
+    
+    def patch(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        user = User.objects.filter(id=payload['id']).first()
+
+        image = request.FILES.get('avatar')
+        if not image:
+            raise AuthenticationFailed('No image provided!')
+
+        user.avatar = image.read()
+        user.save()
+        return Response({'message': 'Avatar updated successfully!'})
+        
 
