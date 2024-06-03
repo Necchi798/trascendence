@@ -1,88 +1,10 @@
-export function RegisterStyle()
-{
-	const styleElement = document.createElement("style");
-	styleElement.textContent =`
-	body {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100vh;
-		background-color: #00224D;
-		background-position: center;
-		background-size: cover;
-		margin: 0;
-		background-position: center;
-		background-size: cover;
-	}
-
-	.container {
-		background-color: rgba(255, 255, 255, 0.8);
-		border-radius: 15px;
-		box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-		overflow: auto;
-	}
-
-	.form-box {
-		padding: 50px 60px 60px;
-	}
-
-	.form-box h1 {
-		color: #00224D;
-		font-size: 30px;
-		margin-bottom: 30px;
-		position: relative;
-	}
-8
-	.form-box h1::after {
-		content: '';
-		width: 30px;
-		height: 4px;
-		border-radius: 3px;
-		position: absolute;
-		background: #00224D;
-		bottom: -12px;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-
-	.input-group {
-		margin-bottom: 10px;
-	}
-
-	.input-group-text {
-		background-color: #EAEAEA;
-		color: #999;
-		border: none;
-	}
-
-	.input-group-text .fas {
-		margin-right: 10px;
-	}
-
-	input.form-control {
-		border-color: #EAEAEA;
-		max-width: 100%;
-		box-sizing: border-box;
-	}
-
-	.btn-primary {
-		background-color: #00224D;
-		border: none;
-	}
-
-	.btn-primary:hover {
-		background-color: #00172F;
-	}
-
-	p {
-		color: #999;
-		margin-top: 10px;
-	}
-	`;
-	return styleElement;
-}
+import {router} from "../main.js";
 
 export default  ()=> `
+<div class="background d-flex" style="		display: flex;
+align-items: center;
+height: 100vh;
+background-color: #00224D;">
 	<div class="container">
 		<div class="row justify-content-center">
 			<div class="col-12">
@@ -115,6 +37,7 @@ export default  ()=> `
 			</div>
 		</div>
 	</div>
+	</div>
 	`;
 
 export function fetchDataRegister() {
@@ -129,16 +52,19 @@ export function fetchDataRegister() {
 			'Content-Type': 'application/json' // Specifica il tipo di contenuto
 		},
 		body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
+	}).then(response => {
+		if(response.ok){
+			console.log("successino")
+			history.pushState({},"","/login")
+			router()
+			return response.json()
+		}
+		else
+			console.log(response)
+			console.log("errorino")
 	})
-	.then(response => response.json()) // Converte la risposta in un oggetto Json
-	.then(data => {
-		console.log('Success:', data);
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
 }
 
 export function actionRegister() {
-	document.getElementById('RegisterButton').addEventListener('click', fetchDataRegister);
+	document.getElementById('RegisterButton').addEventListener('click', (e)=>{e.preventDefault();fetchDataRegister()});
 }

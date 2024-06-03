@@ -5,13 +5,12 @@ export function loginStyle()
 {
 	const styleElement = document.createElement("style");
 	styleElement.textContent =`
-	body {
+	.pippo {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		height: 100vh;
 		background-color: #00224D;
-		background-position: center;
 		background-size: cover;
 		margin: 0;
 		background-position: center;
@@ -19,6 +18,7 @@ export function loginStyle()
 	}
 
 	.container {
+		width:fit-content;
 		background-color: rgba(255, 255, 255, 0.8);
 		border-radius: 15px;
 		box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
@@ -27,25 +27,6 @@ export function loginStyle()
 
 	.form-box {
 		padding: 50px 60px 60px;
-	}
-
-	.form-box h1 {
-		color: #00224D;
-		font-size: 30px;
-		margin-bottom: 30px;
-		position: relative;
-	}
-8
-	.form-box h1::after {
-		content: '';
-		width: 30px;
-		height: 4px;
-		border-radius: 3px;
-		position: absolute;
-		background: #00224D;
-		bottom: -12px;
-		left: 50%;
-		transform: translateX(-50%);
 	}
 
 	.input-group {
@@ -77,15 +58,12 @@ export function loginStyle()
 		background-color: #00172F;
 	}
 
-	p {
-		color: #999;
-		margin-top: 10px;
-	}
 	`;
 	return styleElement;
 }
 
 export default  ()=> `
+<div class="pippo">
 <div class="container">
 	<div class="row justify-content-center">
 		<div class="col-12">
@@ -114,6 +92,7 @@ export default  ()=> `
 			</div>
 		</div>
 	</div>
+</div>
 </div>
 `;
 

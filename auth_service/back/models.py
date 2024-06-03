@@ -8,6 +8,10 @@ class User(AbstractUser):
     two_factor = models.BooleanField(default=False)
     api42 = models.BooleanField(default=False)
 
+    avatar = models.BinaryField()
+
+    last_fetch = models.DateTimeField(auto_now=True)
+
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
     
