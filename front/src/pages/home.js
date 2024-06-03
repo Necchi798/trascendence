@@ -31,14 +31,7 @@ export default  ()=> `
             <div style="display:flex; flex-direction: column;align-content: center;
                     width: 60%; padding: 3%; gap: 5%">
 				<profile-card></profile-card>
-                <h2>Settings</h2>
-				<div style="display: flex; flex-direction: row; gap: 5%">
-					<button id="twofaButton">Enable 2FA</button>
-					<button id="login42Button">Enable login 42</button>
-					<button id="delete42Button">Delete login 42</button>
-					<button id="delete2faButton">Delete 2FA</button>
-					<button id="UserButton">Search User</button>
-				</div>
+                <history-card></history-card>
             </div>
             <div style="display:flex; flex-direction: column;align-content: center;
                     width: 40%; padding: 3%; padding-left: 0%">
