@@ -5,7 +5,7 @@ import base64
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'password', 'two_factor', 'api42', 'avatar']
+        fields = ['id','username', 'email', 'password', 'two_factor', 'api42', 'avatar', 'last_fetch']
         extra_kwargs = {
             'password': {'write_only': True}
             }

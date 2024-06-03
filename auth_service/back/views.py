@@ -67,6 +67,7 @@ class UserView(APIView):
         except jwt.ImmatureSignatureError:
             raise AuthenticationFailed('Invalid jwt')
         user = User.objects.filter(id=payload['id']).first()
+        user.last_fetch=datetime.datetime.now()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
