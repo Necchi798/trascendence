@@ -1,5 +1,5 @@
 import game from "./pages/game.js";
-import home, {actionHome} from "./pages/home.js";
+import home from "./pages/home.js";
 import stats from "./pages/stats.js"
 import { makeGame } from "./2Dpong/game.js";
 import login, {loginStyle} from "./pages/login.js";
@@ -9,17 +9,20 @@ import { actionRegister } from "./pages/register.js";
 import { actionLogin } from "./pages/login.js";
 import search from "./pages/search.js";
 import { makeGame3d } from "./3Dpong/game.js";
+import settings, {actionSettings} from "./pages/settings.js";
 
 
 const routes = {
-    "/":{title:"home", render: home, action: actionHome},
+    "/":{title:"home", render: home, action: ()=>{}},
+    "/home":{title:"home", render: home, action: ()=>{}},
     "/profile":{title:"profile",render: ()=>{},action: ()=>{}},
     "/2dpong":{title:"game", render: game,action:makeGame},
     "/3dpong_stats":{title: "history",render:stats,action: ()=>{}},
     "/login":{title:"login",render:login,action:actionLogin},
     "/twofa":{title:"twofa",render:twofa,action:()=>{}},
     "/register":{title:"register",render:register,action:actionRegister},
-    "/search":{title:"search",render:search,action:()=>{}},,
+    "/search":{title:"search",render:search,action:()=>{}},
+    "/settings":{title:"settings",render:settings,action:actionSettings},
     "/3dpong":{title:"3dpong",render:game,action:makeGame3d}
 }
 
@@ -33,7 +36,7 @@ export const router = ()=> {
     if (view.title === "login") {
         document.head.appendChild(loginStyle());
     }
-    document.getElementById("content").innerHTML=view.render();
+    document.getElementById("divContent").innerHTML=view.render();
     view.action();
 }
 

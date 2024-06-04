@@ -3,6 +3,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed
 from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import QRCode
 from rest_framework.response import Response
@@ -31,8 +32,19 @@ class QRCodeCreationView(APIView):
         return Response(status=status.HTTP_201_CREATED, data={"message": "QR code created successfully."})
     
     def get(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Missing jwt')
         try:
-            qr_code = QRCode.objects.get(owner_id=request.data["id"])
+            jwt_decode = jwt.decode(token, settings.SECRET_JWT, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired jwt')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid jwt')
+        
+
+        try:
+            qr_code = QRCode.objects.get(owner_id=jwt_decode['id'])
             image_data = qr_code.image
             #image_base64 = base64.b64encode(image_data).decode()
             response_data = {

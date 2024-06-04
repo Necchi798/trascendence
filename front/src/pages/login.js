@@ -128,13 +128,14 @@ export function fetchDataLogin() {
 	})
 	.then(response => response.json())
 	.then(response_data => {
-		if(response_data.ok)
+		if(response_data.jwt)
 		{
 			history.pushState({},"","/")
 			router();
 		}
 		else
 		{
+			console.log(response_data);
 			var response_msg = response_data.detail;
 			console.log(response_msg);
 			if (response_msg == "OTP required!")

@@ -14,7 +14,7 @@ class Api42(APIView):
         if not token:
             redir_uri = settings.REDIRECT_URI + 'login'
         else:
-            redir_uri = settings.REDIRECT_URI
+            redir_uri = settings.REDIRECT_URI + 'settings'
 
         payload = {
             'client_id': settings.CLIENT_ID,
@@ -56,7 +56,7 @@ class Enable42(APIView):
             'client_id': settings.CLIENT_ID,
             'client_secret': settings.CLIENT_SECRET,
             'code': request.data.get('code'),
-            'redirect_uri': settings.REDIRECT_URI,
+            'redirect_uri': settings.REDIRECT_URI + 'settings',
             'grant_type': 'authorization_code'
         }
         first_step=requests.request("POST", "https://api.intra.42.fr/oauth/token", data=payload)

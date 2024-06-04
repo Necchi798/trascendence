@@ -1,5 +1,3 @@
-import { makeGame } from "../2Dpong/game.js";
-import "./components/profile_card.js"
 import "./components/sidebar.js"
 
 function getCookieValue(cookieName) {
@@ -19,29 +17,64 @@ function getCookieValue(cookieName) {
 	return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
 }
 
-import "./components/profile_card.js"
-import "./components/sidebar.js"
-import "./components/friends_card.js"
-import "./components/history_card.js"
-
+//add buttons for settings
 export default  ()=> `
 	<div style="display: flex;flex-direction: row;">
-		<side-bar>Trascendence</side-bar>
-		<main id="content" style="width: 100%;height: 100vh;display:flex; flex-direction: row">
-            <div style="display:flex; flex-direction: column;align-content: center;
-                    width: 60%; padding: 3%; gap: 5%">
-				<profile-card></profile-card>
-                <history-card></history-card>
-            </div>
-            <div style="display:flex; flex-direction: column;align-content: center;
-                    width: 40%; padding: 3%; padding-left: 0%">
-				<friends-card><friends-card>
-            </div>
-        </main>
+		<side-bar></side-bar>
+		<main id="content" style="width: 100%;height: 100vh;overflow:hidden">
+			<h2>Settings</h2>
+			<div style="display: flex; justify-content: space-between; align-items: center ">
+				<div style="display: flex; justify-content: space-between; align-items: center " id="div2FA">
+					<span>Enable two-factor authentication</span>
+					<button type="button" id="twofaButton" class="btn btn-primary">Enable 2FA</button>
+				</div>
+				<hr></hr>
+				<div style="display: flex; justify-content: space-between; align-items: center ">
+					<span>Enable login with 42</span>
+					<button type="button" id="login42Button" class="btn btn-primary">Enable login 42</button>
+				</div>
+				<hr></hr>
+				<div style="display: flex; justify-content: space-between; align-items: center ">
+					<span>Force delete of 42 User</span>
+					<button type="button" id="delete42Button" class="btn btn-primary">Delete 42 User</button>
+				</div>
+				<hr></hr>
+				<div style="display: flex; justify-content: space-between; align-items: center ">
+					<span>Force delete of 2FA</span>
+					<button type="button" id="delete2faButton" class="btn btn-primary">Delete 2FA</button>
+				</div>
+				<hr></hr>
+				<div style="display: flex; justify-content: space-between; align-items: center ">
+					<span>log info of the user</span>
+					<button type="button" id="UserButton" class="btn btn-primary">user</button>
+				</div>
+			</div>
+			<div class="card" style="width: 100%;display: flex;flex-direction: row;  flex-wrap: wrap">
+				<div class="card-body">
+					<h3 class="card-title">Your Information</h3>
+					<form id="updateForm">
+						<div class="mb-3">
+							<label for="emailChange" class="form-label">Email address</label>
+							<input type="email" class="form-control" id="emailChange" disabled>
+						</div>
+						<div class="mb-3">
+							<label for="passwordChange" class="form-label">Password</label>
+							<input type="password" class="form-control" id="passwordChange" disabled>
+						</div>
+						<div class="mb-3">
+							<label for="nameChange" class="form-label">Name</label>
+							<input type="text" class="form-control" id="nameChange" disabled>
+						</div>
+						<button type="button" class="btn btn-primary" id="changeButton">Change</button>
+					</form>
+				</div>
+			</div>
+		</main>
 	</div>
 `;
 
-/* function fetchDeleteQRCodeButton()
+// add functions for settings (take them from home)
+function fetchDeleteQRCodeButton()
 {
 	const data = {id: 1}
 	fetch("https://127.0.0.1:8001/qr/",{
@@ -83,6 +116,7 @@ function fetchDeleteQRCode(data)
 			{
 				console.log("QR code deleted");
 				fetchUpdateUser("twofa", false, data);
+				document.getElementById("div2FA").removeChild(document.getElementById("div2FA").lastChild);
 			}
 			else
 				console.log("QR code not deleted");
@@ -93,6 +127,49 @@ function fetchDeleteQRCode(data)
 	});
 }
 
+function fetchShowQR(id)
+{
+	fetch("https://127.0.0.1:8001/qr/",{
+		method: "GET",
+		mode: "cors",
+		credentials: "include"
+	})
+	.then(response => response.arrayBuffer())
+    .then(buffer => {
+      const imageData = new Blob([buffer], { type: 'image/png' });
+      const imageURL = URL.createObjectURL(imageData);
+      const img = document.createElement('img');
+	  img.src = imageURL;
+	  document.getElementById("div2FA").appendChild(img);
+    })
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+}
+
+function updateUserInfo()
+{
+	const email = document.getElementById("emailChange").value;
+	const password = document.getElementById("passwordChange").value;
+	const username = document.getElementById("nameChange").value;
+	fetch("https://127.0.0.1:8000/updateuser/",{
+		method: "PATCH",
+		mode: "cors",
+		credentials: "include",
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({email, password, username})
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log(data);
+		disableUpdateForm();
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+}
 
 function fetchUpdateUser(data, val, userdata)
 {
@@ -171,6 +248,7 @@ function fetchGenerateQRCode(data)
 		{
 			console.log("QR code generated");
 			fetchUpdateUser("twofa", true, data);
+			fetchShowQR(id);
 		}
 		else
 		{
@@ -227,6 +305,24 @@ function searchUser() {
 	.then(response => response.json())
 	.then(data => {
 		console.log(data);
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
+}
+
+function getOriginalUserInfo() {
+	const jwt = getCookieValue("jwt");
+	fetch("https://127.0.0.1:8000/user/",{
+			method: "GET",
+			mode: "cors",
+			credentials: "include"
+	})
+	.then(response => response.json())
+	.then(data => {
+		document.getElementById("emailChange").value = data.email;
+		document.getElementById("passwordChange").value = data.password;
+		document.getElementById("nameChange").value = data.username;
 	})
 	.catch((error) => {
 		console.error('Error:', error);
@@ -305,7 +401,7 @@ function fetchCreate42User(userdata, code)
 	.then(data => {
 		console.log(data);
 		fetchUpdateUser("login42", true, userdata);
-		window.location.href = "https://127.0.0.1:4430/";
+		window.location.href = "https://127.0.0.1:4430/settings";
 	})
 	.catch((error) => {
 		console.error('Error:', error);
@@ -369,8 +465,7 @@ function getQueryParameter(name) {
 	return urlParams.get(name);
 }
 
-
-export function actionHome() {
+export function actionSettings() {
 	const jwt = getCookieValue("jwt");
 	fetch("https://127.0.0.1:8000/user/",{
 			method: "GET",
@@ -403,10 +498,14 @@ export function actionHome() {
 			document.getElementById('login42Button').removeEventListener('click', fetchDisableLogin42);
 			document.getElementById('login42Button').addEventListener('click', fetchEnableLogin42);
 		}
+		document.getElementById("emailChange").value = data.email;
+		document.getElementById("passwordChange").value = data.password;
+		document.getElementById("nameChange").value = data.username;
 	})
 	.catch((error) => {
 		console.error('Error:', error);
 	});
+	document.getElementById("changeButton").addEventListener("click", enableUpdateForm);
 	document.getElementById('delete42Button').addEventListener('click', fetchDisableLogin42Button);
 	document.getElementById('delete2faButton').addEventListener('click', fetchDeleteQRCodeButton);
 	document.getElementById('UserButton').addEventListener('click', searchUser);
@@ -416,4 +515,34 @@ export function actionHome() {
 		console.log(code);
 		searchUsertoEnable42(code);
 	}
-} */
+}
+//in the same area of the settings for 2fa, add the qr code returned
+
+//add the form to update user info
+function disableUpdateForm()
+{
+	document.getElementById("emailChange").disabled = true;
+	document.getElementById("passwordChange").disabled = true;
+	document.getElementById("nameChange").disabled = true;
+	getOriginalUserInfo();
+	document.getElementById("changeButton").textContent = "Change";
+	document.getElementById("changeButton").removeEventListener('click', updateUserInfo);
+	document.getElementById("changeButton").addEventListener('click', enableUpdateForm);
+	document.getElementById("updateForm").removeChild(document.getElementById("updateForm").lastChild);
+}
+
+function enableUpdateForm()
+{
+	document.getElementById("emailChange").disabled = false;
+	document.getElementById("passwordChange").disabled = false;
+	document.getElementById("nameChange").disabled = false;
+	document.getElementById("changeButton").textContent = "Update";
+	document.getElementById("changeButton").removeEventListener('click', enableUpdateForm);
+	document.getElementById("changeButton").addEventListener('click', updateUserInfo);
+	var resetButton = document.createElement("button");
+	resetButton.textContent = "Reset";
+	resetButton.type = "button";
+	resetButton.className = "btn btn-secondary";
+	resetButton.addEventListener("click", disableUpdateForm);
+	document.getElementById("updateForm").appendChild(resetButton);
+}

@@ -372,12 +372,14 @@ function drawCanvas()
 
 export function makeGame()
 {
-	canvas = document.getElementById("canvas");
+	canvas = document.createElement("canvas");
 	if (!canvas)
 	{
-		console.error("Canvas not found!");
+		console.error("Canvas not created!");
 		return;
 	}
+	document.getElementById("content").appendChild(canvas);
+	canvas.id = "canvas";
 	ctx = canvas.getContext("2d");
 	if (!ctx)
 	{
