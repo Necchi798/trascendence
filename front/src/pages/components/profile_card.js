@@ -18,8 +18,8 @@ class ProfileCard extends HTMLElement {
     constructor(){
         super();
         this.innerHTML = /*html*/`
-        <div class="card" style=" width: 40rem;display: flex;flex-direction: row;">
-                <image src="./assets/inani.svg"></image>
+        <div id="123" class="card" style=" width: 40rem;display: flex;flex-direction: row;">
+                <img style={}id="image-container"></img>
                 <div class="card-body">
                     <h5 class="card-title">Profile</h5>
                     <div style="display: flex; gap:5rem;margin-top:2rem">
@@ -33,9 +33,9 @@ class ProfileCard extends HTMLElement {
                             <span id="name">Loading...</span>
                             <span id="nick-name">Loading...</span>
                         </div>
-                        <button type="button" id="mau" class="btn btn-primary">mau</button>
-                    </div>
+                        </div>
                 </div>
+           
             </div>
         `
         this.fetchData()
@@ -43,23 +43,27 @@ class ProfileCard extends HTMLElement {
         document.getElementById("mau").addEventListener("click",this.maufetch)
     }
     async maufetch(){
-        
-        let data = {names:["player1","player2","player3","player4"]}
+       // "https://127.0.0.1:8000/avatar/" png 
+        //let data = {names:["player1","player2","player3","player4"]}
         try {
-        const response = await fetch("http://127.0.0.1:9001/create-challenge/",{
-            method: "POST",
+        const response = await fetch("https://127.0.0.1:8000/avatar/",{
+            method: "GET",
             mode: "cors",
             credentials: "include",
             headers: {
                 'Content-Type': 'application/json', // Tipo di contenuto corretto
               },
-            body:JSON.stringify(data)
-        }).then((res)=>console.log(res));
+            //body:JSON.stringify(data)
+        })
+        const blob = await response.blob()
+        const imgURL = URL.createObjectURL(blob);
+        const img = document.createElement('img');
+        img.src = imgURL;
+        img.alt = 'Immagine PNG';
+        document.getElementById("image-container").src = imgURL
         }catch{}
-    
     }
     async fetchData() {
-        const jwt = getCookieValue("jwt")
         try {
             const response = await fetch("https://127.0.0.1:8000/user/",{
                 method: "GET",

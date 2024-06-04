@@ -34,7 +34,7 @@ class Sidebar extends HTMLElement {
 			</div>
 		</div>
 		`;
-		document.getElementById("logout").addEventListener("click",()=> {localStorage.removeItem("jwtToken"),window.location="/login"})
+		document.getElementById("logout").addEventListener("click",()=> { document.cookie = "jwt" + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';window.location="/login"})
 	}
 }
 
