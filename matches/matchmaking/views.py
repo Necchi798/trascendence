@@ -11,8 +11,9 @@ import random
 
 class CreateChallenge(APIView):
     def post(self, request):
-        names = request.data.get('names')
-        if not names or len(names) < 2:
+        print(request.data)
+        names = request.data["names"]
+        if len(names) < 2:
             return Response({'error': 'At least 2 players are required.'}, status=status.HTTP_400_BAD_REQUEST)
         
         players = []
