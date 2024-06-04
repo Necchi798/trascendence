@@ -6,7 +6,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from .serializer import UserSerializer
 from .models import User
-import jwt, datetime, pyotp, base64
+import jwt, datetime, pyotp, base64, pyotp, base64
 
 class RegisterView(APIView):
     def post(self, request):
@@ -25,27 +25,24 @@ class LoginView(APIView):
             raise AuthenticationFailed('User not found!')
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
-        
         if user.two_factor:
             try:
                 if not request.data['otp']:
                     raise AuthenticationFailed('OTP required!')
-                
-                key=base64.b32encode(settings.SECRET_KEY.encode() + str(request.data["id"]).encode())
+                else:
+                    print(request.data['otp'])
+                key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
                 totp = pyotp.TOTP(key)
                 if not totp.verify(request.data["otp"]):
                     raise AuthenticationFailed(totp.now())
-                
             except KeyError:
                 raise AuthenticationFailed('OTP required!')
-                
-        
         payload = {
             'id': user.id,
             'exp': datetime.datetime.now() + datetime.timedelta(minutes=120),
             'iat': datetime.datetime.now(tz=datetime.timezone.utc)
         }
-        print(payload)
+        
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
         response.set_cookie('jwt', token, secure=True, samesite='None')

@@ -346,7 +346,7 @@ function drawCanvas()
 	ball.draw();
 }
 
-function resizeCanvas() {
+/* function resizeCanvas() {
 	var tempWidth = window.screen.availWidth < window.innerWidth ? window.screen.availWidth : window.innerWidth;
 	var tempHeight = window.screen.availHeight < window.innerHeight ? window.screen.availHeight : window.innerHeight;
 
@@ -365,19 +365,21 @@ function resizeCanvas() {
 	height = canvas.height;
 
 	drawCanvas();
-}
+} */
 
-window.addEventListener('resize', resizeCanvas);
+//window.addEventListener('resize', resizeCanvas);
 
 
 export function makeGame()
 {
-	canvas = document.getElementById("canvas");
+	canvas = document.createElement("canvas");
 	if (!canvas)
 	{
-		console.error("Canvas not found!");
+		console.error("Canvas not created!");
 		return;
 	}
+	document.getElementById("content").appendChild(canvas);
+	canvas.id = "canvas";
 	ctx = canvas.getContext("2d");
 	if (!ctx)
 	{
