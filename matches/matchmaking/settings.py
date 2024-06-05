@@ -83,7 +83,7 @@ DATABASES = {
         'USER' : 'match_history_user',
         'PASSWORD' : os.environ.get('DB_PASSWORD'),
         'HOST' : 'match_history',
-        'PORT' : '5433',
+        'PORT' : '5432',
     } 
 }
 
