@@ -40,4 +40,9 @@ class SubmitMatchResultSerializer(serializers.Serializer):
         if not Player.objects.filter(id=value).exists():
             raise serializers.ValidationError("Invalid winner ID.")
         return value
+    
+class ChallengeSerializer(serializers.Serializer):
+    names = serializers.ListField(
+        child=serializers.CharField(max_length=100),
+    )
 
