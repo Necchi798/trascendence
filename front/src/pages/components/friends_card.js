@@ -6,22 +6,17 @@ class FriendsCard extends HTMLElement {
             <div class="card-body">
                 <h5 class="card-title">Friends</h5>
                 <div style="display: flex;margin-top:1rem ;flex-direction: column">
-                    <div>
-                        <span>amico 1</span>
-                    </div>
-                    <hr></hr>
-                    <div>
-                        <span>amico 2</span>
-                    </div>
-                    <hr></hr>
-                    <div>
-                        <span>amico 3</span>
-                    </div>
+                    
                 </div>
             </div>
         </div>
         `
+        this.fetchFriends();
     }
+    async fetchFriends() {
+        /* try {
+            const response = await fetch("https:// */
+        }
 }
 
 customElements.define("friends-card", FriendsCard);

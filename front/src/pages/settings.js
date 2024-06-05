@@ -17,53 +17,64 @@ function getCookieValue(cookieName) {
 	return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
 }
 
+function showPwd() {
+	var x = document.getElementById("passwordChange");
+	if (x.type === "password") {
+		x.type = "text";
+	} else {
+		x.type = "password";
+	}
+}
+
 //add buttons for settings
 export default  ()=> `
 	<div style="display: flex;flex-direction: row;">
 		<side-bar></side-bar>
 		<main id="content" style="width: 100%;height: 100vh;overflow:hidden">
-			<h2>Settings</h2>
-			<div style="display: flex; justify-content: space-between; align-items: center ">
-				<div style="display: flex; justify-content: space-between; align-items: center " id="div2FA">
-					<span>Enable two-factor authentication</span>
-					<button type="button" id="twofaButton" class="btn btn-primary">Enable 2FA</button>
-				</div>
-				<hr></hr>
+			<div class="card" style="width: 100%;display: flex; flex-wrap: wrap; margin: 5%">
+				<h2>Settings</h2>
 				<div style="display: flex; justify-content: space-between; align-items: center ">
-					<span>Enable login with 42</span>
-					<button type="button" id="login42Button" class="btn btn-primary">Enable login 42</button>
-				</div>
-				<hr></hr>
-				<div style="display: flex; justify-content: space-between; align-items: center ">
-					<span>Force delete of 42 User</span>
-					<button type="button" id="delete42Button" class="btn btn-primary">Delete 42 User</button>
-				</div>
-				<hr></hr>
-				<div style="display: flex; justify-content: space-between; align-items: center ">
-					<span>Force delete of 2FA</span>
-					<button type="button" id="delete2faButton" class="btn btn-primary">Delete 2FA</button>
-				</div>
-				<hr></hr>
-				<div style="display: flex; justify-content: space-between; align-items: center ">
-					<span>log info of the user</span>
-					<button type="button" id="UserButton" class="btn btn-primary">user</button>
+					<div style="display: flex; justify-content: space-between; align-items: center " id="div2FA">
+						<span>Enable two-factor authentication</span>
+						<button type="button" id="twofaButton" class="btn btn-primary">Enable 2FA</button>
+					</div>
+					<hr></hr>
+					<div style="display: flex; justify-content: space-between; align-items: center ">
+						<span>Enable login with 42</span>
+						<button type="button" id="login42Button" class="btn btn-primary">Enable login 42</button>
+					</div>
+					<hr></hr>
+					<div style="display: flex; justify-content: space-between; align-items: center ">
+						<span>Force delete of 42 User</span>
+						<button type="button" id="delete42Button" class="btn btn-primary">Delete 42 User</button>
+					</div>
+					<hr></hr>
+					<div style="display: flex; justify-content: space-between; align-items: center ">
+						<span>Force delete of 2FA</span>
+						<button type="button" id="delete2faButton" class="btn btn-primary">Delete 2FA</button>
+					</div>
+					<hr></hr>
+					<div style="display: flex; justify-content: space-between; align-items: center ">
+						<span>log info of the user</span>
+						<button type="button" id="UserButton" class="btn btn-primary">user</button>
+					</div>
 				</div>
 			</div>
-			<div class="card" style="width: 100%;display: flex;flex-direction: row;  flex-wrap: wrap">
+			<div class="card" style="width: 100%;display: flex;flex-direction: row; flex-wrap: wrap; margin: 5%">
 				<div class="card-body">
 					<h3 class="card-title">Your Information</h3>
 					<form id="updateForm">
 						<div class="mb-3">
 							<label for="emailChange" class="form-label">Email address</label>
-							<input type="email" class="form-control" id="emailChange" disabled>
+							<input type="email" class="form-control" id="emailChange" disabled></input>
 						</div>
 						<div class="mb-3">
 							<label for="passwordChange" class="form-label">Password</label>
-							<input type="password" class="form-control" id="passwordChange" disabled>
+							<input type="password" class="form-control" id="passwordChange" disabled></input>
 						</div>
 						<div class="mb-3">
 							<label for="nameChange" class="form-label">Name</label>
-							<input type="text" class="form-control" id="nameChange" disabled>
+							<input type="text" class="form-control" id="nameChange" disabled></input>
 						</div>
 						<button type="button" class="btn btn-primary" id="changeButton">Change</button>
 					</form>
@@ -320,6 +331,7 @@ function getOriginalUserInfo() {
 	})
 	.then(response => response.json())
 	.then(data => {
+		console.log(data);
 		document.getElementById("emailChange").value = data.email;
 		document.getElementById("passwordChange").value = data.password;
 		document.getElementById("nameChange").value = data.username;
@@ -474,6 +486,7 @@ export function actionSettings() {
 	})
 	.then(response => response.json())
 	.then(data => {
+		console.log(data);
 		if (data.two_factor === true)
 		{
 			document.getElementById('twofaButton').textContent = "Disable 2FA";
@@ -499,7 +512,7 @@ export function actionSettings() {
 			document.getElementById('login42Button').addEventListener('click', fetchEnableLogin42);
 		}
 		document.getElementById("emailChange").value = data.email;
-		document.getElementById("passwordChange").value = data.password;
+		//document.getElementById("passwordChange").value = data.password;
 		document.getElementById("nameChange").value = data.username;
 	})
 	.catch((error) => {
@@ -509,6 +522,7 @@ export function actionSettings() {
 	document.getElementById('delete42Button').addEventListener('click', fetchDisableLogin42Button);
 	document.getElementById('delete2faButton').addEventListener('click', fetchDeleteQRCodeButton);
 	document.getElementById('UserButton').addEventListener('click', searchUser);
+	document.getElementById('checkBoxPwd').addEventListener('click', showPwd);
 	const code = getQueryParameter('code');
 	if (code)
 	{
