@@ -19,7 +19,7 @@ class ProfileCard extends HTMLElement {
         super();
         this.innerHTML = /*html*/`
         <div id="123" class="card" style=" width: 40rem;display: flex;flex-direction: row;">
-                <img style={}id="image-container"></img>
+                <img style="width:200px;height:200px" id="image-container"></img>
                 <div class="card-body">
                     <h5 class="card-title">Profile</h5>
                     <div style="display: flex; gap:5rem;margin-top:2rem">
@@ -31,7 +31,6 @@ class ProfileCard extends HTMLElement {
                         <div style="display: flex;flex-direction: column;gap:1rem">
                             <span id="email" >loading...</span>
                             <span id="name">Loading...</span>
-                            <span id="nick-name">Loading...</span>
                         </div>
                         </div>
                 </div>
@@ -39,8 +38,7 @@ class ProfileCard extends HTMLElement {
             </div>
         `
         this.fetchData()
-        
-        document.getElementById("mau").addEventListener("click",this.maufetch)
+        this.maufetch()
     }
     async maufetch(){
        // "https://127.0.0.1:8000/avatar/" png 
@@ -61,6 +59,7 @@ class ProfileCard extends HTMLElement {
         img.src = imgURL;
         img.alt = 'Immagine PNG';
         document.getElementById("image-container").src = imgURL
+        document.getElementById("image-container-sidebar").src = imgURL
         }catch{}
     }
     async fetchData() {
@@ -74,8 +73,10 @@ class ProfileCard extends HTMLElement {
             const data = await response.json();
             //console.log(data)
             const nameSpan = this.querySelector('#name');
-            if (nameSpan) 
+            if (nameSpan) {
+                document.getElementById("name-sidebar").textContent = data.username
                 nameSpan.textContent = data.username;
+            }
             const mailSpan = this.querySelector('#email')
             if(mailSpan)
                 mailSpan.textContent= data.email;

@@ -28,9 +28,9 @@ const routes = {
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"
 export const router = ()=> {
-    if(!document.cookie.includes("jwt") && window.location.pathname != "/register" && window.location.pathname != "/login") {
-        window.history.pushState(null,null,"/login")
-    }
+    // if(!document.cookie.includes("jwt") && (window.location.pathname != "/register")) {
+    //     window.history.pushState(null,null,"/login")
+    // }
     let view = routes[location.pathname];
     document.title = view.title;
     if (view.title === "login") {

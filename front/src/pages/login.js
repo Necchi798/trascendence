@@ -167,7 +167,7 @@ function searchToken(code) {
 		if(response.ok){
 			console.log(window.location.href)
 			console.log(response)
-			history.pushState({},"","/")
+			history.pushState({},"","/home")
 			router()
 		}
 		else
