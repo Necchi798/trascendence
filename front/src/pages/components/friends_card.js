@@ -10,8 +10,11 @@ class FriendsCard extends HTMLElement {
                         <span>amico 1</span>
                     </div>
                     <hr></hr>
-                    <div>
-                        <span>amico 2</span>
+                    <div class="d-flex align-items-center">
+                        <span>amico 2</span><div style="width: 10px;
+                        height: 10px;
+                        background-color: red;
+                        border-radius: 100%;"></div>
                     </div>
                     <hr></hr>
                     <div>
