@@ -177,3 +177,25 @@ class Friend(APIView):
         user.friends.remove(friend)
         return Response({'message': 'Friend removed successfully!'})
     
+
+class UsersView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        # get the users that start with the query
+        try:
+            query = request.query_params.get('usr')
+            print(query)
+        except:
+            raise AuthenticationFailed('Invalid query!')
+        try:
+            users = User.objects.all().filter(username__startswith=query).exclude(id=payload['id'])
+        except:
+            raise AuthenticationFailed('No users found!')
+        return Response(UserSerializer(users, many=True).data)
