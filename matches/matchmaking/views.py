@@ -12,7 +12,7 @@ class CreatePlayer(APIView):
         name = request.data.get('name')
         if not name:
             return Response({'error': 'Name is required.'}, status=status.HTTP_400_BAD_REQUEST)
-        player = Player.objects.create(nickname=name)
+        player = Player.objects.get_or_create(nickname=name)
         
         return Response({'success': True, 'message': f'Player "{name}" created.'}, status=status.HTTP_200_OK)
 class GetNextMatch(APIView):
@@ -62,11 +62,21 @@ class CreateChallenge(APIView):
             )
             return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id}, status=status.HTTP_200_OK)
 
-        creator = players[0].user
+        creator = players[0].nickname
+        rounds = 0
+        x = len(players)
+        if len(players) % 2 == 0:
+            while x / 2 > 1:
+                rounds += 1
+        else:
+            x += 1
+            while x / 2 > 1:
+                rounds += 1  
         tournament = Tournament.objects.create(
             creator=creator, 
             player_count=len(players), 
-            curr_round=0, 
+            curr_round=0,
+            n_rounds = rounds,
             created_at =timezone.now(),
         )
         
