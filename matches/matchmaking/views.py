@@ -15,6 +15,8 @@ class CreatePlayer(APIView):
         player = Player.objects.get_or_create(nickname=name)
         
         return Response({'success': True, 'message': f'Player "{name}" created.'}, status=status.HTTP_200_OK)
+
+
 class GetNextMatch(APIView):
     def get(self, request):
         index = request.data.get('match_id')
@@ -66,12 +68,14 @@ class CreateChallenge(APIView):
         rounds = 0
         x = len(players)
         if len(players) % 2 == 0:
-            while x / 2 > 1:
+            while x > 1:
+                x=  x/2
                 rounds += 1
         else:
             x += 1
-            while x / 2 > 1:
-                rounds += 1  
+            while x > 1:
+                x=  x/2
+                rounds += 1
         tournament = Tournament.objects.create(
             creator=creator, 
             player_count=len(players), 

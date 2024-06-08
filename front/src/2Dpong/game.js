@@ -134,20 +134,24 @@ class Player {
 		this.height = height;
 	}
 }
-// sendResult = (winner)=>{
-// 	data = {
-// 		winner:winner,
-// 		match_id:
-// 	}
-// 	fetch( fetch('https://jsonplaceholder.typicode.com/posts', { //sostituire con l'indirizzo del server impostato dal backend oppure testare con "fetch('https://jsonplaceholder.typicode.com/posts'"
-// 		method: 'POST',
-// 		headers: {
-// 			'Content-Type': 'application/json' // Specifica il tipo di contenuto
-// 		},
-// 		body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
-// 		}
-// 	))		
-// }
+const  sendResult = (winner)=>{
+	data = {
+		winner:winner,
+		match_id:localStorage.getItem("match_id")
+	}
+	localStorage.removeItem('nomeUtente');
+	 fetch('https://127.0.0.1/get-next-match/', { 
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json' 
+		},
+		body: JSON.stringify(data)	
+		}
+	).then(()=>{
+        history.pushState({},"","/3dpong_tournament")
+        router();
+	})
+}
 class Ball {
 	constructor(x, y, vel, alpha, color, size)
 	{

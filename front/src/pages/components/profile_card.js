@@ -74,7 +74,7 @@ class ProfileCard extends HTMLElement {
             //console.log(data)
             const nameSpan = this.querySelector('#name');
             if (nameSpan) {
-                document.getElementById("name-sidebar").textContent = data.username
+
                 nameSpan.textContent = data.username;
             }
             const mailSpan = this.querySelector('#email')
