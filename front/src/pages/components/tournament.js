@@ -1,3 +1,4 @@
+import {router} from "../../main.js";
 class Tournament extends HTMLElement {
     constructor(){
         super();
@@ -33,18 +34,27 @@ class Tournament extends HTMLElement {
             'Content-Type': 'application/json' // Specifica il tipo di contenuto
             },
             body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
-	    }).then(async res=>await res.json()).then(res=>console.log(res))
+	    }).then(async res=>await res.json()).then(res=>{
+            
+            localStorage.setItem("tournament_id",res.tournament_id)
+            //localStorage.setItem("match_id",res.match_id)
+        })
 	}
     prossimapartita = ()=>{
         fetch('https://127.0.0.1:9001/get-next-match/', { //sostituire con l'indirizzo del server impostato dal backend
-        method: 'GET',
+        method: 'POST',
         mode:"cors",
-        credentials: 'include',
+        credentials: 'include', 
         headers: {
         'Content-Type': 'application/json' // Specifica il tipo di contenuto
         },
+        body: JSON.stringify({tournament_id:localStorage.getItem("tournament_id")})
     }).then(async res=>await res.json()).then(res=>{
-        localStorage.setItem("match_id", res.body.match_id)
+        console.log(res.match_id.filter((el)=>!el.has_ended[0]))
+        let nextmatch = res.match_id.filter((el)=>!el.has_ended)[0]
+        localStorage.setItem("match_id", nextmatch.id)
+        localStorage.setItem("player1", nextmatch.player1)
+        localStorage.setItem("player2", nextmatch.player2)
         history.pushState({},"","/2dpong")
         router();
     }

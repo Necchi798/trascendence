@@ -134,13 +134,13 @@ class Player {
 		this.height = height;
 	}
 }
-const  sendResult = (winner)=>{
-	data = {
+function sendResult(winner){
+	let data = {
 		winner:winner,
 		match_id:localStorage.getItem("match_id")
 	}
-	localStorage.removeItem('nomeUtente');
-	 fetch('https://127.0.0.1/get-next-match/', { 
+	localStorage.removeItem("match_id");
+	 fetch('https://127.0.0.1:9001/update-match-result/', { 
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json' 
@@ -185,8 +185,8 @@ class Ball {
 		{
 			alert("p1 score!");
 			p1Score++;
-			// if(p1Score === 3)
-
+			if(p1Score === 1)
+				sendResult(localStorage.getItem("player1"))
 			paused = true;
 			isAccelerated = false;
 			player1Down = false;
@@ -203,6 +203,8 @@ class Ball {
 		else if (this.x <= 0)
 		{
 			alert("p2 score!");
+			if(p1Score === 1)
+				sendResult(localStorage.getItem("player1"))
 			p2Score++;
 			isAccelerated = false;
 			paused = true;

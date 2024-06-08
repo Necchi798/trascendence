@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed
 from .models import Tournament, Player, Match, User
 from .serializer import TournamentSerializer, MatchSerializer, PlayerSerializer, UserSerializer, ChallengeSerializer
-import random,  json
+import random,  jwt
 
 class CreatePlayer(APIView):
     def post(self, request):
@@ -18,16 +20,15 @@ class CreatePlayer(APIView):
 
 
 class GetNextMatch(APIView):
-    def get(self, request):
-        index = request.data.get('match_id')
+    def post(self, request):
+        index = request.data.get('tournament_id')
         try:
-            match = Match.objects.get(id=index)
-            serializer = MatchSerializer(match)
-            data = serializer.data
+            matchs = Match.objects.filter(tournament=index)
+            toRet = list(matchs.values("id","creator","has_ended","player1","player2"))
             response_data = {
                 'success': True,
                 'message': 'Match details retrieved successfully.',
-                'match_id': index +1
+                'match_id': toRet
             }
             return Response(response_data, status=status.HTTP_200_OK)
         except Match.DoesNotExist:
@@ -64,18 +65,18 @@ class CreateChallenge(APIView):
             )
             return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id}, status=status.HTTP_200_OK)
 
-        creator = players[0].nickname
+        creator = players[0].id
         rounds = 0
         x = len(players)
         if len(players) % 2 == 0:
             while x > 1:
-                x=  x/2
+                x = x / 2
                 rounds += 1
         else:
             x += 1
             while x > 1:
-                x=  x/2
-                rounds += 1
+                x = x / 2
+                rounds += 1  
         tournament = Tournament.objects.create(
             creator=creator, 
             player_count=len(players), 
@@ -88,9 +89,9 @@ class CreateChallenge(APIView):
             #player.tournament = tournament
             player.save()
 
-        self._create_matches(tournament, players)
+        matchs = self._create_matches(tournament, players)
         
-        return Response({'success': True, 'message': 'Tournament created with multiple players', 'tournament_id': tournament.id}, status=status.HTTP_200_OK)
+        return Response({'success': True, 'message': 'Tournament created with multiple players', 'tournament_id': tournament.id, 'match_id': matchs[0].id}, status=status.HTTP_200_OK)
     
     def _create_matches(self, tournament, players):
         random.shuffle(players)
@@ -121,11 +122,18 @@ class CreateChallenge(APIView):
             )
             matches.append(match)
         
+        print(matches)
+
         return matches
 
 
 class DeleteHistory(APIView):
-    def delete(self, request):
+    def delete(self, request, user_id):
+        matches = Match.objects.filter(player1__user__id=user_id) | Match.objects.filter(player2__user__id=user_id)
+        match_count = matches.count()
+        matches.delete()
+        return Response({'success': True, 'message': f'{match_count} matches deleted.'}, status=status.HTTP_200_OK)
+    '''def delete(self, request):
         username = request.data.get('username')
         if not username:
             return Response({'error': 'Username is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -143,13 +151,33 @@ class DeleteHistory(APIView):
         user.delete()
 
         return Response({'success': True, 'message': 'User history deleted and references updated.'}, status=status.HTTP_200_OK)
-
+'''
 
 class GetHistory(APIView):
     def get(self, request):
-        username = request.data.get('user')
-        if not username:
-            return Response({'error': 'Username is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Missing jwt')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired jwt')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid jwt')
+        user_id = payload['id']
+        try:
+            player = Player.objects.get(user__id=user_id)
+        except Player.DoesNotExist:
+            return Response({'success': False, 'message': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        matches = Match.objects.filter(player1=player) | Match.objects.filter(player2=player)
+        matches_won = matches.filter(winner=player).count()
+
+        serializer = MatchSerializer(matches, many=True)
+        return Response({'success': True, 'data': serializer.data, 'matches_won': matches_won}, status=status.HTTP_200_OK)
+    '''def get(self, request):
+        #username = request.data.get('user')
+        user_id = request.data.get(user_id)
         
         #user = get_object_or_404(User, username=username)
         player = get_object_or_404(Player, user=username)
@@ -163,7 +191,7 @@ class GetHistory(APIView):
         return Response({
             'tournaments': tournament_serializer.data,
             'matches': match_serializer.data
-        }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)'''
 
 
 class UpdateMatchResult(APIView):
