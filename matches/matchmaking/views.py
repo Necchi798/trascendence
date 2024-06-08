@@ -7,22 +7,37 @@ from .models import Tournament, Player, Match, User
 from .serializer import TournamentSerializer, MatchSerializer, PlayerSerializer, UserSerializer, ChallengeSerializer
 import random,  json
 
+class CreatePlayer(APIView):
+    def post(self, request):
+        name = request.data.get('name')
+        if not name:
+            return Response({'error': 'Name is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        player = Player.objects.create(nickname=name)
+        
+        return Response({'success': True, 'message': f'Player "{name}" created.'}, status=status.HTTP_200_OK)
 class GetNextMatch(APIView):
-    def get(self, request, index):
+    def get(self, request):
+        index = request.data.get('match_id')
         try:
-            match = Match.objects.all()[index]
+            match = Match.objects.get(id=index)
             serializer = MatchSerializer(match)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except IndexError:
-            return Response({'error': 'No match found at this index.'}, status=status.HTTP_404_NOT_FOUND)
-
+            data = serializer.data
+            response_data = {
+                'success': True,
+                'message': 'Match details retrieved successfully.',
+                'match_id': index +1
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        except Match.DoesNotExist:
+            return Response({'error': 'Match not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class CreateChallenge(APIView):
     def post(self, request):
         
         names=request.data.get('names')
-        print(names)
-
+        #print(names)
+        for x in range(len(names)):
+            print(names[x])
         if not isinstance(names, list):
             return Response({'error': 'Expected a list of names.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -32,8 +47,8 @@ class CreateChallenge(APIView):
         players = []
 
         for name in names:
-            user, created = User.objects.get_or_create(username=name)
-            player, created = Player.objects.get_or_create(user=user, nickname=name)
+            #user, created = User.objects.get_or_create(username=name)
+            player = Player.objects.create(nickname=name)
             players.append(player)
 
         if len(players) == 2:
@@ -56,7 +71,7 @@ class CreateChallenge(APIView):
         )
         
         for player in players:
-            player.tournament = tournament
+            #player.tournament = tournament
             player.save()
 
         self._create_matches(tournament, players)
@@ -118,12 +133,12 @@ class DeleteHistory(APIView):
 
 class GetHistory(APIView):
     def get(self, request):
-        username = request.user.username
+        username = request.data.get('user')
         if not username:
             return Response({'error': 'Username is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        user = get_object_or_404(User, username=username)
-        player = get_object_or_404(Player, user=user)
+        #user = get_object_or_404(User, username=username)
+        player = get_object_or_404(Player, user=username)
         
         tournaments = Tournament.objects.filter(players=player)
         matches = Match.objects.filter(player1=player) | Match.objects.filter(player2=player)
@@ -138,8 +153,8 @@ class GetHistory(APIView):
 
 
 class UpdateMatchResult(APIView):
-    def post(self, request, match_id):
-        match = get_object_or_404(Match, id=match_id)
+    def post(self, request):
+        match = get_object_or_404(Match, id=request.data.get('match_id'))
         winner_name = request.data.get('winner')
         if not winner_name:
             return Response({'error': 'Winner name is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -170,7 +185,11 @@ class GetNextRound(APIView):
             return Response({'message': 'Tournament has ended.'}, status=status.HTTP_200_OK)
 
         names = request.data.get('names')
-        players = [Player.objects.get_or_create(user=User.objects.get_or_create(username=name)[0], nickname=name)[0] for name in names]
+        players = []
+        for name in names:
+            players.append(name)
+
+        #players = [Player.objects.get_or_create(user=User.objects.get_or_create(username=name)[0], nickname=name)[0] for name in names]
 
         random.shuffle(players)
         self._create_matches(tournament, players)

@@ -23,13 +23,13 @@ class PlayerSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
-        fields = ['id', 'player1', 'player2', 'winner', 'tournament', 'round_number', 'start_time', 'end_time', 'is_completed']
+        fields = ['id', 'tournament', 'round_number','player1', 'player2', 'winner',  'created_at', 'ended_at', 'has_ended', 'direct_match']
 
 
 class TournamentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tournament
-        fields = ['id', 'creator', 'player_count', 'current_round', 'start_time', 'end_time', 'is_active', 'players']
+        fields = ['id', 'creator', 'player_count', 'n_rounds', 'curr_round', 'created_at', 'ended_at']
 
 
 class SubmitMatchResultSerializer(serializers.Serializer):

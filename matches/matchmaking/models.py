@@ -20,9 +20,10 @@ class User(AbstractUser):
     )
 
 class Player(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    id = models.AutoField(primary_key=True)
+    #user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nickname = models.CharField(max_length=255, null=True, blank=True)
-    tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, related_name='players', null=True, blank=True)
+    #tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, related_name='players', null=True, blank=True)
 
 class Tournament(models.Model):
     id = models.AutoField(primary_key=True)
