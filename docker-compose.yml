@@ -59,8 +59,8 @@ services:
   match_history:
     image: postgres
     ports:
-      - "5435:5433"
-    command: ["postgres", "-c", "port=5433"]
+      - "5435:5432"
+    command: ["postgres", "-c", "port=5432"]
     depends_on:
       - nginx
     env_file:

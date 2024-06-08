@@ -12,7 +12,7 @@ class User(AbstractUser):
 
     last_fetch = models.DateTimeField(auto_now=True)
 
+    friends = models.ManyToManyField('self', blank=True)
+
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
-    
-

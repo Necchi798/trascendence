@@ -7,7 +7,7 @@ import register from "./pages/register.js";
 import twofa from "./pages/twofa.js";
 import { actionRegister } from "./pages/register.js";
 import { actionLogin } from "./pages/login.js";
-import search from "./pages/search.js";
+import search, { actionSearch } from "./pages/search.js";
 import { makeGame3d } from "./3Dpong/game.js";
 import settings, {actionSettings} from "./pages/settings.js";
 import tournament from "./pages/tournamentpage.js"
@@ -22,7 +22,7 @@ const routes = {
     "/login":{title:"login",render:login,action:actionLogin},
     "/twofa":{title:"twofa",render:twofa,action:()=>{}},
     "/register":{title:"register",render:register,action:actionRegister},
-    "/search":{title:"search",render:search,action:()=>{}},
+    "/search":{title:"search",render:search,action:actionSearch},
     "/settings":{title:"settings",render:settings,action:actionSettings},
     "/3dpong":{title:"3dpong",render:game,action:makeGame3d},
     "/3dpong_tournament":{title:"tournament",render:tournamentpage,action:()=>{}}
@@ -30,9 +30,10 @@ const routes = {
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"
 export const router = ()=> {
-    // if(!document.cookie.includes("jwt") && (window.location.pathname != "/register")) {
-    //     window.history.pushState(null,null,"/login")
-    // }
+    console.log(window.location.pathname);
+    if(!document.cookie.includes("jwt") && window.location.pathname != "/register" && window.location.pathname != "/login" && window.location.pathname != "/twofa") {
+        window.history.pushState(null,null,"/login");
+    }
     let view = routes[location.pathname];
     document.title = view.title;
     if (view.title === "login") {

@@ -52,4 +52,5 @@ export function twofaScript(userdata)
 {
 	console.log(userdata);
 	document.getElementById("loginButton").addEventListener("click", twofaLogin.bind(null, userdata));
+	
 }

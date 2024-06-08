@@ -15,7 +15,7 @@ RUN openssl req -new -key /app/private.key -out /app/certificate.csr -subj "/C=E
 RUN openssl x509 -req -days 365 -in /app/certificate.csr -signkey /app/private.key -out /app/certificate.crt
 #test fine
 
-EXPOSE 5433
+#EXPOSE 9001
 
 COPY ./matches /app/
 #COPY ./docker/matchmaking_system/entrypoint.sh /app

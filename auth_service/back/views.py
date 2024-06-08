@@ -87,9 +87,9 @@ class UpdateUserView(APIView):
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Unauthenticated!')
-        
-        user = User.objects.filter(id=payload['id']).first()
 
+        user = User.objects.filter(id=payload['id']).first()
+        
         serializer = UserSerializer(instance=user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -130,4 +130,72 @@ class AvatarView(APIView):
         user.save()
         return Response({'message': 'Avatar updated successfully!'})
         
+class Friend(APIView):
+    def post(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
 
+        user = User.objects.filter(id=payload['id']).first()
+        friend = User.objects.filter(username=request.data['friend']).first()
+        if not friend:
+            raise AuthenticationFailed('Friend not found!')
+        user.friends.add(friend)
+        return Response({'message': 'Friend added successfully!'})
+    
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        user = User.objects.filter(id=payload['id']).first()
+        friends = user.friends.all()
+        return Response(UserSerializer(friends, many=True).data)
+    
+    def delete(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        user = User.objects.filter(id=payload['id']).first()
+        friend = User.objects.filter(username=request.data['friend']).first()
+        if not friend:
+            raise AuthenticationFailed('Friend not found!')
+        user.friends.remove(friend)
+        return Response({'message': 'Friend removed successfully!'})
+    
+
+class UsersView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        # get the users that start with the query
+        try:
+            query = request.query_params.get('usr')
+            print(query)
+        except:
+            raise AuthenticationFailed('Invalid query!')
+        try:
+            users = User.objects.all().filter(username__startswith=query).exclude(id=payload['id'])
+        except:
+            raise AuthenticationFailed('No users found!')
+        return Response(UserSerializer(users, many=True).data)

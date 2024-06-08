@@ -153,6 +153,47 @@ function getQueryParameter(name) {
 	return urlParams.get(name);
 }
 
+function needToRegisterModal()
+{
+	console.log("needToRegisterModal");
+	const modal = document.createElement("div");
+	modal.id = "modal";
+	modal.className = "modal";
+	modal.innerHTML = `
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+			<div class="modal-header">
+				<h4 class="modal-title">Error: no user found</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				You need to register to login in with 42
+			</div>
+
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+				<a href="/register" class="btn btn-primary">Register</a>
+			</div>
+
+			</div>
+		</div>
+	`;
+	
+	//remove modal using data-bs-dismiss
+	document.body.appendChild(modal);
+	const modalElement = new bootstrap.Modal(modal);
+	modalElement.show();
+	// event listener to remove the modal
+	// event listener to remove the modal
+	modal.addEventListener("hidden.bs.modal", () => {
+		document.body.removeChild(modal);
+	});
+}
+
 function searchToken(code) {
 	fetch('https://127.0.0.1:8002/login42/', {
 		method: 'POST',
@@ -171,8 +212,14 @@ function searchToken(code) {
 			router()
 		}
 		else
-			console.log(response)
-			console.log("errorino 1")
+		{
+			console.log(response);
+			if (response.status == 403)
+			{
+				history.replaceState({},"","/login");
+				needToRegisterModal();
+			}
+		}
 	})
 }
 
