@@ -134,7 +134,20 @@ class Player {
 		this.height = height;
 	}
 }
-
+// sendResult = (winner)=>{
+// 	data = {
+// 		winner:winner,
+// 		match_id:
+// 	}
+// 	fetch( fetch('https://jsonplaceholder.typicode.com/posts', { //sostituire con l'indirizzo del server impostato dal backend oppure testare con "fetch('https://jsonplaceholder.typicode.com/posts'"
+// 		method: 'POST',
+// 		headers: {
+// 			'Content-Type': 'application/json' // Specifica il tipo di contenuto
+// 		},
+// 		body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
+// 		}
+// 	))		
+// }
 class Ball {
 	constructor(x, y, vel, alpha, color, size)
 	{
@@ -168,6 +181,8 @@ class Ball {
 		{
 			alert("p1 score!");
 			p1Score++;
+			// if(p1Score === 3)
+
 			paused = true;
 			isAccelerated = false;
 			player1Down = false;
