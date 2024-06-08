@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import QRCode
 from rest_framework.response import Response
+import smtplib
 
 class QRCodeCreationView(APIView):
     def post(self, request):
@@ -72,4 +73,25 @@ class setMail(APIView):
             return Response(status=status.HTTP_201_CREATED, data={"message": "Email set successfully."})
         except QRCode.DoesNotExist:
             raise NotFound(detail="QR code not found for this user.")
+
+class sendMail(APIView):
+    def post(self, request):
+        try:
+            mail=QRCode.objects.filter(owner_id=request.data["id"]).values('email')
+            sender = settings.SENDER
+            app_password = settings.APP_PWD
+            dest = mail[0]['email']
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(sender, app_password)
+            key=base64.b32encode(settings.SECRET_KEY.encode() + str(request.data["id"]).encode())
+            totp = pyotp.TOTP(key)
+            server.sendmail(sender, dest, str(totp.now()))
+            server.quit()
+            return Response(status=status.HTTP_200_OK, data={"message": "Mail sent successfully."})
+        except QRCode.DoesNotExist:
+            raise NotFound(detail="QR code not found for this user.")
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
         
+
