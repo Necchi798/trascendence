@@ -50,5 +50,6 @@ function fetchData() {
     .catch((error) => {
         console.error('Error:', error);
     });
+    
 }
 customElements.define("login-card",loginCard)

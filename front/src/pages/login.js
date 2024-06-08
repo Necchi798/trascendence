@@ -131,6 +131,7 @@ export function fetchDataLogin() {
 		if(response_data.jwt)
 		{
 			history.pushState({},"","/")
+			localStorage.setItem("user",name)
 			router();
 		}
 		else
@@ -146,6 +147,16 @@ export function fetchDataLogin() {
 			}
 		}
 	})
+	fetch('https://127.0.0.1:9001/create-player/', { //sostituire con l'indirizzo del server impostato dal backend
+	method: 'POST',
+	mode:"cors",
+	credentials: 'include',
+	headers: {
+		'Content-Type': 'application/json' // Specifica il tipo di contenuto
+	},
+	body: JSON.stringify({name:name})	// Converte l'oggetto JavaScript in una stringa JSON
+	})
+	
 }
 
 function getQueryParameter(name) {

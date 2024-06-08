@@ -5,7 +5,7 @@ class Tournament extends HTMLElement {
         <div class="container">
             <div class="d-flex">
                 <div class="d-flex"style=" flex-direction:column; gap:1rem">
-                    <input type="text" id="player1" placeholder="Enter player 1">
+                    <span id="userNameForTournament"></span>
                     <input type="text" id="player2" placeholder="Enter player 2">
                     <input type="text" id="player3" placeholder="Enter player 3">
                     <input type="text" id="player4" placeholder="Enter player 4">
@@ -15,11 +15,12 @@ class Tournament extends HTMLElement {
             </div>
         </div>
         `
+        document.getElementById("userNameForTournament").textContent=localStorage.getItem("user")
         document.getElementById("createTorneo").addEventListener('click',this.createTournament)
         document.getElementById("prossimomatch").addEventListener('click',this.prossimapartita)
     }
     createTournament = ()=>{
-		const p1 = document.getElementById("player1").value;
+		const p1 = localStorage.getItem("user")
         const p2 = document.getElementById("player2").value;
         const p3 = document.getElementById("player3").value;
         const p4 = document.getElementById("player4").value;
