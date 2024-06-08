@@ -41,8 +41,13 @@ class SubmitMatchResultSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid winner ID.")
         return value
     
-class ChallengeSerializer(serializers.Serializer):
+'''class ChallengeSerializer(serializers.Serializer):
     names = serializers.ListField(
         child=serializers.CharField(max_length=100),
     )
-
+'''
+class ChallengeSerializer(serializers.Serializer):
+    names = serializers.ListField(
+        child=serializers.CharField(max_length=100),
+        min_length=2
+    )
