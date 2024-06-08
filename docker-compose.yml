@@ -84,8 +84,7 @@ services:
     ports:
       - "9001:9001"
     depends_on:
-      match_history:
-        condition: service_started
+      - match_history
     networks:
       - trancendence      
 #otp
