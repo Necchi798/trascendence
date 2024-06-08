@@ -61,8 +61,6 @@ services:
     ports:
       - "5435:5432"
     command: ["postgres", "-c", "port=5432"]
-    depends_on:
-      - nginx
     env_file:
       - .env
     environment:

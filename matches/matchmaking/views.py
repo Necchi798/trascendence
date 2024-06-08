@@ -1,25 +1,54 @@
-# views.py
-
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Tournament, Player, Match, User
-from .serializer import TournamentSerializer, MatchSerializer
-import random
+from .serializer import TournamentSerializer, MatchSerializer, PlayerSerializer, UserSerializer, ChallengeSerializer
+import random,  json
+
+class CreatePlayer(APIView):
+    def post(self, request):
+        name = request.data.get('name')
+        if not name:
+            return Response({'error': 'Name is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        player = Player.objects.create(nickname=name)
+        
+        return Response({'success': True, 'message': f'Player "{name}" created.'}, status=status.HTTP_200_OK)
+class GetNextMatch(APIView):
+    def get(self, request):
+        index = request.data.get('match_id')
+        try:
+            match = Match.objects.get(id=index)
+            serializer = MatchSerializer(match)
+            data = serializer.data
+            response_data = {
+                'success': True,
+                'message': 'Match details retrieved successfully.',
+                'match_id': index +1
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        except Match.DoesNotExist:
+            return Response({'error': 'Match not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class CreateChallenge(APIView):
     def post(self, request):
-        names = request.data.get('names')
+        
+        names=request.data.get('names')
+        #print(names)
+        for x in range(len(names)):
+            print(names[x])
+        if not isinstance(names, list):
+            return Response({'error': 'Expected a list of names.'}, status=status.HTTP_400_BAD_REQUEST)
+
         if not names or len(names) < 2:
             return Response({'error': 'At least 2 players are required.'}, status=status.HTTP_400_BAD_REQUEST)
         
         players = []
 
         for name in names:
-            user, created = User.objects.get_or_create(username=name)
-            player, created = Player.objects.get_or_create(user=user, nickname=name)
+            #user, created = User.objects.get_or_create(username=name)
+            player = Player.objects.create(nickname=name)
             players.append(player)
 
         if len(players) == 2:
@@ -27,21 +56,27 @@ class CreateChallenge(APIView):
                 player1=players[0],
                 player2=players[1],
                 created_at=timezone.now(),
-                direct_match=True,
-                round_number=-1
+                round_number=-1,
+                has_ended=False,
+                tournament=None
             )
             return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id}, status=status.HTTP_200_OK)
 
         creator = players[0].user
-        tournament = Tournament.objects.create(creator=creator, player_count=len(players), n_rounds=0)
+        tournament = Tournament.objects.create(
+            creator=creator, 
+            player_count=len(players), 
+            curr_round=0, 
+            created_at =timezone.now(),
+        )
         
         for player in players:
-            player.tournament = tournament
+            #player.tournament = tournament
             player.save()
-        
+
         self._create_matches(tournament, players)
         
-        return Response({'success': True, 'message': 'Tournament created with multiple players'}, status=status.HTTP_200_OK)
+        return Response({'success': True, 'message': 'Tournament created with multiple players', 'tournament_id': tournament.id}, status=status.HTTP_200_OK)
     
     def _create_matches(self, tournament, players):
         random.shuffle(players)
@@ -55,7 +90,7 @@ class CreateChallenge(APIView):
                 player1=player1,
                 player2=player2,
                 created_at=timezone.now(),
-                direct_match=False,
+                has_ended=False
             )
             matches.append(match)
         
@@ -67,22 +102,13 @@ class CreateChallenge(APIView):
                 player1=player,
                 player2=None,
                 winner=player,
-                has_ended=True,
-                created_at=timezone.now(),
-                direct_match=False
+                ended_at=timezone.now(),
+                has_ended=True
             )
             matches.append(match)
         
         return matches
 
-class GetNextMatch(APIView):
-    def get(self, request, index):
-        try:
-            match = Match.objects.all()[index]
-            serializer = MatchSerializer(match)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except IndexError:
-            return Response({'error': 'No match found at this index.'}, status=status.HTTP_404_NOT_FOUND)
 
 class DeleteHistory(APIView):
     def delete(self, request):
@@ -104,14 +130,15 @@ class DeleteHistory(APIView):
 
         return Response({'success': True, 'message': 'User history deleted and references updated.'}, status=status.HTTP_200_OK)
 
+
 class GetHistory(APIView):
     def get(self, request):
-        username = request.user.username
+        username = request.data.get('user')
         if not username:
             return Response({'error': 'Username is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        user = get_object_or_404(User, username=username)
-        player = get_object_or_404(Player, user=user)
+        #user = get_object_or_404(User, username=username)
+        player = get_object_or_404(Player, user=username)
         
         tournaments = Tournament.objects.filter(players=player)
         matches = Match.objects.filter(player1=player) | Match.objects.filter(player2=player)
@@ -124,9 +151,10 @@ class GetHistory(APIView):
             'matches': match_serializer.data
         }, status=status.HTTP_200_OK)
 
+
 class UpdateMatchResult(APIView):
-    def post(self, request, match_id):
-        match = get_object_or_404(Match, id=match_id)
+    def post(self, request):
+        match = get_object_or_404(Match, id=request.data.get('match_id'))
         winner_name = request.data.get('winner')
         if not winner_name:
             return Response({'error': 'Winner name is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -139,6 +167,7 @@ class UpdateMatchResult(APIView):
 
         return Response({'success': True, 'message': 'Match result updated.'}, status=status.HTTP_200_OK)
 
+
 class UpdateTournament(APIView):
     def post(self, request, tournament_id):
         tournament = get_object_or_404(Tournament, id=tournament_id)
@@ -148,14 +177,19 @@ class UpdateTournament(APIView):
             return Response({'success': True, 'message': 'Tournament updated.'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class GetNextRound(APIView):
     def post(self, request, tournament_id):
         tournament = get_object_or_404(Tournament, id=tournament_id)
-        if tournament.curr_round >= tournament.n_rounds:
+        if tournament.curr_round >= tournament.total_rounds:
             return Response({'message': 'Tournament has ended.'}, status=status.HTTP_200_OK)
 
         names = request.data.get('names')
-        players = [Player.objects.get_or_create(user=User.objects.get_or_create(username=name)[0], nickname=name)[0] for name in names]
+        players = []
+        for name in names:
+            players.append(name)
+
+        #players = [Player.objects.get_or_create(user=User.objects.get_or_create(username=name)[0], nickname=name)[0] for name in names]
 
         random.shuffle(players)
         self._create_matches(tournament, players)
@@ -176,7 +210,7 @@ class GetNextRound(APIView):
                 player1=player1,
                 player2=player2,
                 created_at=timezone.now(),
-                direct_match=False
+                has_ended=False
             )
             matches.append(match)
 
@@ -188,9 +222,8 @@ class GetNextRound(APIView):
                 player1=player,
                 player2=None,
                 winner=player,
-                has_ended=True,
-                created_at=timezone.now(),
-                direct_match=False
+                ended_at=timezone.now(),
+                has_ended=True
             )
             matches.append(match)
 
