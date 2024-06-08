@@ -21,13 +21,13 @@ class User(AbstractUser):
 
 class Player(models.Model):
     id = models.AutoField(primary_key=True)
-    #user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nickname = models.CharField(max_length=255, null=True, blank=True)
-    #tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, related_name='players', null=True, blank=True)
+    user_id  = models.IntegerField(default=-1)
+
 
 class Tournament(models.Model):
     id = models.AutoField(primary_key=True)
-    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_tournaments')
+    creator = models.IntegerField(default=-1)
     player_count = models.IntegerField()
     n_rounds = models.IntegerField(default=1)
     curr_round = models.IntegerField(default=0)
@@ -36,6 +36,7 @@ class Tournament(models.Model):
 
 class Match(models.Model):
     id = models.AutoField(primary_key=True)
+    creator = models.IntegerField(default=-1)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='matches', null=True, blank=True)
     round_number = models.IntegerField()
     player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player1_matches', null=True, blank=True)
