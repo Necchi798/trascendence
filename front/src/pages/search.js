@@ -1,5 +1,33 @@
 import "./components/sidebar.js"
 
+function removeFriend(username) {
+	//send a POST request to the server to add the user as a friend
+	fetch("https://127.0.0.1:8000/friend/", {
+		method: "DELETE",
+		mode: "cors",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({friend: username})
+	})
+	.then(response => {
+		if(response.ok) {
+			console.log("Friend removed successfully");
+			//change the button text to "Add friend"
+			let btn = document.getElementById("result-" + username).querySelector("button");
+			btn.innerHTML = "Add friend";
+			btn.removeEventListener("click", removeFriend);
+			btn.addEventListener("click", () => {
+				addFriend(user.username);
+			});
+		}
+		else {
+			console.log("Failed to add friend");
+		}
+	});
+}
+
 function addFriend(username) {
 	//send a POST request to the server to add the user as a friend
 	fetch("https://127.0.0.1:8000/friend/", {
@@ -13,10 +41,17 @@ function addFriend(username) {
 	})
 	.then(response => {
 		if(response.ok) {
-			alert("Friend added successfully");
+			console.log("Friend added successfully");
+			//change the button text to "Remove friend"
+			let btn = document.getElementById("result-" + username).querySelector("button");
+			btn.innerHTML = "Remove friend";
+			btn.removeEventListener("click", addFriend);
+			btn.addEventListener("click", () => {
+				removeFriend(user.username);
+			});
 		}
 		else {
-			alert("Failed to add friend");
+			console.log("Failed to add friend");
 		}
 	});
 }

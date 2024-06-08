@@ -35,7 +35,7 @@ export default  ()=> `
             </div>
             <div style="display:flex; flex-direction: column;align-content: center;
                     width: 40%; padding: 3%; padding-left: 0%">
-				<friends-card><friends-card>
+				<friends-card></friends-card>
             </div>
         </main>
 	</div>
