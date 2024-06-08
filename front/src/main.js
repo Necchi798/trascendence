@@ -10,7 +10,8 @@ import { actionLogin } from "./pages/login.js";
 import search from "./pages/search.js";
 import { makeGame3d } from "./3Dpong/game.js";
 import settings, {actionSettings} from "./pages/settings.js";
-
+import tournament from "./pages/tournamentpage.js"
+import tournamentpage from "./pages/tournamentpage.js";
 
 const routes = {
     "/":{title:"home", render: home, action: ()=>{}},
@@ -23,7 +24,8 @@ const routes = {
     "/register":{title:"register",render:register,action:actionRegister},
     "/search":{title:"search",render:search,action:()=>{}},
     "/settings":{title:"settings",render:settings,action:actionSettings},
-    "/3dpong":{title:"3dpong",render:game,action:makeGame3d}
+    "/3dpong":{title:"3dpong",render:game,action:makeGame3d},
+    "/3dpong_tournament":{title:"tournament",render:tournamentpage,action:()=>{}}
 }
 
 //metodo per il routing: in base all' url cambia il contenuto di "content"

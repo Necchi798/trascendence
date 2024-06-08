@@ -14,6 +14,9 @@ class SidebarElement extends HTMLElement {
 				<a class="p-2 d-inline-flex text-decoration-none" style="color:red">
 					Stats
 				</a>
+				<a class="p-2 d-inline-flex text-decoration-none" style="color:red">
+					Stats
+				</a>
 			</div> 
 		</div>
 		`;
@@ -39,10 +42,14 @@ class SidebarElement extends HTMLElement {
 				<a data-link href="/${tmp}_stats" class="p-2 d-inline-flex text-decoration-none" style="color:white">
 					Stats
 				</a>
+				<a data-link href="/${tmp}_tournament" class="p-2 d-inline-flex text-decoration-none" style="color:white">
+				tournament
+			</a>
 			</div> 
 		</div>
 		`;
 	}
+
 }
 
 
