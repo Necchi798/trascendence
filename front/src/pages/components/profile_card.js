@@ -70,10 +70,10 @@ class ProfileCard extends HTMLElement {
             });
             console.log(response)
             const data = await response.json();
-            //console.log(data)
+            localStorage.setItem("userID",data.id)
+            console.log(data.id)
             const nameSpan = this.querySelector('#name');
             if (nameSpan) {
-
                 nameSpan.textContent = data.username;
             }
             const mailSpan = this.querySelector('#email')

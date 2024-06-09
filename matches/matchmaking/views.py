@@ -65,7 +65,7 @@ class CreateChallenge(APIView):
             return Response({'error': 'Expected a list of names.'}, status=status.HTTP_400_BAD_REQUEST)
         
         for x in names:
-            if x == "":
+            if x =="":
                 return Response({'error': 'Expected list of names whit empty names.'}, status=status.HTTP_400_BAD_REQUEST)
         
 
@@ -156,4 +156,105 @@ class DeleteHistory(APIView):
         match_count = matches.count()
         matches.delete()
         return Response({'success': True, 'message': f'{match_count} matches deleted.'}, status=status.HTTP_200_OK)
-   
+
+
+class GetHistory(APIView):
+    def post(self, request):
+        
+        user_id = request.data['id']
+        try:
+            player = Player.objects.get(user_id=user_id)
+            print(PlayerSerializer(player).data)
+        except Player.DoesNotExist:
+            return Response({'success': False, 'message': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        matches = Match.objects.filter(Q(player1=player.id) | Q(player2=player.id))
+
+        serializer = MatchSerializer(matches, many=True)
+
+        for match in serializer.data:
+            name1 = Player.objects.filter(id=match["player1"]).first()
+            name2 = Player.objects.filter(id=match["player2"]).first()
+            match["player1"] = name1.nickname
+            match["player2"] = name2.nickname
+            match["winner"] = Player.objects.filter(id=match["winner"]).first().nickname
+
+        return Response({'success': True, 'data': serializer.data, 'matches_won':0}, status=status.HTTP_200_OK)
+
+
+class UpdateMatchResult(APIView):
+    def post(self, request):
+        match = get_object_or_404(Match, id=request.data.get('match_id'))
+        winner_name = request.data.get('winner')
+        if not winner_name:
+            return Response({'error': 'Winner name is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        winner = get_object_or_404(Player, id=winner_name)
+        match.winner = winner
+        match.has_ended = True
+        match.ended_at = timezone.now()
+        match.save()
+        return Response({'success': True, 'message': 'Match result updated.'}, status=status.HTTP_200_OK)
+        
+
+
+class UpdateTournament(APIView):
+    def post(self, request, tournament_id):
+        tournament = get_object_or_404(Tournament, id=tournament_id)
+        serializer = TournamentSerializer(tournament, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success': True, 'message': 'Tournament updated.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetNextRound(APIView):
+    def post(self, request, tournament_id):
+        tournament = get_object_or_404(Tournament, id=tournament_id)
+        if tournament.curr_round >= tournament.total_rounds:
+            return Response({'message': 'Tournament has ended.'}, status=status.HTTP_200_OK)
+
+        names = request.data.get('names')
+        players = []
+        for name in names:
+            players.append(name)
+
+        #players = [Player.objects.get_or_create(user=User.objects.get_or_create(username=name)[0], nickname=name)[0] for name in names]
+
+        random.shuffle(players)
+        self._create_matches(tournament, players)
+
+        tournament.curr_round += 1
+        tournament.save()
+
+        return Response({'success': True, 'message': f'Round {tournament.curr_round} matches created.'}, status=status.HTTP_200_OK)
+    
+    def _create_matches(self, tournament, players):
+        matches = []
+        while len(players) > 1:
+            player1 = players.pop()
+            player2 = players.pop()
+            match = Match.objects.create(
+                tournament=tournament,
+                round_number=tournament.curr_round,
+                player1=player1,
+                player2=player2,
+                created_at=timezone.now(),
+                has_ended=False
+            )
+            matches.append(match)
+
+        if players:
+            player = players.pop()
+            match = Match.objects.create(
+                tournament=tournament,
+                round_number=tournament.curr_round,
+                player1=player,
+                player2=None,
+                winner=player,
+                ended_at=timezone.now(),
+                has_ended=True
+            )
+            matches.append(match)
+
+        return matches
