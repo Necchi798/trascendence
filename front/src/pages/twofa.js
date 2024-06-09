@@ -1,5 +1,67 @@
 import {router} from "../main.js";
 
+export function twofaStyle()
+{
+	const styleElement = document.createElement("style");
+	styleElement.id = "twofaStyle";
+	styleElement.textContent =`
+	.pippo {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+		background-color: #00224D;
+		background-size: cover;
+		margin: 0;
+		background-position: center;
+		background-size: cover;
+	}
+
+	.container {
+		width:fit-content;
+		background-color: rgba(255, 255, 255, 0.8);
+		border-radius: 15px;
+		box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+		overflow: auto;
+	}
+
+	.form-box {
+		padding: 50px 60px 60px;
+	}
+
+	.input-group {
+		margin-bottom: 10px;
+	}
+
+	.input-group-text {
+		background-color: #EAEAEA;
+		color: #999;
+		border: none;
+	}
+
+	.input-group-text .fas {
+		margin-right: 10px;
+	}
+
+	input.form-control {
+		border-color: #EAEAEA;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	.btn-primary {
+		background-color: #00224D;
+		border: none;
+	}
+
+	.btn-primary:hover {
+		background-color: #00172F;
+	}
+
+	`;
+	return styleElement;
+}
+
 export default ()=> `
 <div class="container">
 	<div class="row justify-content-center">
@@ -24,6 +86,20 @@ export default ()=> `
 </div>
 `;
 
+async function twofaMail(id)
+{
+	console.log(id);
+	const response = await fetch("https://127.0.0.1:8001/send_mail/", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(id)
+	});
+	const data = await response.json();
+	console.log(data);
+}
+
 async function twofaLogin(userdata)
 {
 	const username = userdata.username;
@@ -31,14 +107,17 @@ async function twofaLogin(userdata)
 	const otp = document.getElementById("otpField").value;
 	const response = await fetch("https://127.0.0.1:8000/login/", {
 		method: "POST",
+		credentials: "include",
+		mode:"cors",
 		headers: {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({username: username, password: password, otp: otp})
 	});
 	const data = await response.json();
-	if(data.success)
+	if(data.jwt)
 	{
+		document.getElementById("twofaStyle").remove();
 		history.pushState({},"","/");
 		router();
 	}
@@ -48,9 +127,13 @@ async function twofaLogin(userdata)
 	}
 }
 
-export function twofaScript(userdata)
+export function twofaScript(userdata, id)
 {
-	console.log(userdata);
+	var style = document.getElementById("twofaStyle");
+	if (style == null)
+	{
+		document.head.appendChild(twofaStyle());
+	}
 	document.getElementById("loginButton").addEventListener("click", twofaLogin.bind(null, userdata));
-	
+	document.getElementById("mailButton").addEventListener("click", twofaMail.bind(null, id));
 }

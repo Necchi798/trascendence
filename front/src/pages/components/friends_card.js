@@ -1,22 +1,53 @@
+function removeFriend(username, id) {
+	//send a POST request to the server to add the user as a friend
+	fetch("https://127.0.0.1:8000/friend/", {
+		method: "DELETE",
+		mode: "cors",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({friend: username})
+	})
+	.then(response => {
+		if(response.ok) {
+			console.log("Friend removed successfully");
+			//remove the div of the friend
+			let friendDiv = document.getElementById("friend-" + id);
+			document.getElementById("friendsContainer").removeChild(friendDiv);
+		}
+		else {
+			console.log("Failed to add friend");
+		}
+	});
+}
+
 function createFriendElement(friend) {
 	const friendElement = document.createElement("div");
 	friendElement.id = "friend-" + friend.id;
-	friendElement.style = "display: flex; justify-content: space-between; flex-direction: row;";
+	friendElement.style = "display: flex; justify-content: space-between; flex-direction: col;";
 	friendElement.classList.add("card");
 	friendElement.innerHTML = `
-		<div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-direction: col;">
-			<div>
-				<h5>${friend.username}</h5>
+		<div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-direction: row;">
+			<div class="name">
+				${friend.username}
 			</div>
-			<button class ="btn">
+			<button class ="btn" id="removeFriendsBtn">
 				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
 					<path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1m0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
 					<path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
 				</svg>
 			</button>
+			<a href="#history-${friend.id}" class="btn" data-bs-toggle="collapse">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+					<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+				</svg>
+			</a>
+		</div>
+		<div class="collapse" id="history-${friend.id}">
+			culo
 		</div>
 	`;
-	console.log(friendElement);
 	return friendElement;
 }
 
@@ -24,10 +55,16 @@ class FriendsCard extends HTMLElement {
 	constructor(){
 		super();
 		this.innerHTML = /*html*/`
-		<div class="card" id="friendsDiv" style="display: flex; flex-direction: column;">
+		<div class="card" id="friendsDiv" style="display: flex; flex-direction: column; padding: 5%">
 			<div class="top" style="display: flex; align-items: center; justify-content: space-between;">
 				<input type="text" id="search-input" placeholder="Search for friends...">
-				<button class="btn" id="search-button"">Search</button>
+				<a class="btn" id="searchButton" href="/search">
+					Search new friends
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
+						<path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+						<path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+					</svg>
+				</a>
 			</div>
 			<div class ="scroll-container" style="flex: 1; overflow-y: auto; height: 100%;">
 				<div class="container" id="friendsContainer">
@@ -51,9 +88,25 @@ class FriendsCard extends HTMLElement {
 			const data = await response.json();
 			console.log(data);
 
-			const friendsDiv = document.getElementById("friendsDiv");
+			const friendsDiv = document.getElementById("friendsContainer");
 			data.forEach(friend => {
 				friendsDiv.appendChild(createFriendElement(friend));
+				const removeFriendsBtn = document.getElementById("friend-" + friend.id).querySelector("#removeFriendsBtn");
+				removeFriendsBtn.addEventListener("click", () => {
+					removeFriend(friend.username, friend.id);
+				});
+				//checks if the friend is online by looking at the last_fetch field is 10 minutes old
+				const lastFetch = new Date(friend.last_fetch);
+				const now = new Date();
+				console.log(now);
+				console.log(lastFetch);
+				console.log(now - lastFetch);
+				if (now - lastFetch < 600000) {
+					const status = document.createElement("div");
+					status.classList.add("status");
+					status.style = "background-color: green; border-radius: 50%; width: 10px; height: 10px; margin-left: 5px";
+					document.getElementById("friend-" + friend.id).querySelector(".name").appendChild(status);
+				}
 			});
 			enableFriendCard();
 		}
@@ -63,34 +116,22 @@ class FriendsCard extends HTMLElement {
 	}
 }
 
-function toggleFriendShip(event) {
-	const button = event.target;
-	if(button.innerHTML === "Add friend")
-		button.innerHTML = "Remove friend";
-	else
-		button.innerHTML = "Add friend";
-}
 
 function enableFriendCard() {
-	const addFriend = document.querySelectorAll('.add_friend');
-	addFriend.forEach((button) => {
-		button.addEventListener("click", toggleFriendShip);
-	});
 	const searchInput = document.getElementById('search-input');
 	const searchButton = document.getElementById('search-button');
-	const users = document.querySelectorAll('.user');
+	const users = document.getElementById('friendsContainer').children;
 	const searchFriends = () => {
 		const searchText = searchInput.value.toLowerCase();
-		users.forEach(user => {
-			const userName = user.querySelector('.name h3').innerText.toLowerCase();
-			if (userName.includes(searchText)) {
-				user.style.display = 'flex'; // Mostra l'utente
+		Array.from(users).forEach(user => {
+			const username = user.querySelector('.name').textContent.toLowerCase();
+			if (username.includes(searchText)) {
+				user.style.display = 'block';
 			} else {
-				user.style.display = 'none'; // Nasconde l'utente
+				user.style.display = 'none';
 			}
 		});
 	};
-	searchButton.addEventListener('click', searchFriends);
 	searchInput.addEventListener('input', searchFriends);
 }
 

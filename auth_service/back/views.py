@@ -32,30 +32,36 @@ class LoginView(APIView):
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
         if user.two_factor:
-            try:
-                if not request.data['otp']:
-                    raise AuthenticationFailed('OTP required!')
-                else:
-                    print(request.data['otp'])
-                key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
-                totp = pyotp.TOTP(key)
-                if not totp.verify(request.data["otp"]):
-                    raise AuthenticationFailed(totp.now())
-            except KeyError:
-                raise AuthenticationFailed('OTP required!')
+
+            if not request.data['otp']:
+                response = Response()
+                response.data = {
+                    'detail': 'OTP required!',
+                    "id": user.id,
+                }
+                response.status_code = 401
+                return response
+            else:
+                print(request.data['otp'])
+            key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
+            totp = pyotp.TOTP(key)
+            if not totp.verify(request.data["otp"]):
+                raise AuthenticationFailed(totp.now())
+        print("code was good, making the jwt")
         payload = {
             'id': user.id,
             'exp': datetime.datetime.now() + datetime.timedelta(minutes=120),
             'iat': datetime.datetime.now(tz=datetime.timezone.utc)
         }
-        
+        user.last_fetch=datetime.datetime.now()
+        user.save()
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
         response.set_cookie('jwt', token, secure=True, samesite='None')
         response.data = {
             'jwt': token
         }
-
+        print(response.data["jwt"])
         return response
     
 class UserView(APIView):
@@ -71,6 +77,7 @@ class UserView(APIView):
             raise AuthenticationFailed('Invalid jwt')
         user = User.objects.filter(id=payload['id']).first()
         user.last_fetch=datetime.datetime.now()
+        user.save()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 

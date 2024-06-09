@@ -26,7 +26,7 @@ class QRCodeCreationView(APIView):
 
         # Salva i dati binari nel database
         try:
-            qr_code = QRCode.objects.create(image=image_data, owner_id=request.data["id"])
+            qr_code = QRCode.objects.create(image=image_data, owner_id=request.data["id"], email=request.data["email"])
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
         print(type(qr_code.image))
@@ -37,7 +37,7 @@ class QRCodeCreationView(APIView):
         if not token:
             raise AuthenticationFailed('Missing jwt')
         try:
-            jwt_decode = jwt.decode(token, settings.SECRET_JWT, algorithms=['HS256'])
+            jwt_decode = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Expired jwt')
         except jwt.ImmatureSignatureError:
@@ -88,22 +88,21 @@ class setMail(APIView):
 
 class sendMail(APIView):
     def post(self, request):
-        try:
-            mail=QRCode.objects.filter(owner_id=request.data["id"]).values('email')
-            sender = settings.SENDER
-            app_password = settings.APP_PWD
-            dest = mail[0]['email']
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(sender, app_password)
-            key=base64.b32encode(settings.SECRET_KEY.encode() + str(request.data["id"]).encode())
-            totp = pyotp.TOTP(key)
-            server.sendmail(sender, dest, str(totp.now()))
-            server.quit()
-            return Response(status=status.HTTP_200_OK, data={"message": "Mail sent successfully."})
-        except QRCode.DoesNotExist:
-            raise NotFound(detail="QR code not found for this user.")
-        except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
+        mail=QRCode.objects.filter(owner_id=request.data).values('email')
+        sender = settings.SENDER
+        app_password = settings.APP_PWD
+        dest = mail[0]['email']
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(sender, app_password)
+        key=base64.b32encode(settings.SECRET_KEY.encode() + str(request.data).encode())
+        totp = pyotp.TOTP(key)
+        server.sendmail(sender, dest, str(totp.now()))
+        server.quit()
+        return Response(status=status.HTTP_200_OK, data={"message": "Mail sent successfully."})
+        #except QRCode.DoesNotExist:
+        #    raise NotFound(detail="QR code not found for this user.")
+        #except Exception as e:
+        #    return Response(status=status.HTTP_400_BAD_REQUEST, data={"error": str(e)})
         
 

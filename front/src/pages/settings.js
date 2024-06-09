@@ -258,6 +258,7 @@ function fetchGenerateQRCode(data)
 		if (response.ok)
 		{
 			console.log("QR code generated");
+			//fetchSetMail(data);
 			fetchUpdateUser("twofa", true, data);
 			fetchShowQR(id);
 		}
@@ -522,7 +523,7 @@ export function actionSettings() {
 	document.getElementById('delete42Button').addEventListener('click', fetchDisableLogin42Button);
 	document.getElementById('delete2faButton').addEventListener('click', fetchDeleteQRCodeButton);
 	document.getElementById('UserButton').addEventListener('click', searchUser);
-	document.getElementById('checkBoxPwd').addEventListener('click', showPwd);
+	//document.getElementById('checkBoxPwd').addEventListener('click', showPwd);
 	const code = getQueryParameter('code');
 	if (code)
 	{

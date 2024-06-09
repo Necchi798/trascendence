@@ -120,7 +120,7 @@ export function fetchDataLogin() {
 	document.getElementById("alertDiv").innerHTML = "";
 	const name = document.getElementById('Name').value;
 	const password = document.getElementById('password').value;
-	const data = {  password:password, username:name};
+	const data = {  password:password, username:name, otp: 0};
 	
 	fetch('https://127.0.0.1:8000/login/', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
@@ -148,7 +148,7 @@ export function fetchDataLogin() {
 			{
 				history.pushState({},"","/twofa")
 				router();
-				twofaScript(data);
+				twofaScript(data, response_data.id);
 			}
 			else
 			{
