@@ -1,5 +1,67 @@
 import {router} from "../main.js";
 
+export function registerStyle()
+{
+	const styleElement = document.createElement("style");
+	styleElement.id = "registerStyle";
+	styleElement.textContent =`
+	.pippo {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+		background-color: #00224D;
+		background-size: cover;
+		margin: 0;
+		background-position: center;
+		background-size: cover;
+	}
+
+	.container {
+		width:fit-content;
+		background-color: rgba(255, 255, 255, 0.8);
+		border-radius: 15px;
+		box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+		overflow: auto;
+	}
+
+	.form-box {
+		padding: 50px 60px 60px;
+	}
+
+	.input-group {
+		margin-bottom: 10px;
+	}
+
+	.input-group-text {
+		background-color: #EAEAEA;
+		color: #999;
+		border: none;
+	}
+
+	.input-group-text .fas {
+		margin-right: 10px;
+	}
+
+	input.form-control {
+		border-color: #EAEAEA;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	.btn-primary {
+		background-color: #00224D;
+		border: none;
+	}
+
+	.btn-primary:hover {
+		background-color: #00172F;
+	}
+
+	`;
+	return styleElement;
+}
+
 export default  ()=> `
 <div class="background d-flex" style="		display: flex;
 align-items: center;
@@ -10,6 +72,9 @@ background-color: #00224D;">
 			<div class="col-12">
 				<div class="form-box">
 					<h1 class="text-center">Register</h1>
+					<div class="alert alert-danger" id="alertDiv">
+						<strong id="alertStrong">Error:</strong>
+					</div>
 					<form>
 						<div class="mb-3 input-group">
 							<span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -41,6 +106,9 @@ background-color: #00224D;">
 	`;
 
 export function fetchDataRegister() {
+	document.getElementById("alertDiv").style.display = "none";
+	//remove the text from the alert div
+	document.getElementById("alertDiv").innerHTML = "";
 	const password = document.getElementById('password').value;
 	const email = document.getElementById('email').value;
 	const nome = document.getElementById('Name').value;
@@ -54,17 +122,48 @@ export function fetchDataRegister() {
 		body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
 	}).then(response => {
 		if(response.ok){
-			console.log("successino")
+			//console.log("successino")
+			document.getElementById("registerStyle").remove();
 			history.pushState({},"","/login")
 			router()
-			return response.json()
+			//return response.json()
 		}
 		else
-			console.log(response)
-			console.log("errorino")
+		{
+			var error = response.json()
+			error.then(data => {
+				document.getElementById('alertDiv').style.display = "block";
+				if (data.detail)
+				{
+					document.getElementById('alertDiv').innerHTML += data.detail;
+				}
+				else
+				{
+					if (data.username && data.email)
+					{
+						document.getElementById('alertDiv').innerHTML += data.username + "<br>";
+						document.getElementById('alertDiv').innerHTML += data.email;
+					}
+					else if (data.username)
+					{
+						document.getElementById('alertDiv').innerHTML += data.username;
+					}
+					else if (data.email)
+					{
+						document.getElementById('alertDiv').innerHTML += data.email;
+					}
+				}
+			})
+		}
 	})
 }
 
 export function actionRegister() {
+	var style = document.getElementById("registerStyle");
+	if (style == null)
+	{
+		document.head.appendChild(registerStyle());
+	}
+	document.getElementById("alertDiv").style.display = "none";
 	document.getElementById('RegisterButton').addEventListener('click', (e)=>{e.preventDefault();fetchDataRegister()});
 }

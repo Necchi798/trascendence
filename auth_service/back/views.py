@@ -10,6 +10,12 @@ import jwt, datetime, pyotp, base64, pyotp, base64
 
 class RegisterView(APIView):
     def post(self, request):
+        if not request.data['password']:
+            raise AuthenticationFailed('Password required!')
+        if not request.data['username']:
+            raise AuthenticationFailed('Username required!')
+        if not request.data['email']:
+            raise AuthenticationFailed('Email required!')
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -26,30 +32,36 @@ class LoginView(APIView):
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
         if user.two_factor:
-            try:
-                if not request.data['otp']:
-                    raise AuthenticationFailed('OTP required!')
-                else:
-                    print(request.data['otp'])
-                key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
-                totp = pyotp.TOTP(key)
-                if not totp.verify(request.data["otp"]):
-                    raise AuthenticationFailed(totp.now())
-            except KeyError:
-                raise AuthenticationFailed('OTP required!')
+
+            if not request.data['otp']:
+                response = Response()
+                response.data = {
+                    'detail': 'OTP required!',
+                    "id": user.id,
+                }
+                response.status_code = 401
+                return response
+            else:
+                print(request.data['otp'])
+            key=base64.b32encode(settings.SECRET_KEY.encode() + str(user.id).encode())
+            totp = pyotp.TOTP(key)
+            if not totp.verify(request.data["otp"]):
+                raise AuthenticationFailed(totp.now())
+        print("code was good, making the jwt")
         payload = {
             'id': user.id,
             'exp': datetime.datetime.now() + datetime.timedelta(minutes=120),
             'iat': datetime.datetime.now(tz=datetime.timezone.utc)
         }
-        
+        user.last_fetch=datetime.datetime.now()
+        user.save()
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         response = Response()
         response.set_cookie('jwt', token, secure=True, samesite='None')
         response.data = {
             'jwt': token
         }
-
+        print(response.data["jwt"])
         return response
     
 class UserView(APIView):
@@ -65,6 +77,7 @@ class UserView(APIView):
             raise AuthenticationFailed('Invalid jwt')
         user = User.objects.filter(id=payload['id']).first()
         user.last_fetch=datetime.datetime.now()
+        user.save()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -198,4 +211,12 @@ class UsersView(APIView):
             users = User.objects.all().filter(username__startswith=query).exclude(id=payload['id'])
         except:
             raise AuthenticationFailed('No users found!')
-        return Response(UserSerializer(users, many=True).data)
+        friends = User.objects.filter(id=payload['id']).first().friends.all()
+        # add a field to the users that are already friends
+        res = UserSerializer(users, many=True).data
+        for user in res:
+            if User.objects.filter(id=user['id']).first() in friends:
+                user['is_friend'] = True
+            else:
+                user['is_friend'] = False
+        return Response(res)

@@ -63,15 +63,24 @@ function createResultElement(user) {
 	resultElement.style.width = "18rem";
 	resultElement.innerHTML = `
 		<div class="card-body">
-			<button type="button" class="btn btn-primary">Add friend</button>
+			<button type="button" class="btn btn-primary"></button>
 			<h5 class="card-title">${user.username}</h5>
 			<p class="card-text">${user.email}</p>
 		</div>
 	`;
 	//add event listener to the button to add the user as a friend
-	resultElement.querySelector("button").addEventListener("click", () => {
-		addFriend(user.username);
-	});
+	if (user.is_friend) {
+		resultElement.querySelector("button").addEventListener("click", () => {
+			removeFriend(user.username);
+		});
+		resultElement.querySelector("button").innerHTML = "Remove friend";
+	}
+	else {
+		resultElement.querySelector("button").addEventListener("click", () => {
+			addFriend(user.username);
+		});
+		resultElement.querySelector("button").innerHTML = "Add friend";
+	}
 	return resultElement;
 }
 
