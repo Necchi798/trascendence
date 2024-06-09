@@ -150,7 +150,7 @@ export function fetchDataLogin() {
 	fetch('https://127.0.0.1:9001/create-player/', { //sostituire con l'indirizzo del server impostato dal backend
 	method: 'POST',
 	mode:"cors",
-	credentials: 'include',
+	credentials: 'include', 
 	headers: {
 		'Content-Type': 'application/json' // Specifica il tipo di contenuto
 	},

@@ -13,12 +13,14 @@ class Tournament extends HTMLElement {
                 </div>
                 <button class="btn btn-primary" id="createTorneo" >crea</button>
                 <button class="btn btn-primary" id="prossimomatch" >prossimo match</button>
+                <button class="btn btn-primary" id="provuzzo" >aistoy match</button>
             </div>
         </div>
         `
         document.getElementById("userNameForTournament").textContent=localStorage.getItem("user")
         document.getElementById("createTorneo").addEventListener('click',this.createTournament)
         document.getElementById("prossimomatch").addEventListener('click',this.prossimapartita)
+        document.getElementById("provuzzo").addEventListener('click',this.istory)
     }
     createTournament = ()=>{
 		const p1 = localStorage.getItem("user")
@@ -50,8 +52,8 @@ class Tournament extends HTMLElement {
         },
         body: JSON.stringify({tournament_id:localStorage.getItem("tournament_id")})
     }).then(async res=>await res.json()).then(res=>{
-        console.log(res.match_id.filter((el)=>!el.has_ended[0]))
-        let nextmatch = res.match_id.filter((el)=>!el.has_ended)[0]
+        console.log(res.matches.filter((el)=>!el.has_ended[0]))
+        let nextmatch = res.matches.filter((el)=>!el.has_ended)[0]
         localStorage.setItem("match_id", nextmatch.id)
         localStorage.setItem("player1", nextmatch.player1)
         localStorage.setItem("player2", nextmatch.player2)
@@ -59,7 +61,19 @@ class Tournament extends HTMLElement {
         router();
     }
     )
-}
+    }
+    istory = ()=>{
+        fetch('https://127.0.0.1:9001/get-history/', { //sostituire con l'indirizzo del server impostato dal backend
+        method: 'GET',
+        mode:"cors",
+        credentials: 'include', 
+        headers: {
+        'Content-Type': 'application/json' // Specifica il tipo di contenuto
+        },}).then(async res=>await res.json()).then(res=>{
+            
+            console.log(res)
+        })
+    }
 }
 
 customElements.define("tournament-card", Tournament);

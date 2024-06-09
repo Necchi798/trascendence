@@ -26,7 +26,6 @@ class ProfileCard extends HTMLElement {
                         <div style="display: flex;flex-direction: column;gap:1rem">
                             <span>e-Mail</span>
                             <span >name:</span>
-                            <span>nick-name</span>
                         </div>
                         <div style="display: flex;flex-direction: column;gap:1rem">
                             <span id="email" >loading...</span>

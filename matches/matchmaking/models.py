@@ -21,7 +21,7 @@ class User(AbstractUser):
 
 class Player(models.Model):
     id = models.AutoField(primary_key=True)
-    nickname = models.CharField(max_length=255, null=True, blank=True)
+    nickname = models.CharField(max_length=255)
     user_id  = models.IntegerField(default=-1)
 
 
