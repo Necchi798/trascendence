@@ -26,12 +26,17 @@ class ProfileCard extends HTMLElement {
                         <div style="display: flex;flex-direction: column;gap:1rem">
                             <span>e-Mail</span>
                             <span >name:</span>
+                            <span>WINS: <span id="wins"> </span></span>
                         </div>
                         <div style="display: flex;flex-direction: column;gap:1rem">
                             <span id="email" >loading...</span>
                             <span id="name">Loading...</span>
+                            <span>LOSSES: <span id="losses"> </span></span>
                         </div>
                         </div>
+
+                            
+
                 </div>
            
             </div>
@@ -40,8 +45,6 @@ class ProfileCard extends HTMLElement {
         this.maufetch()
     }
     async maufetch(){
-       // "https://127.0.0.1:8000/avatar/" png 
-        //let data = {names:["player1","player2","player3","player4"]}
         try {
         const response = await fetch("https://127.0.0.1:8000/avatar/",{
             method: "GET",
@@ -79,6 +82,21 @@ class ProfileCard extends HTMLElement {
             const mailSpan = this.querySelector('#email')
             if(mailSpan)
                 mailSpan.textContent= data.email;
+            fetch("https://127.0.0.1:9001/get-history/",{
+                method: "Post",
+                mode: "cors",
+                credentials: "include",
+                headers: {
+                    'Content-Type': 'application/json', // Tipo di contenuto corretto
+                  },
+                body:JSON.stringify({id:localStorage.getItem("userID")})
+            }).then(async res=>await res.json()).then(res=>{
+                console.log(res.data)
+                const wins = res.data.filter(el=>el.winner === localStorage.getItem("user")).length
+                document.getElementById("wins").innerText= wins
+                document.getElementById("losses").innerText= res.data.length - wins
+            });
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }

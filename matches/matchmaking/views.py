@@ -169,8 +169,9 @@ class GetHistory(APIView):
             return Response({'success': False, 'message': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
         
         matches = Match.objects.filter(Q(player1=player.id) | Q(player2=player.id))
-
         serializer = MatchSerializer(matches, many=True)
+        # if len(serializer.data)
+        #     return Response({'success': True, 'data': [] }, status=status.HTTP_404_NOT_FOUND)
 
         for match in serializer.data:
             name1 = Player.objects.filter(id=match["player1"]).first()

@@ -45,7 +45,7 @@ class HistoryCard extends HTMLElement {
            
                tableRow.innerHTML =  `
                        <td>${formattedDate}</td>
-                       <td>${element.player1=== user ? element.player2 : element.player1}</td>
+                       <td>${element.player1 === user ? element.player2 : element.player1}</td>
                        <td>${element.winner === localStorage.getItem("user") ? "win" : "loss"}</td>   
                `
                 table.appendChild(tableRow)

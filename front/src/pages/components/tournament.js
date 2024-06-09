@@ -63,15 +63,15 @@ class Tournament extends HTMLElement {
     )
     }
     istory = ()=>{
-        fetch('https://127.0.0.1:9001/get-history/', { //sostituire con l'indirizzo del server impostato dal backend
+        fetch('https://127.0.0.1:9001/create-challenge/', { //sostituire con l'indirizzo del server impostato dal backend
         method: 'POST',
         mode:"cors",
-        credentials: 'include', 
+        credentials: 'include',
         headers: {
         'Content-Type': 'application/json' // Specifica il tipo di contenuto
         },
-        body: JSON.stringify({id:localStorage.getItem("userID")})
-        }).then(async res=>await res.json()).then(res=>{
+        body: JSON.stringify({names:[localStorage.getItem("user"),"pippo"]})	// Converte l'oggetto JavaScript in una stringa JSON
+    }).then(async res=>await res.json()).then(res=>{
             
             console.log(res)
         })
