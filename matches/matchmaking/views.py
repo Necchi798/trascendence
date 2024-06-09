@@ -9,6 +9,7 @@ from .models import Tournament, Player, Match, User
 from .serializer import TournamentSerializer, MatchSerializer, PlayerSerializer, UserSerializer, ChallengeSerializer
 import random,  jwt
 from django.db.models import Q
+
 class CreatePlayer(APIView):
     def post(self, request):
         token = request.COOKIES.get('jwt')
@@ -173,7 +174,7 @@ class DeleteHistory(APIView):
         return Response({'success': True, 'message': 'User history deleted and references updated.'}, status=status.HTTP_200_OK)
 '''
 
-class GetHistory(APIView):
+""" class GetHistory(APIView):
     def get(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
@@ -195,7 +196,53 @@ class GetHistory(APIView):
         matches_won = matches1.filter(winner=player).count() 
 
         serializer = MatchSerializer(matches1, many=True)
-        return Response({'success': True, 'data': serializer.data, 'matches_won': matches_won}, status=status.HTTP_200_OK)
+        return Response({'success': True, 'data': serializer.data, 'matches_won': matches_won}, status=status.HTTP_200_OK) """
+    
+class GetHistory(APIView):
+    def get(self, request):
+        # Extract the token from cookies
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Missing JWT token')
+        
+        # Decode the token
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired JWT token')
+        except jwt.ImmatureSignatureError:
+            raise AuthenticationFailed('Invalid JWT token')
+
+        user_id = payload['id']
+        
+        # Retrieve the player object
+        try:
+            player = Player.objects.get(user_id=user_id)
+        except Player.DoesNotExist:
+            return Response({'success': False, 'message': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Retrieve matches where the player is either player1 or player2
+        matches1 = Match.objects.filter(player1=player)
+        matches2 = Match.objects.filter(player2=player)
+        matches = matches1 | matches2
+
+        # Calculate the number of matches won by the player
+        matches_won = matches.filter(winner=player).count()
+        matches_lost = matches.count() - matches_won
+
+        # Serialize the match data
+        serializer = MatchSerializer(matches, many=True)
+
+        # Prepare the response data
+        response_data = {
+            'success': True,
+            'data': serializer.data,
+            'matches_won': matches_won,
+            'matches_lost': matches_lost,
+            'total_matches': matches.count(),
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class UpdateMatchResult(APIView):
