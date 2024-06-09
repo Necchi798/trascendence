@@ -10,6 +10,12 @@ import jwt, datetime, pyotp, base64, pyotp, base64
 
 class RegisterView(APIView):
     def post(self, request):
+        if not request.data['password']:
+            raise AuthenticationFailed('Password required!')
+        if not request.data['username']:
+            raise AuthenticationFailed('Username required!')
+        if not request.data['email']:
+            raise AuthenticationFailed('Email required!')
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -198,4 +204,12 @@ class UsersView(APIView):
             users = User.objects.all().filter(username__startswith=query).exclude(id=payload['id'])
         except:
             raise AuthenticationFailed('No users found!')
-        return Response(UserSerializer(users, many=True).data)
+        friends = User.objects.filter(id=payload['id']).first().friends.all()
+        # add a field to the users that are already friends
+        res = UserSerializer(users, many=True).data
+        for user in res:
+            if User.objects.filter(id=user['id']).first() in friends:
+                user['is_friend'] = True
+            else:
+                user['is_friend'] = False
+        return Response(res)

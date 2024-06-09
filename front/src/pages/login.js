@@ -4,6 +4,7 @@ import { twofaScript } from "./twofa.js";
 export function loginStyle()
 {
 	const styleElement = document.createElement("style");
+	styleElement.id = "loginStyle";
 	styleElement.textContent =`
 	.pippo {
 		display: flex;
@@ -69,6 +70,7 @@ export default  ()=> `
 		<div class="col-12">
 			<div class="form-box">
 				<h1 class="text-center">Login</h1>
+				<div id="alertDiv" class="alert alert-warning" role="alert" style="display:none"></div>
 				<form id="formLogin" class="needs-validation">
 					<div class="mb-3 input-group">
 						<span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -113,6 +115,9 @@ function fetchDataLogin42() {
 }
 
 export function fetchDataLogin() {
+	document.getElementById("alertDiv").style.display = "none";
+	//remove the text from the alert div
+	document.getElementById("alertDiv").innerHTML = "";
 	const name = document.getElementById('Name').value;
 	const password = document.getElementById('password').value;
 	const data = {  password:password, username:name};
@@ -130,6 +135,7 @@ export function fetchDataLogin() {
 	.then(response_data => {
 		if(response_data.jwt)
 		{
+			document.getElementById("loginStyle").remove();
 			history.pushState({},"","/")
 			router();
 		}
@@ -143,6 +149,11 @@ export function fetchDataLogin() {
 				history.pushState({},"","/twofa")
 				router();
 				twofaScript(data);
+			}
+			else
+			{
+				document.getElementById('alertDiv').style.display = "block";
+				document.getElementById('alertDiv').innerHTML = response_msg;
 			}
 		}
 	})
@@ -224,6 +235,11 @@ function searchToken(code) {
 }
 
 export function actionLogin() {
+	var style = document.getElementById("loginStyle");
+	if (style == null)
+	{
+		document.head.appendChild(loginStyle());
+	}
 	document.getElementById('LoginButton').addEventListener("click",(e)=>{e.preventDefault() ;fetchDataLogin()});
 	document.getElementById('Login42Button').addEventListener("click",(e)=>{e.preventDefault(); fetchDataLogin42()});
 	const code = getQueryParameter('code');

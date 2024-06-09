@@ -1,15 +1,20 @@
 function createFriendElement(friend) {
 	const friendElement = document.createElement("div");
-	friendElement.id = "friend-" + friend.username;
-	friendElement.style = "display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;";
-	friendElement.classList.add("user");
+	friendElement.id = "friend-" + friend.id;
+	friendElement.style = "display: flex; justify-content: space-between; flex-direction: row;";
+	friendElement.classList.add("card");
 	friendElement.innerHTML = `
-	<div class="profile" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-		<div class="name">
-			<h5>${friend.username}</h5>
+		<div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-direction: col;">
+			<div>
+				<h5>${friend.username}</h5>
+			</div>
+			<button class ="btn">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">
+					<path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1m0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+					<path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+				</svg>
+			</button>
 		</div>
-	</div>
-	<button class ="btn add_friend" style = "background-color: #e0e0e0; color: #00224D; border: 1px solid #00224D; font-size: 12px; outline: none; padding: 4px 13px; border-radius: 5px; cursor: pointer; transition: .2s linear;" onmouseover="this.style.backgroundColor='#00224D'; this.style.color='#e0e0e0';" onmouseout="this.style.backgroundColor='#e0e0e0'; this.style.color='#00224D';" onmouseover="this.style.backgroundColor='#00224D'; this.style.color='#e0e0e0';" onmouseout="this.style.backgroundColor='#e0e0e0'; this.style.color='#00224D';">Add friend</button>
 	`;
 	console.log(friendElement);
 	return friendElement;
@@ -19,35 +24,41 @@ class FriendsCard extends HTMLElement {
 	constructor(){
 		super();
 		this.innerHTML = /*html*/`
-		<div class="container" id="friendsDiv" style="width: 500px; height: 400px; background-color: aliceblue; border-radius: 8px; overflow: hidden; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; display: flex; flex-direction: column;">
-			<div class="top" style="display: flex; align-items: center; justify-content: space-between; background-color: #fefeff; padding: 20px 25px; border-bottom: 1px solid #e0e0e0;">
+		<div class="card" id="friendsDiv" style="display: flex; flex-direction: column;">
+			<div class="top" style="display: flex; align-items: center; justify-content: space-between;">
 				<input type="text" id="search-input" placeholder="Search for friends...">
-				<button class="btn" id="search-button" style="background-color: #e0e0e0; color: #00224D; border: none; outline: none; padding: 7px 14px; border-radius: 4px; cursor: pointer; transition: .2s linear;" onmouseover="this.style.backgroundColor='#00224D'; this.style.color='#e0e0e0';" onmouseout="this.style.backgroundColor='#e0e0e0'; this.style.color='#00224D';">Search</button>
+				<button class="btn" id="search-button"">Search</button>
 			</div>
 			<div class ="scroll-container" style="flex: 1; overflow-y: auto; height: 100%;">
-				<div class="users_container" style="padding: 25px">
+				<div class="container" id="friendsContainer">
 				</div>
 			</div>
 		</div>
 		`
 		this.fetchFriends();
 	}
-	fetchFriends() {
+	async fetchFriends() {
 		try {
-			const response = fetch("https://127.0.0.1:8000/friend/",{
+			const response = await fetch("https://127.0.0.1:8000/friend/",{
 				method: "GET",
 				mode: "cors",
 				credentials: "include"
 			});
-			const data = response.json();
+			console.log(response);
+			if (!response.ok) {
+				throw new Error("Something went wrong");
+			}
+			const data = await response.json();
+			console.log(data);
+
 			const friendsDiv = document.getElementById("friendsDiv");
 			data.forEach(friend => {
 				friendsDiv.appendChild(createFriendElement(friend));
 			});
 			enableFriendCard();
 		}
-		catch (error) {
-			console.error('Error fetching data:', error);
+		catch(error) {
+			console.error(error);
 		}
 	}
 }

@@ -15,6 +15,7 @@ import settings, {actionSettings} from "./pages/settings.js";
 const routes = {
     "/":{title:"home", render: home, action: ()=>{}},
     "/home":{title:"home", render: home, action: ()=>{}},
+    "/culo":{title:"home", render: home, action: ()=>{}},
     "/profile":{title:"profile",render: ()=>{},action: ()=>{}},
     "/2dpong":{title:"game", render: game,action:makeGame},
     "/3dpong_stats":{title: "history",render:stats,action: ()=>{}},
@@ -34,9 +35,6 @@ export const router = ()=> {
     }
     let view = routes[location.pathname];
     document.title = view.title;
-    if (view.title === "login") {
-        document.head.appendChild(loginStyle());
-    }
     document.getElementById("divContent").innerHTML=view.render();
     view.action();
 }
