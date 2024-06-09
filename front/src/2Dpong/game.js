@@ -183,10 +183,15 @@ class Ball {
 	{
 		if (this.x + this.size >= width)
 		{
-			alert("p1 score!");
 			p1Score++;
-			if(p1Score === 1)
-				sendResult(localStorage.getItem("player1"))
+			if(p1Score == 1){
+				p1Score = 0;
+				p2Score = 0;
+				alert(localStorage.getItem("player2") + " Won!");
+				sendResult(localStorage.getItem("player1"));
+			}else {
+				alert("p1 score!");
+			}
 			paused = true;
 			isAccelerated = false;
 			player1Down = false;
@@ -202,10 +207,18 @@ class Ball {
 
 		else if (this.x <= 0)
 		{
-			alert("p2 score!");
-			if(p1Score === 1)
-				sendResult(localStorage.getItem("player1"))
 			p2Score++;
+			if(p2Score == 1){
+				p1Score = 0;
+				p2Score = 0;
+				alert(localStorage.getItem("player2") + " Won!");
+				sendResult(localStorage.getItem("player2"));
+				
+			}
+			else{
+				alert("p2 score!");
+			}
+
 			isAccelerated = false;
 			paused = true;
 			player1Down = false;

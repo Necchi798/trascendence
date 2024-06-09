@@ -29,7 +29,7 @@ function createFriendElement(friend) {
 	friendElement.classList.add("card");
 	friendElement.innerHTML = `
 		<div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-direction: row;">
-			<div class="name">
+			<div class="name d-flex align-items-center"  >
 				${friend.username}
 			</div>
 			<button class ="btn" id="removeFriendsBtn">
@@ -101,10 +101,15 @@ class FriendsCard extends HTMLElement {
 				console.log(now);
 				console.log(lastFetch);
 				console.log(now - lastFetch);
-				if (now - lastFetch < 600000) {
+				if (now - lastFetch < 60000) {
 					const status = document.createElement("div");
 					status.classList.add("status");
 					status.style = "background-color: green; border-radius: 50%; width: 10px; height: 10px; margin-left: 5px";
+					document.getElementById("friend-" + friend.id).querySelector(".name").appendChild(status);
+				}else{
+					const status = document.createElement("div");
+					status.classList.add("status");
+					status.style = "background-color: grey; border-radius: 50%; width: 10px; height: 10px; margin-left: 5px";
 					document.getElementById("friend-" + friend.id).querySelector(".name").appendChild(status);
 				}
 			});
