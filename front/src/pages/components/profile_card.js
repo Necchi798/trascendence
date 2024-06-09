@@ -19,7 +19,7 @@ class ProfileCard extends HTMLElement {
         super();
         this.innerHTML = /*html*/`
         <div id="123" class="card" style=" width: 40rem;display: flex;flex-direction: row;">
-                <img style="width:200px;height:200px" id="image-container"></img>
+            <img style="width:200px;height:200px" id="image-container"></img>
                 <div class="card-body">
                     <h5 class="card-title">Profile</h5>
                     <div style="display: flex; gap:5rem;margin-top:2rem">

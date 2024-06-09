@@ -17,20 +17,11 @@ function getCookieValue(cookieName) {
 	return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
 }
 
-function showPwd() {
-	var x = document.getElementById("passwordChange");
-	if (x.type === "password") {
-		x.type = "text";
-	} else {
-		x.type = "password";
-	}
-}
-
 //add buttons for settings
 export default  ()=> `
-	<div style="display: flex;flex-direction: row;">
+	<div style="display: flex;flex-direction: row;width: 100%;height: 100vh">
 		<side-bar></side-bar>
-		<main id="content" style="width: 100%;height: 100vh;overflow:hidden">
+		<main id="content" >
 			<div class="card" style="width: 100%;display: flex; flex-wrap: wrap; margin: 5%">
 				<h2>Settings</h2>
 				<div style="display: flex; justify-content: space-between; align-items: center ">
@@ -78,12 +69,41 @@ export default  ()=> `
 						</div>
 						<button type="button" class="btn btn-primary" id="changeButton">Change</button>
 					</form>
+					<div class="d-flex mb-3"  >
+						<input id="fileInput" class="form-control" type="file" >
+						</div>
+						<button id="imgUpdate"  class="btn btn-primary">update img</button> 
 				</div>
 			</div>
 		</main>
 	</div>
 `;
 
+function imgUpdate(){
+    const fileInput = document.getElementById('fileInput');
+    const selectedFile = fileInput.files[0];
+    
+    if (!selectedFile) {
+        console.error('Nessun file selezionato.');
+        return;
+    }
+    
+    const formdata = new FormData();
+    formdata.append('avatar', selectedFile, selectedFile.name);
+
+    const requestOptions = {
+      method: 'PATCH',
+      body: formdata,
+      redirect: 'follow',
+	  credentials:"include",
+	  mode:"cors"
+    };
+
+    fetch('https://127.0.0.1:8000/avatar/', requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.error('Error:', error));
+}
 // add functions for settings (take them from home)
 function fetchDeleteQRCodeButton()
 {
@@ -523,7 +543,8 @@ export function actionSettings() {
 	document.getElementById('delete42Button').addEventListener('click', fetchDisableLogin42Button);
 	document.getElementById('delete2faButton').addEventListener('click', fetchDeleteQRCodeButton);
 	document.getElementById('UserButton').addEventListener('click', searchUser);
-	//document.getElementById('checkBoxPwd').addEventListener('click', showPwd);
+	document.getElementById("imgUpdate").addEventListener("click",imgUpdate)
+
 	const code = getQueryParameter('code');
 	if (code)
 	{
