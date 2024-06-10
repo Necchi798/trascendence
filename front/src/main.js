@@ -1,5 +1,5 @@
 import game from "./pages/game.js";
-import home from "./pages/home.js";
+import home , { actionHome } from "./pages/home.js";
 import stats from "./pages/stats.js"
 import { makeGame } from "./2Dpong/game.js";
 import login, {loginStyle} from "./pages/login.js";
@@ -12,13 +12,13 @@ import { makeGame3d } from "./3Dpong/game.js";
 import settings, {actionSettings} from "./pages/settings.js";
 import tournament from "./pages/tournamentpage.js"
 import tournamentpage from "./pages/tournamentpage.js";
+import { startGame } from "./2Dpong/start.js";
 
 const routes = {
-    "/":{title:"home", render: home, action: ()=>{}},
-    "/home":{title:"home", render: home, action: ()=>{}},
-    "/culo":{title:"home", render: home, action: ()=>{}},
+    "/":{title:"home", render: home, action: actionHome},
+    "/home":{title:"home", render: home, action: actionHome},
     "/profile":{title:"profile",render: ()=>{},action: ()=>{}},
-    "/2dpong":{title:"game", render: game,action:makeGame},
+    "/2dpong":{title:"game", render: game,action:startGame},
     "/3dpong_stats":{title: "history",render:stats,action: ()=>{}},
     "/login":{title:"login",render:login,action:actionLogin},
     "/twofa":{title:"twofa",render:twofa,action:()=>{}},

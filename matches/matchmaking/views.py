@@ -57,6 +57,17 @@ class GetNextMatch(APIView):
             return Response({'error': 'Match not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class CreateChallenge(APIView):
+    def get (self, request):
+        #get the query from the url
+        match = request.query_params.get('match_id')
+        #get the match
+        match = Match.objects.filter(id=match).first()
+        #from the match get the player1 and player2
+        player1 = match.player1
+        player2 = match.player2
+        #return the match
+        return Response({'success': True, 'message': 'Match details retrieved successfully.', 'match': MatchSerializer(match).data, "player1": player1.nickname, "player2": player2.nickname}, status=status.HTTP_200_OK)
+    
     def post(self, request):
         names=request.data.get('names')
         for x in range(len(names)):
@@ -77,6 +88,8 @@ class CreateChallenge(APIView):
         for name in names:
             player,created = Player.objects.get_or_create(nickname=name)
             players.append(player)
+
+        print(players)
 
         if len(players) == 2:
             match = Match.objects.create(
@@ -185,11 +198,15 @@ class GetHistory(APIView):
 class UpdateMatchResult(APIView):
     def post(self, request):
         match = get_object_or_404(Match, id=request.data.get('match_id'))
+        if not match:
+            return Response({'error': 'Match not found.'}, status=status.HTTP_404_NOT_FOUND)
         winner_name = request.data.get('winner')
         if not winner_name:
             return Response({'error': 'Winner name is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
         winner = get_object_or_404(Player, id=winner_name)
+        if not winner:
+            return Response({'error': 'Winner not found.'}, status=status.HTTP_404_NOT_FOUND)
         match.winner = winner
         match.has_ended = True
         match.ended_at = timezone.now()

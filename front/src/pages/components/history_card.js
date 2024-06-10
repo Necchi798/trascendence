@@ -20,7 +20,7 @@ class HistoryCard extends HTMLElement {
             </div>
         </div>
         `
-        this.istory()
+        //this.istory()
         //document.addEventListener('DOMContentLoaded',this.istory())
     }
     istory = ()=>{
