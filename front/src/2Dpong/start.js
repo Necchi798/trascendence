@@ -104,7 +104,7 @@ function getNextMatch(tournament_id)
 
 function fetchCreateTournament(player1, player2, player3, player4)
 {
-	/* fetch("https://127.0.0.1:9001/create-challenge/", {
+	 fetch("https://127.0.0.1:9001/create-challenge/", {
 		method: "POST",
 		mode: "cors",
 		credentials: "include",
@@ -120,14 +120,15 @@ function fetchCreateTournament(player1, player2, player3, player4)
 		console.log(data);
 		getNextMatch(data.tournament_id);
 	})
-	.catch(error => console.error(error)); */
-	getNextMatch(1);
+	.catch(error => console.error(error)); 
 }
 
 function fetchCreateMatch(player1, player2)
 {
 	fetch("https://127.0.0.1:9001/create-challenge/", {
 		method: "POST",
+		mode:"cors",
+		credentials:"include",
 		headers: {
 			"Content-Type": "application/json"
 		},
@@ -138,9 +139,9 @@ function fetchCreateMatch(player1, player2)
 	.then(response => response.json())
 	.then(data => {
 		console.log(data);
-		getMatchInfo(data.match_id, player1, player2);
+		//getMatchInfo(data.match_id, player1, player2);
 		//fakeGame(data.match_id, player1, player2);
-		//makeGame(data.match_id, player1, player2);
+		makeGame(data.match_id, data.players[0], data.players[1],player1,player2);
 	})
 	.catch(error => console.error(error));
 }

@@ -154,9 +154,9 @@ function getMatchInfo(match_id)
 	.catch(error => console.error(error));
 }
 
-function sendResult(winner, match_id){
+function sendResult(winner_id, match_id){
 	let data = {
-		winner: winner,
+		winner: winner_id,
 		match_id:match_id
 	}
 	//localStorage.removeItem("match_id");
@@ -175,19 +175,14 @@ function sendResult(winner, match_id){
 		document.getElementById("content").innerHTML += '<button id="back" class="btn btn-primary">Home</button>';
 		document.getElementById("back").addEventListener("click", () => {
 			console.log("back to home");
-			history.pushState(null, null, "/");
+			history.pushState({}, "", "/");
 			router();
 		});
 		document.getElementById("content").innerHTML += '<button id="play" class="btn btn-primary">Play Again</button>';
 		document.getElementById("play").addEventListener("click", () => {
 			console.log("play again");
-			history.pushState(null, null, "/2dpong");
+			history.pushState({}, "", "/2dpong");
 			router();
-		});
-		// add a button to ask for match info
-		document.getElementById("content").innerHTML += '<button id="info" class="btn btn-primary">Match Info</button>';
-		document.getElementById("info").addEventListener("click", () => {
-			getMatchInfo(match_id);
 		});
 	})
 }

@@ -13,7 +13,7 @@ class Tournament extends HTMLElement {
                 </div>
                 <button class="btn btn-primary" id="createTorneo" >crea</button>
                 <button class="btn btn-primary" id="prossimomatch" >prossimo match</button>
-                <button class="btn btn-primary" id="provuzzo" >aistoy match</button>
+                <button class="btn btn-primary" id="provuzzo" >single match match</button>
             </div>
         </div>
         `
@@ -62,20 +62,11 @@ class Tournament extends HTMLElement {
         }
     )
     }
-    istory = ()=>{
-        fetch('https://127.0.0.1:9001/create-challenge/', { //sostituire con l'indirizzo del server impostato dal backend
-        method: 'POST',
-        mode:"cors",
-        credentials: 'include',
-        headers: {
-        'Content-Type': 'application/json' // Specifica il tipo di contenuto
-        },
-        body: JSON.stringify({names:[localStorage.getItem("user"),"pippo"]})	// Converte l'oggetto JavaScript in una stringa JSON
-    }).then(async res=>await res.json()).then(res=>{
-            
-            console.log(res)
-        })
-    }
+    // istory = ()=>{
+    //     const p1 = localStorage.getItem("user")
+    //     const p2 = document.getElementById("player2").value;
+    //     makeGame(data.match_id, data.players[0], data.players[1],player1,player2);
+    // }
 }
 
 customElements.define("tournament-card", Tournament);
