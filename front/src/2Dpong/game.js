@@ -1,3 +1,5 @@
+import { router } from "../main.js";
+
 var ball;
 var p1;
 var p2;
@@ -106,7 +108,7 @@ function updatePlayers() {
 }
 
 class Player {
-	constructor(x, y, width, height)
+	constructor(x, y, width, height, player, player_id, match_id)
 	{
 		this.x = x;
 		this.y = y;
@@ -114,6 +116,9 @@ class Player {
 		this.width = width;
 		this.height = height;
 		this.offsetmove = this.height / 10;
+		this.player = player;
+		this.player_id = player_id;
+		this.match_id = match_id;
 	}
 	draw()
 	{
@@ -134,24 +139,59 @@ class Player {
 		this.height = height;
 	}
 }
-function sendResult(winner){
+
+function getMatchInfo(match_id)
+{
+	fetch("https://127.0.0.1:9001/create-challenge/?" + new URLSearchParams({"match_id": match_id}), {
+		method: "GET",
+		mode: "cors"
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log(data);
+		console.log(data.match);
+	})
+	.catch(error => console.error(error));
+}
+
+function sendResult(winner, match_id){
 	let data = {
-		winner:winner,
-		match_id:localStorage.getItem("match_id")
+		winner: winner,
+		match_id:match_id
 	}
-	localStorage.removeItem("match_id");
-	 fetch('https://127.0.0.1:9001/update-match-result/', { 
+	//localStorage.removeItem("match_id");
+	fetch('https://127.0.0.1:9001/update-match-result/', { 
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json' 
 		},
-		body: JSON.stringify(data)	
-		}
+		body: JSON.stringify(data)
+	}
 	).then(()=>{
-        history.pushState({},"","/3dpong_tournament")
-        router();
+		//document.getElementById("canvas").remove();
+		document.getElementById("content").innerHTML = "<h1>Game Over</h1>";
+		console.log("Result sent");
+		// add a button to go back to the home page or to play another game
+		document.getElementById("content").innerHTML += '<button id="back" class="btn btn-primary">Home</button>';
+		document.getElementById("back").addEventListener("click", () => {
+			console.log("back to home");
+			history.pushState(null, null, "/");
+			router();
+		});
+		document.getElementById("content").innerHTML += '<button id="play" class="btn btn-primary">Play Again</button>';
+		document.getElementById("play").addEventListener("click", () => {
+			console.log("play again");
+			history.pushState(null, null, "/2dpong");
+			router();
+		});
+		// add a button to ask for match info
+		document.getElementById("content").innerHTML += '<button id="info" class="btn btn-primary">Match Info</button>';
+		document.getElementById("info").addEventListener("click", () => {
+			getMatchInfo(match_id);
+		});
 	})
 }
+
 class Ball {
 	constructor(x, y, vel, alpha, color, size)
 	{
@@ -184,14 +224,6 @@ class Ball {
 		if (this.x + this.size >= width)
 		{
 			p1Score++;
-			if(p1Score == 1){
-				p1Score = 0;
-				p2Score = 0;
-				alert(localStorage.getItem("player2") + " Won!");
-				sendResult(localStorage.getItem("player1"));
-			}else {
-				alert("p1 score!");
-			}
 			paused = true;
 			isAccelerated = false;
 			player1Down = false;
@@ -208,17 +240,6 @@ class Ball {
 		else if (this.x <= 0)
 		{
 			p2Score++;
-			if(p2Score == 1){
-				p1Score = 0;
-				p2Score = 0;
-				alert(localStorage.getItem("player2") + " Won!");
-				sendResult(localStorage.getItem("player2"));
-				
-			}
-			else{
-				alert("p2 score!");
-			}
-
 			isAccelerated = false;
 			paused = true;
 			player1Down = false;
@@ -346,19 +367,23 @@ function loop()
 		ball.update();
 		ball.collisionDetect();
 	}
-	/* if (p1Offense)
-		ball.color = "red";
-	else if (p2Offense)
-		ball.color = "blue";
-	else
-		ball.color = "white"; */
+	if (p1Score == 1)
+	{
+		sendResult(p1.player_id, p1.match_id);
+		return;
+	}
+	else if (p2Score == 1)
+	{
+		sendResult(p2.player_id, p2.match_id);
+		return;
+	}
 	ball.draw();
 	p1.draw();
 	p2.draw();
 	requestAnimationFrame(loop);
 }
 
-function drawCanvas()
+/* function drawCanvas()
 {
 	var playerWidth = height / 20;
 	var playerHeight = height / 5;
@@ -378,7 +403,7 @@ function drawCanvas()
 	p1.draw();
 	p2.draw();
 	ball.draw();
-}
+} */
 
 /* function resizeCanvas() {
 	var tempWidth = window.screen.availWidth < window.innerWidth ? window.screen.availWidth : window.innerWidth;
@@ -404,7 +429,7 @@ function drawCanvas()
 //window.addEventListener('resize', resizeCanvas);
 
 
-export function makeGame()
+export function makeGame(match_id, player1_id, player2_id, player1, player2)
 {
 	canvas = document.createElement("canvas");
 	if (!canvas)
@@ -447,10 +472,9 @@ export function makeGame()
 	var startingBallX = width / 2 - ballSize / 2;
 	var startingBallY = height / 2 - ballSize / 2;
 
-	p1 = new Player(startingP1X, startingPY, playerWidth, playerHeight);
-	p2 = new Player(startingP2X, startingPY, playerWidth, playerHeight);
+	p1 = new Player(startingP1X, startingPY, playerWidth, playerHeight, player1, player1_id, match_id);
+	p2 = new Player(startingP2X, startingPY, playerWidth, playerHeight, player2, player2_id, match_id);
 	ball = new Ball(startingBallX, startingBallY, 0, 0, "white", ballSize);
-	//document.addEventListener('keydown', moveP, false);
  	paused = true;
 	savedVel = 10;
 	savedAlpha = - (Math.PI / 4);

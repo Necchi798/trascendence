@@ -71,10 +71,7 @@ class ProfileCard extends HTMLElement {
                 mode: "cors",
                 credentials: "include"
             });
-            console.log(response)
             const data = await response.json();
-            localStorage.setItem("userID",data.id)
-            console.log(data.id)
             const nameSpan = this.querySelector('#name');
             if (nameSpan) {
                 nameSpan.textContent = data.username;
@@ -83,13 +80,12 @@ class ProfileCard extends HTMLElement {
             if(mailSpan)
                 mailSpan.textContent= data.email;
             fetch("https://127.0.0.1:9001/get-history/",{
-                method: "Post",
+                method: "GET",
                 mode: "cors",
                 credentials: "include",
                 headers: {
                     'Content-Type': 'application/json', // Tipo di contenuto corretto
                   },
-                body:JSON.stringify({id:localStorage.getItem("userID")})
             }).then(async res=>await res.json()).then(res=>{
                 console.log(res.data)
                 const wins = res.data.filter(el=>el.winner === localStorage.getItem("user")).length

@@ -6,10 +6,9 @@ from .views import (
     CreateChallenge,
     GetNextMatch,
     DeleteHistory,
-    GetHistory,
+    GetMyHistory,
     UpdateMatchResult,
-    UpdateTournament,
-    GetNextRound
+    GetUserHistory
 )
 
 urlpatterns = [
@@ -17,8 +16,7 @@ urlpatterns = [
     path('create-challenge/', CreateChallenge.as_view(), name='create-challenge'),
     path('get-next-match/', GetNextMatch.as_view(), name='get-next-match'),
     path('delete-history/', DeleteHistory.as_view(), name='delete-history'),
-    path('get-history/', GetHistory.as_view(), name='get-history'),
+    path('get-history/', GetMyHistory.as_view(), name='get-history'),
     path('update-match-result/', UpdateMatchResult.as_view(), name='update-match-result'),
-    path('update-tournament/', UpdateTournament.as_view(), name='update-tournament'),
-    path('get-next-round/', GetNextRound.as_view(), name='get-next-round')
+    path('get-user-history/', GetMyHistory.as_view(), name='get-user-history'),
 ]
