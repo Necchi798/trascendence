@@ -52,14 +52,14 @@ class Tournament extends HTMLElement {
         },
         body: JSON.stringify({tournament_id:localStorage.getItem("tournament_id")})
     }).then(async res=>await res.json()).then(res=>{
-        console.log(res.matches.filter((el)=>!el.has_ended[0]))
-        let nextmatch = res.matches.filter((el)=>!el.has_ended)[0]
-        localStorage.setItem("match_id", nextmatch.id)
-        localStorage.setItem("player1", nextmatch.player1)
-        localStorage.setItem("player2", nextmatch.player2)
-        history.pushState({},"","/2dpong")
-        router();
-    }
+            console.log(res.matches.filter((el)=>!el.has_ended[0]))
+            let nextmatch = res.matches.filter((el)=>!el.has_ended)[0]
+            localStorage.setItem("match_id", nextmatch.id)
+            localStorage.setItem("player1", nextmatch.player1)
+            localStorage.setItem("player2", nextmatch.player2)
+            history.pushState({},"","/2dpong")
+            router();
+        }
     )
     }
     istory = ()=>{

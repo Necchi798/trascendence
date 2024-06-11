@@ -25,16 +25,18 @@ class CreatePlayer(APIView):
         player,created = Player.objects.get_or_create(nickname=name,user_id=payload['id'])
         return Response({'success': True, 'message': f'Player "{name}" created.'}, status=status.HTTP_200_OK)
 
-
 class GetNextMatch(APIView):
     def post(self, request):
         index = request.data.get('tournament_id')
         try:
-            
             matchs = Match.objects.filter(tournament=index)
             toRet = list(matchs.values("id","creator","has_ended","player1","player2","winner"))
             if len(toRet) == 3 and toRet[0]["has_ended"] and toRet[1]["has_ended"] and toRet[2]["has_ended"]:
-                 return Response({'message': 'torneo finito'}, status=status.HTTP_200_OK)
+                t = Tournament.objects.get(id=index)
+                t.ended_at = timezone.now()
+                t.save()
+                return Response({'message': 'torneo finito'}, status=status.HTTP_200_OK)
+                
             if  toRet[0]["has_ended"] and toRet[1]["has_ended"]:
                 match = Match.objects.create(
                     player1=Player.objects.filter(id=toRet[0]["winner"]).first(),
@@ -70,8 +72,14 @@ class CreateChallenge(APIView):
     
     def post(self, request):
         names=request.data.get('names')
-        for x in range(len(names)):
-            print(names[x])
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('Missing jwt')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired jwt')  
         if not isinstance(names, list):
             return Response({'error': 'Expected a list of names.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -83,25 +91,28 @@ class CreateChallenge(APIView):
         if not names or len(names) < 2:
             return Response({'error': 'At least 2 players are required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        players = []
+        # for name in names:
+        #     player,created = Player.objects.get_or_create(nickname=name)
+        #     players.append(player)
 
-        for name in names:
-            player,created = Player.objects.get_or_create(nickname=name)
-            players.append(player)
-
-        print(players)
-
-        if len(players) == 2:
+        if len(names) == 2:
+            player1 = Player.objects.get(user_id=payload['id'])
+            player2,created = Player.objects.get_or_create(nickname=names[1])
             match = Match.objects.create(
                 player1=players[0],
-                player2=players[1],
+                player2=player2[1],
                 created_at=timezone.now(),
                 round_number=-1,
                 has_ended=False,
                 tournament=None
             )
             return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id}, status=status.HTTP_200_OK)
-
+        player1 = Player.objects.get(user_id=payload['id'])
+        player2,created = Player.objects.get_or_create(nickname=names[1],user_id=-1)
+        player3,created = Player.objects.get_or_create(nickname=names[2],user_id=-1)
+        player4,created = Player.objects.get_or_create(nickname=names[3],user_id=-1)
+        players = [player1,player2,player3,player4]
+        
         creator = players[0].id
         rounds = 0
         x = len(players)
@@ -123,12 +134,11 @@ class CreateChallenge(APIView):
         )
         
         for player in players:
-            #player.tournament = tournament
             player.save()
 
         matchs = self._create_matches(tournament, players)
-        
-        return Response({'success': True, 'message': 'Tournament created with multiple players', 'tournament_id': tournament.id, 'match_id': matchs[0].id}, status=status.HTTP_200_OK)
+        playersIds = [player1.id,player2.id,player3.id,player4.id]
+        return Response({'success': True, 'message': 'Tournament created with multiple players', 'tournament_id': tournament.id, 'match_id': matchs[0].id,'players':playersIds}, status=status.HTTP_200_OK)
     
     def _create_matches(self, tournament, players):
         random.shuffle(players)
@@ -171,12 +181,17 @@ class DeleteHistory(APIView):
         return Response({'success': True, 'message': f'{match_count} matches deleted.'}, status=status.HTTP_200_OK)
 
 
-class GetHistory(APIView):
-    def post(self, request):
-        
-        user_id = request.data['id']
+class GetMyHistory(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed('Missing jwt')
         try:
-            player = Player.objects.get(user_id=user_id)
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Expired jwt')    
+        try:
+            player = Player.objects.get(user_id=payload['id'])
             print(PlayerSerializer(player).data)
         except Player.DoesNotExist:
             return Response({'success': False, 'message': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -190,7 +205,8 @@ class GetHistory(APIView):
             name2 = Player.objects.filter(id=match["player2"]).first()
             match["player1"] = name1.nickname
             match["player2"] = name2.nickname
-            match["winner"] = Player.objects.filter(id=match["winner"]).first().nickname
+            # winner = Player.objects.filter(id=match["winner"]).first().nickname
+            # match["winner"] = Player.objects.filter(id=match["winner"]).first().nickname
 
         return Response({'success': True, 'data': serializer.data, 'matches_won':0}, status=status.HTTP_200_OK)
 
@@ -212,66 +228,19 @@ class UpdateMatchResult(APIView):
         match.ended_at = timezone.now()
         match.save()
         return Response({'success': True, 'message': 'Match result updated.'}, status=status.HTTP_200_OK)
-        
+ 
+class GetUserHistory(APIView):
+    def post(self, request):
+        name = request.data.get('user-name')
+        player =  Player.objects.filter(nickname=name).exclude(user_id=-1).first()
+        matches = Match.objects.filter(Q(player1=player) | Q(player2=player))
+        serializer = MatchSerializer(matches, many=True)
 
+        for match in serializer.data:
+            name1 = Player.objects.filter(id=match["player1"]).first()
+            name2 = Player.objects.filter(id=match["player2"]).first()
+            match["player1"] = name1.nickname
+            match["player2"] = name2.nickname
+        return Response({'success': True, 'history': serializer.data}, status=status.HTTP_200_OK)
+               
 
-class UpdateTournament(APIView):
-    def post(self, request, tournament_id):
-        tournament = get_object_or_404(Tournament, id=tournament_id)
-        serializer = TournamentSerializer(tournament, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'success': True, 'message': 'Tournament updated.'}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GetNextRound(APIView):
-    def post(self, request, tournament_id):
-        tournament = get_object_or_404(Tournament, id=tournament_id)
-        if tournament.curr_round >= tournament.total_rounds:
-            return Response({'message': 'Tournament has ended.'}, status=status.HTTP_200_OK)
-
-        names = request.data.get('names')
-        players = []
-        for name in names:
-            players.append(name)
-
-        #players = [Player.objects.get_or_create(user=User.objects.get_or_create(username=name)[0], nickname=name)[0] for name in names]
-
-        random.shuffle(players)
-        self._create_matches(tournament, players)
-
-        tournament.curr_round += 1
-        tournament.save()
-
-        return Response({'success': True, 'message': f'Round {tournament.curr_round} matches created.'}, status=status.HTTP_200_OK)
-    
-    def _create_matches(self, tournament, players):
-        matches = []
-        while len(players) > 1:
-            player1 = players.pop()
-            player2 = players.pop()
-            match = Match.objects.create(
-                tournament=tournament,
-                round_number=tournament.curr_round,
-                player1=player1,
-                player2=player2,
-                created_at=timezone.now(),
-                has_ended=False
-            )
-            matches.append(match)
-
-        if players:
-            player = players.pop()
-            match = Match.objects.create(
-                tournament=tournament,
-                round_number=tournament.curr_round,
-                player1=player,
-                player2=None,
-                winner=player,
-                ended_at=timezone.now(),
-                has_ended=True
-            )
-            matches.append(match)
-
-        return matches

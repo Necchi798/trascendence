@@ -13,10 +13,10 @@ import settings, {actionSettings} from "./pages/settings.js";
 import tournament from "./pages/tournamentpage.js"
 import tournamentpage from "./pages/tournamentpage.js";
 import { startGame } from "./2Dpong/start.js";
-
 const routes = {
-    "/":{title:"home", render: home, action: actionHome},
-    "/home":{title:"home", render: home, action: actionHome},
+    "/":{title:"home", render: home, action: ()=>{}},
+    "/home":{title:"home", render: home, action: ()=>{}},
+    "/culo":{title:"home", render: home, action: ()=>{}},
     "/profile":{title:"profile",render: ()=>{},action: ()=>{}},
     "/2dpong":{title:"game", render: game,action:startGame},
     "/3dpong_stats":{title: "history",render:stats,action: ()=>{}},

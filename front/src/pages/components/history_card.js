@@ -25,13 +25,12 @@ class HistoryCard extends HTMLElement {
     }
     istory = ()=>{
         fetch('https://127.0.0.1:9001/get-history/', { //sostituire con l'indirizzo del server impostato dal backend
-        method: 'POST',
+        method: 'GET',
         mode:"cors",
         credentials: 'include', 
         headers: {
         'Content-Type': 'application/json' // Specifica il tipo di contenuto
         },
-        body: JSON.stringify({id:localStorage.getItem("userID")})
         }).then(async res=>await res.json()).then(res=>{
             const table = document.getElementById("table")
             res.data.forEach(element => {

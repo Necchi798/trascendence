@@ -112,6 +112,13 @@ export function fetchDataRegister() {
 	const password = document.getElementById('password').value;
 	const email = document.getElementById('email').value;
 	const nome = document.getElementById('Name').value;
+	const confirmpassword = document.getElementById("confirmpassword" ).value
+	if(confirmpassword !== password){
+		document.getElementById('alertDiv').style.display = "block";
+		document.getElementById('alertDiv').innerHTML += "password mismatch";
+		return
+	}
+	 
 	const data = { password, email , username:nome,};
 	fetch('https://127.0.0.1:8000/register/', { //sostituire con l'indirizzo del server impostato dal backend
 		method: 'POST',
@@ -122,17 +129,25 @@ export function fetchDataRegister() {
 		body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
 	}).then(response => {
 		if(response.ok){
-			//console.log("successino")
+			fetch('https://127.0.0.1:9001/create-player/', { 
+				method: 'POST',
+				mode:"cors",
+				credentials: 'include', 
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({name:nome})
+			})
 			document.getElementById("registerStyle").remove();
 			history.pushState({},"","/login")
 			router()
-			//return response.json()
 		}
 		else
 		{
 			var error = response.json()
 			error.then(data => {
 				document.getElementById('alertDiv').style.display = "block";
+				document.getElementById('alertDiv').innerHTML = ""
 				if (data.detail)
 				{
 					document.getElementById('alertDiv').innerHTML += data.detail;
