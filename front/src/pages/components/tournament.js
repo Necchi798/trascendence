@@ -1,9 +1,10 @@
 import {router} from "../../main.js";
+import { makeGame } from "../../2Dpong/game.js";
 class Tournament extends HTMLElement {
     constructor(){
         super();
         this.innerHTML = /*html*/`
-        <div class="container">
+        <div id="mystuff">
             <div class="d-flex" style="gap:1rem">
                 <div class="d-flex"style=" flex-direction:column; gap:1rem">
                     <span id="userNameForTournament"></span>
@@ -62,11 +63,30 @@ class Tournament extends HTMLElement {
         }
     )
     }
-    // istory = ()=>{
-    //     const p1 = localStorage.getItem("user")
-    //     const p2 = document.getElementById("player2").value;
-    //     makeGame(data.match_id, data.players[0], data.players[1],player1,player2);
-    // }
+    istory = ()=>{
+        const p1 = localStorage.getItem("user")
+        const p2 = document.getElementById("player2").value;
+        
+        fetch("https://127.0.0.1:9001/create-challenge/", {
+            method: "POST",
+            mode:"cors",
+            credentials:"include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                names: [p1, p2]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            document.getElementById("mystuff").remove()
+            makeGame(data.match_id, data.players[0], data.players[1],p1,p2);
+        })
+        .catch(error => console.error(error));
+    
+    }
 }
 
 customElements.define("tournament-card", Tournament);
