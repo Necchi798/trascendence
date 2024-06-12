@@ -105,7 +105,7 @@ background-color: #00224D;">
 	</div>
 	`;
 
-export function fetchDataRegister() {
+export async function fetchDataRegister() {
 	document.getElementById("alertDiv").style.display = "none";
 	//remove the text from the alert div
 	document.getElementById("alertDiv").innerHTML = "";
@@ -120,57 +120,60 @@ export function fetchDataRegister() {
 	}
 	 
 	const data = { password, email , username:nome,};
-	fetch('https://127.0.0.1:8000/register/', { //sostituire con l'indirizzo del server impostato dal backend
+	try{
+	const resRegister = await fetch('https://127.0.0.1:8000/register/', { 
 		method: 'POST',
 		mode:"cors",
 		headers: {
-			'Content-Type': 'application/json' // Specifica il tipo di contenuto
+			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify(data)	// Converte l'oggetto JavaScript in una stringa JSON
-	}).then(response => {
-		if(response.ok){
-			fetch('https://127.0.0.1:9001/create-player/', { 
-				method: 'POST',
-				mode:"cors",
-				credentials: 'include', 
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({name:nome})
-			})
-			document.getElementById("registerStyle").remove();
-			history.pushState({},"","/login")
-			router()
+		body: JSON.stringify(data)
+	})
+	if (!resRegister.ok) {
+		const errorData = await resRegister.json();
+		throw new Error(JSON.stringify(errorData));
+	}
+	const registerData = await resRegister.json()
+	const playerRes = await fetch("https://127.0.0.1:9001/create-player/", {
+		method: "POST",
+		mode:"cors",
+		credentials:"include",
+		headers:{
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({name: nome, id: registerData.id})
+	})
+	document.getElementById("registerStyle").remove();
+	history.pushState({}, "", "/login");
+	router();
+	
+	}catch(error) {
+		console.log(error)
+		const  data = JSON.parse(error.message);
+		console.log(data)
+		document.getElementById('alertDiv').style.display = "block";
+		document.getElementById('alertDiv').innerHTML = ""
+		if (data.detail)
+		{
+			document.getElementById('alertDiv').innerHTML += data.detail;
 		}
 		else
 		{
-			var error = response.json()
-			error.then(data => {
-				document.getElementById('alertDiv').style.display = "block";
-				document.getElementById('alertDiv').innerHTML = ""
-				if (data.detail)
-				{
-					document.getElementById('alertDiv').innerHTML += data.detail;
-				}
-				else
-				{
-					if (data.username && data.email)
-					{
-						document.getElementById('alertDiv').innerHTML += data.username + "<br>";
-						document.getElementById('alertDiv').innerHTML += data.email;
-					}
-					else if (data.username)
-					{
-						document.getElementById('alertDiv').innerHTML += data.username;
-					}
-					else if (data.email)
-					{
-						document.getElementById('alertDiv').innerHTML += data.email;
-					}
-				}
-			})
+			if (data.username && data.email)
+			{
+				document.getElementById('alertDiv').innerHTML += data.username + "<br>";
+				document.getElementById('alertDiv').innerHTML += data.email;
+			}
+			else if (data.username)
+			{
+				document.getElementById('alertDiv').innerHTML += data.username;
+			}
+			else if (data.email)
+			{
+				document.getElementById('alertDiv').innerHTML += data.email;
+			}
 		}
-	})
+	};
 }
 
 export function actionRegister() {

@@ -85,8 +85,8 @@ services:
       - match_history
     networks:
       - trancendence
-    restart: always
-
+    restart:
+      always   
 #otp
   otp_db:
     image: postgres

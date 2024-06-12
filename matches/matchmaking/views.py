@@ -12,18 +12,12 @@ from django.db.models import Q
 
 class CreatePlayer(APIView):
     def post(self, request):
-        token = request.COOKIES.get('jwt')
-        name = request.data['name']
-        if not token:
-            raise AuthenticationFailed('Missing jwt')
-        try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Expired jwt')    
-        if not name:
-            return Response({'error': 'Name is required.'}, status=status.HTTP_400_BAD_REQUEST)
-        player,created = Player.objects.get_or_create(nickname=name,user_id=payload['id'])
-        return Response({'success': True, 'message': f'Player "{name}" created.'}, status=status.HTTP_200_OK)
+        user_id = request.data.get("id")
+        name = request.data.get("name")
+        print(user_id)
+        print(name)
+        player = Player.objects.create(nickname=name,user_id=user_id)
+        return Response({'success': True, 'message': f'Player "{name}" created, id "{user_id}".'}, status=status.HTTP_200_OK)
 
 class GetNextMatch(APIView):
     def post(self, request):
@@ -97,16 +91,16 @@ class CreateChallenge(APIView):
 
         if len(names) == 2:
             player1 = Player.objects.get(user_id=payload['id'])
-            player2,created = Player.objects.get_or_create(nickname=names[1])
+            player2,created = Player.objects.get_or_create(nickname=names[1],user_id=-1)
             match = Match.objects.create(
-                player1=players[0],
-                player2=player2[1],
+                player1=player1,
+                player2=player2,
                 created_at=timezone.now(),
                 round_number=-1,
                 has_ended=False,
                 tournament=None
             )
-            return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id}, status=status.HTTP_200_OK)
+            return Response({'success': True, 'message': 'Single match created.', 'match_id': match.id,'players':[player1.id,player2.id]}, status=status.HTTP_200_OK)
         player1 = Player.objects.get(user_id=payload['id'])
         player2,created = Player.objects.get_or_create(nickname=names[1],user_id=-1)
         player3,created = Player.objects.get_or_create(nickname=names[2],user_id=-1)
@@ -190,7 +184,8 @@ class GetMyHistory(APIView):
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Expired jwt')    
-        try:
+        try: 
+            print(payload['id'])
             player = Player.objects.get(user_id=payload['id'])
             print(PlayerSerializer(player).data)
         except Player.DoesNotExist:

@@ -135,9 +135,11 @@ export function fetchDataLogin() {
 	.then(response_data => {
 		if(response_data.jwt)
 		{
+			console.log("cookie: ",document.cookie,"ce sta" ,document.cookie.includes("jwt"))
+			
 			document.getElementById("loginStyle").remove();
-			history.pushState({},"","/")
 			localStorage.setItem("user",name)
+			history.pushState({},"","/")
 			router();
 		}
 		else
