@@ -106,8 +106,12 @@ class CreateChallenge(APIView):
         player3,created = Player.objects.get_or_create(nickname=names[2],user_id=-1)
         player4,created = Player.objects.get_or_create(nickname=names[3],user_id=-1)
         players = [player1,player2,player3,player4]
+        # for each player print its id, user_id and nickname
+        for player in players:
+            print(player.id,player.user_id,player.nickname)
         
-        creator = players[0].id
+        creator = player1.id
+        print(creator)
         rounds = 0
         x = len(players)
         if len(players) % 2 == 0:
@@ -192,18 +196,18 @@ class GetMyHistory(APIView):
             return Response({'success': False, 'message': 'Player not found'}, status=status.HTTP_404_NOT_FOUND)
         
         matches = Match.objects.filter(Q(player1=player.id) | Q(player2=player.id))
+        finished_matches = matches.filter(has_ended=True)
 
-        serializer = MatchSerializer(matches, many=True)
+        serializer = MatchSerializer(finished_matches, many=True)
 
         for match in serializer.data:
             name1 = Player.objects.filter(id=match["player1"]).first()
             name2 = Player.objects.filter(id=match["player2"]).first()
             match["player1"] = name1.nickname
             match["player2"] = name2.nickname
-            # winner = Player.objects.filter(id=match["winner"]).first().nickname
-            # match["winner"] = Player.objects.filter(id=match["winner"]).first().nickname
+            match["winner"] = Player.objects.filter(id=match["winner"]).first().nickname
 
-        return Response({'success': True, 'data': serializer.data, 'matches_won':0}, status=status.HTTP_200_OK)
+        return Response({'success': True, 'data': serializer.data, 'matches_won': 0}, status=status.HTTP_200_OK)
 
 
 class UpdateMatchResult(APIView):
@@ -226,10 +230,11 @@ class UpdateMatchResult(APIView):
  
 class GetUserHistory(APIView):
     def post(self, request):
-        name = request.data.get('user-name')
+        name = request.data.get('username')
         player =  Player.objects.filter(nickname=name).exclude(user_id=-1).first()
         matches = Match.objects.filter(Q(player1=player) | Q(player2=player))
-        serializer = MatchSerializer(matches, many=True)
+        finished_matches = matches.filter(has_ended=True)
+        serializer = MatchSerializer(finished_matches, many=True)
 
         for match in serializer.data:
             name1 = Player.objects.filter(id=match["player1"]).first()

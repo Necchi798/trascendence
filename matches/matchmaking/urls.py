@@ -18,5 +18,5 @@ urlpatterns = [
     path('delete-history/', DeleteHistory.as_view(), name='delete-history'),
     path('get-history/', GetMyHistory.as_view(), name='get-history'),
     path('update-match-result/', UpdateMatchResult.as_view(), name='update-match-result'),
-    path('get-user-history/', GetMyHistory.as_view(), name='get-user-history'),
+    path('get-user-history/', GetUserHistory.as_view(), name='get-user-history'),
 ]

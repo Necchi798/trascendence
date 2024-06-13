@@ -4,17 +4,19 @@ class Tournament extends HTMLElement {
     constructor(){
         super();
         this.innerHTML = /*html*/`
-        <div id="mystuff">
-            <div class="d-flex" style="gap:1rem">
-                <div class="d-flex"style=" flex-direction:column; gap:1rem">
-                    <span id="userNameForTournament"></span>
-                    <input type="text" id="player2" placeholder="Enter player 2">
-                    <input type="text" id="player3" placeholder="Enter player 3">
-                    <input type="text" id="player4" placeholder="Enter player 4">
+        <div id="gameContainer">
+            <div id="mystuff">
+                <div class="d-flex" style="gap:1rem">
+                    <div class="d-flex"style=" flex-direction:column; gap:1rem">
+                        <span id="userNameForTournament"></span>
+                        <input type="text" id="player2" placeholder="Enter player 2">
+                        <input type="text" id="player3" placeholder="Enter player 3">
+                        <input type="text" id="player4" placeholder="Enter player 4">
+                    </div>
+                    <button class="btn btn-primary" id="createTorneo" >crea</button>
+                    <button class="btn btn-primary" id="prossimomatch" >prossimo match</button>
+                    <button class="btn btn-primary" id="provuzzo" >single match match</button>
                 </div>
-                <button class="btn btn-primary" id="createTorneo" >crea</button>
-                <button class="btn btn-primary" id="prossimomatch" >prossimo match</button>
-                <button class="btn btn-primary" id="provuzzo" >single match match</button>
             </div>
         </div>
         `

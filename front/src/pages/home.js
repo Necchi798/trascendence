@@ -30,8 +30,8 @@ export default  ()=> `
 		<main id="content" style="width: 100%;height: 100vh;display:flex; flex-direction: row">
             <div style="display:flex; flex-direction: column;align-content: center;
                     width: 60%; padding: 3%; gap: 5%">
-				<profile-card id="profileCard"></profile-card>
-                <history-card id="historyCard"></history-card>
+				<profile-card></profile-card>
+                <history-card></history-card>
             </div>
             <div style="display:flex; flex-direction: column;align-content: center;
                     width: 40%; padding: 3%; padding-left: 0%">
@@ -53,35 +53,41 @@ function fetchUserData()
 			return response.json();
 		else
 			throw new Error("Something went wrong");
-	}).then(data => {
+	}).then(userData => {
 		const nameSpan = userInfoDiv.querySelector('#name');
 		if (nameSpan) {
-			nameSpan.textContent = data.username;
+			nameSpan.textContent = userData.username;
 		}
 		const mailSpan = userInfoDiv.querySelector('#email')
 		if(mailSpan)
-			mailSpan.textContent= data.email;
+			mailSpan.textContent= userData.email;
+
+		fetch("https://127.0.0.1:9001/get-history/", {
+			method: "GET",
+			mode: "cors",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json"
+			}
+		}).then(async resHistory => await resHistory.json()).then(res => {
+			const table = document.getElementById("table");
+			res.data.forEach(element => {
+				console.log(element)
+				const tableRow = document.createElement("tr");
+				const date = new Date(element.ended_at);
+				const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+				const formattedDate = new Intl.DateTimeFormat("it-IT", options).format(date);
+				tableRow.innerHTML = `
+					<td>${formattedDate}</td>
+					<td>${element.player1 === userData.username ? element.player2 : element.player1}</td>
+					<td>${element.winner === userData.username ? "win" : "loss"}</td>
+				`;
+				table.appendChild(tableRow);
+			});
+		});
 	}).catch(error => {
 		console.error('Error fetching data:', error);
 	});
-	/* try {
-		const response = fetch("https://127.0.0.1:8000/user/",{
-			method: "GET",
-			mode: "cors",
-			credentials: "include"
-		});
-		console.log(response);
-		const data = response.json();
-		const nameSpan = userInfoDiv.querySelector('#name');
-		if (nameSpan) {
-			nameSpan.textContent = data.username;
-		}
-		const mailSpan = userInfoDiv.querySelector('#email')
-		if(mailSpan)
-			mailSpan.textContent= data.email;
-	} catch (error) {
-		console.error('Error fetching data:', error);
-	} */
 }
 
 export function actionHome()
