@@ -409,19 +409,30 @@ export function actionGame()
 	const state = history.state;
 	if (state)
 	{
-		const match_id = state.nextmatch.id;
-		const player1_id = state.nextmatch.player1;
-		const player2_id = state.nextmatch.player2;
-		for (let i = 0; i < state.playerNames.length; i++)
+		if (state.nextmatch)
 		{
-			if (state.players_id[i] == player1_id)
+			var match_id = state.nextmatch.id;
+			var player1_id = state.nextmatch.player1;
+			var player2_id = state.nextmatch.player2;
+			for (let i = 0; i < state.playerNames.length; i++)
 			{
-				var player1 = state.playerNames[i];
+				if (state.players_id[i] == player1_id)
+				{
+					var player1 = state.playerNames[i];
+				}
+				else if (state.players_id[i] == player2_id)
+				{
+					var player2 = state.playerNames[i];
+				}
 			}
-			else if (state.players_id[i] == player2_id)
-			{
-				var player2 = state.playerNames[i];
-			}
+		}
+		else
+		{
+			var match_id = state.match_id;
+			var player1_id = state.players[0];
+			var player2_id = state.players[1];
+			var player1 = state.player_names[0];
+			var player2 = state.player_names[1];
 		}
 		makeGame(match_id, player1_id, player2_id, player1, player2);
 	}

@@ -1,6 +1,7 @@
 import "./components/sidebar.js"
 import "./components/players_fields.js"
 import "./components/tournament_element.js"
+import "./components/singlematch_element.js"
 import { router } from "../main.js";
 
 export default  ()=> `
@@ -19,6 +20,7 @@ export default  ()=> `
 				<players-fields style="display: none;" tournament="false"></players-fields>
 				<button id="startButton" disabled style="display: none;font-family: 'Silkscreen', sans-serif; font-size: 20px; margin-top: 50px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;">Start</button>
 				<tournament-element style="display: none;"></tournament-element>
+				<match-element style="display: none;"></match-element>
 			</div>
 		</div>
 		</main>
@@ -61,8 +63,13 @@ function updateTournamentElement(tournament_id, players_id, playerNames)
 	}).then(async res=>await res.json()).then(res=>{
 		if (res.message === "torneo finito")
 		{
-			tournamentElement.style.display = "none";
-			// metti bottone per la home
+			document.getElementById("startMatchButton").textContent = "Tournament ended";
+			const btn = document.getElementById("startMatchButton");
+			btn.removeEventListener("click", startTournamentMatch);
+			btn.addEventListener("click", () => {
+				history.replaceState({}, "", "/home");
+				router();
+			});
 			return;
 		}
 		console.log(res.matches);
@@ -182,7 +189,36 @@ function displayTournament(tournament_id, players_id, playerNames, tournament_st
 
 // function called when start is clicked
 function startSingleMatch() {
-	history.replaceState({}, "", "/game");
+	const playerFields = document.querySelector("players-fields");
+	const playerNames = playerFields.getPlayers();
+	const data = { names: playerNames };
+	fetch("https://127.0.0.1:9001/create-challenge/", {
+		method: "POST",
+		mode: "cors",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	})
+	.then(async (res) => await res.json())
+	.then((res) => {
+		console.log(res);
+		const matchElement = document.querySelector("match-element");
+		document.getElementById("startButton").style.display = "none";
+		const startButton = document.getElementById("startSingleMatchButton");
+		matchElement.style.display = "block";
+		console.log("player names: ", playerNames);
+		matchElement.setPlayers(playerNames);
+		playerFields.style.display = "none";
+		// hide the start button
+		startButton.textContent = "Start Match: " + playerNames[0] + " vs " + playerNames[1];
+		startButton.style.display = "block";
+		startButton.addEventListener("click", () => {
+			history.replaceState({ match_id: res.match_id, players: res.players, player_names: playerNames }, "", "/game");
+			router();
+		});
+	});
 	
 }
 
@@ -236,6 +272,21 @@ export function actionChallenge() {
 		if (state.tournament_id)
 		{
 			displayTournament(state.tournament_id, state.players_id, state.playerNames, true);
+		}
+		else
+		{
+			console.log("culo");
+			const matchElement = document.querySelector("match-element");
+			matchElement.style.display = "block";
+			matchElement.setPlayers(state.player_names);
+			const startButton = document.getElementById("startSingleMatchButton");
+			startButton.style.display = "block";
+			document.getElementById("tournamentButton").style.display = "none";
+			startButton.textContent = "Home";
+			startButton.addEventListener("click", () => {
+				history.replaceState({}, "", "/home");
+				router();
+			});
 		}
 	}
 	const playButton = document.getElementById("playButton");
