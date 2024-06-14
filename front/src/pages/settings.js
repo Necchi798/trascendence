@@ -22,22 +22,19 @@ export default  ()=> `
 	<div style="display: flex;flex-direction: row; margin:auto">
 		<side-bar></side-bar>
 		<main id="content" style="    width: 100%;
-		padding: 10rem;
+		padding: 2rem;
 		display: flex;
 		flex-direction: column;
 		gap: 3rem;" >
 		<h2>Settings</h2>
 			<div class="card" style="width: 100%;display: flex; padding:1rem">
 				<h4>login options</h4>
-				<div style="display: flex; justify-content: space-between; align-items: center ;height:120px; padding:1rem">
-					<div style="display: flex; justify-content: space-between; align-items: center " id="div2FA">
+				<div style="display: flex;  align-items: center ;height:120px; padding:1rem">
+					<div style="display: flex; justify-content: space-between; align-items: center ;gap:2.2rem" id="div2FA">
+						<button type="button" id="login42Button" class="btn btn-primary">Enable login with 42</button>
 						<button type="button" id="twofaButton" class="btn btn-primary">
 							Enable two-factor authentication
 						</button>
-					</div>
-					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<button type="button" id="login42Button" class="btn btn-primary">Enable login with 42</button>
 					</div>
 				</div>
 			</div>
@@ -59,10 +56,10 @@ export default  ()=> `
 						</div>
 						<button type="button" class="btn btn-primary" id="changeButton">Change</button>
 					</form>
-					<div class="d-flex mb-3"  >
+					<div class="d-flex mb-3"  style="margin-top:10px">
 						<input id="fileInput" class="form-control" type="file" >
-						</div>
-						<button id="imgUpdate"  class="btn btn-primary">update img</button> 
+					</div>
+					<button id="imgUpdate"  class="btn btn-primary">update img</button> 
 				</div>
 			</div>
 		</main>
