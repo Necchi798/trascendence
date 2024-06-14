@@ -18,7 +18,7 @@ const routes = {
     "/": { title: "home", render: home, action: actionHome},
     "/home": { title: "home", render: home, action: actionHome },
     "/profile": { title: "profile", render: () => { }, action: () => { } },
-    "/2dpong": { title: "game", render: challenge, action:actionChallenge },
+    "/2dpong": { title: "game", render: challenge, action: actionChallenge },
     "/game": { title: "game", render: game, action: actionGame },
     "/login": { title: "login", render: login, action: actionLogin },
     "/twofa": { title: "twofa", render: twofa, action: () => { } },

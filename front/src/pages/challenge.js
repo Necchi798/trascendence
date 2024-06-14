@@ -42,14 +42,12 @@ function createTournament() {
 	.then(async (res) => await res.json())
 	.then((res) => {
 		console.log(res);
-		displayTournament(res.tournament_id, res.players);
+		displayTournament(res.tournament_id, res.players, playerNames);
 	});
 }
 
-function startTournamentMatch(tournament_id, players_id)
+function updateTournamentElement(tournament_id, players_id, playerNames)
 {
-	const playerFields = document.querySelector("players-fields");
-	const playerNames = playerFields.getPlayers();
 	const tournamentElement = document.querySelector("tournament-element");
 	const data = { tournament_id: tournament_id };
 	fetch('https://127.0.0.1:9001/get-next-match/', { //sostituire con l'indirizzo del server impostato dal backend
@@ -61,43 +59,131 @@ function startTournamentMatch(tournament_id, players_id)
 		},
 		body: JSON.stringify(data)
 	}).then(async res=>await res.json()).then(res=>{
-		console.log(res.matches.filter((el)=>!el.has_ended[0]));
+		if (res.message === "torneo finito")
+		{
+			tournamentElement.style.display = "none";
+			// metti bottone per la home
+			return;
+		}
+		console.log(res.matches);
+		console.log(res.matches.filter((el)=>!el.has_ended))
+		let list_ids = [];
+		let list_names = [];
+		// update the tournament element (if none is ended)
+		if (res.matches.length == 2 && res.matches.filter((el)=>!el.has_ended).length == 2)
+		{
+			console.log("ciao1");
+			res.matches.forEach((el) => {
+				list_ids.push(el.player1)
+				list_ids.push(el.player2);
+			});
+			for (let i = 0; i < list_ids.length; i++)
+			{
+				for (let j = 0; j < players_id.length; j++)
+				{
+					if (list_ids[i] == players_id[j])
+					{
+						list_names.push(playerNames[j]);
+					}
+				}
+			}
+			console.log(list_ids);
+			console.log(list_names);
+		}
+		else
+		{
+			list_ids = players_id;
+			list_names = playerNames;
+		}
+		let matches_played = res.matches.filter((el)=>el.has_ended);
+		if (matches_played.length == 1 || res.matches.length == 1)
+		{
+			let winners = [];
+			if (matches_played.length == 1)
+			{
+				for (let i = 0; i < matches_played.length; i++)
+				{
+					winners.push(matches_played[i].winner);
+				}
+			}
+			else
+			{
+				winners.push(res.matches[0].player1);
+				winners.push(res.matches[0].player2);
+			}
+			for (let i = 0; i < list_names.length; i++)
+			{
+				if (winners.includes(players_id[i]))
+				{
+					document.getElementById("liplayer" + (i + 1)).style.backgroundColor = "#C1EBC5";
+				}
+			}
+		}
 		let nextmatch = res.matches.filter((el)=>!el.has_ended)[0];
-		history.pushState({tournament_id, nextmatch, playerNames, players_id}, "", "/game");
-		router();
+		const startButton = document.getElementById("startMatchButton");
+		console.log("ciao");
+		tournamentElement.setPlayers(list_names);
+		console.log("ciao");
+		for (let i = 0; i < playerNames.length; i++)
+		{
+			if (players_id[i] == nextmatch.player1)
+			{
+				var player1 = playerNames[i];
+			}
+			if (players_id[i] == nextmatch.player2)
+			{
+				var player2 = playerNames[i];
+			}
+		}
+		startButton.textContent = "Start Match: " + player1 + " vs " + player2;
+		startButton.addEventListener("click", () => startTournamentMatch(tournament_id, res.matches, list_ids, list_names));
 	});
 }
 
+function startTournamentMatch(tournament_id, matches, players_id, playerNames)
+{
+	let nextmatch = matches.filter((el)=>!el.has_ended)[0];
+	history.replaceState({tournament_id, nextmatch, playerNames, players_id}, "", "/game");
+	router();
+}
 
-function displayTournament(tournament_id, players_id) {
+
+function displayTournament(tournament_id, players_id, playerNames, tournament_started = false) {
 	console.log(tournament_id);
-	const playerFields = document.querySelector("players-fields");
-	const playerNames = playerFields.getPlayers();
-	const startButton = document.getElementById("startButton");
-	const tournamentElement = document.querySelector("tournament-element");
-	startButton.style.transform = "translateY(1000px)";
-	startButton.style.transition = "transform 1s";
-	
-	playerFields.style.transform = "translateY(1000px)";
-	playerFields.style.transition = "transform 1s";
-	// change the texts of the tournament element
-	tournamentElement.setPlayers(playerNames);
+	if (tournament_started == true)
+	{
+		const tournamentElement = document.querySelector("tournament-element");
+		// make everything else display: none
+		const playButton = document.getElementById("playButton");
+		playButton.style.display = "none";
+		tournamentElement.style.display = "block";
+		updateTournamentElement(tournament_id, players_id, playerNames);
+	}
+	else
+	{
+		const startButton = document.getElementById("startButton");
+		const tournamentElement = document.querySelector("tournament-element");
+		const playerFields = document.querySelector("players-fields");
+		startButton.style.transform = "translateY(1000px)";
+		startButton.style.transition = "transform 1s";
+		
+		playerFields.style.transform = "translateY(1000px)";
+		playerFields.style.transition = "transform 1s";
+		// change the texts of the tournament element
 	// create the tournament element
 	setTimeout(() => {
 		playerFields.style.display = "none";
 		startButton.style.display = "none";
 		tournamentElement.style.display = "block";
-		tournamentElement.addEventListener("click", startTournamentMatch.bind(null, tournament_id, players_id));
+		updateTournamentElement(tournament_id, players_id, playerNames);
 	}, 1000);
+	}
 }
 
 // function called when start is clicked
 function startSingleMatch() {
-	const playerFields = document.querySelector("players-fields");
-	const startButton = document.getElementById("startButton");
-	const contentMain = document.getElementById("contentMain");
-	// remove all the children of the main content
-	contentMain.innerHTML = "";
+	history.replaceState({}, "", "/game");
+	
 }
 
 function playSingleMatch() {
@@ -143,10 +229,18 @@ function playTournament() {
 
 export function actionChallenge() {
 	console.log("challenge page loaded");
+	const state = history.state;
+	if (state)
+	{
+		console.log(state);
+		if (state.tournament_id)
+		{
+			displayTournament(state.tournament_id, state.players_id, state.playerNames, true);
+		}
+	}
 	const playButton = document.getElementById("playButton");
 	const tournamentButton = document.getElementById("tournamentButton");
 	const playerFields = document.querySelector("players-fields");
-	const startButton = document.getElementById("startButton");
 	playerFields.addEventListener("input", checkFields);
 	playButton.addEventListener("click", playSingleMatch);
 	tournamentButton.addEventListener("click", playTournament);
