@@ -19,10 +19,14 @@ function getCookieValue(cookieName) {
 
 //add buttons for settings
 export default  ()=> `
-	<div style="display: flex;flex-direction: row;width: 100%;height: 100vh">
+	<div style="display: flex;flex-direction: row; margin:auto">
 		<side-bar></side-bar>
-		<main id="content" >
-			<div class="card" style="width: 100%;display: flex; flex-wrap: wrap; margin: 5%">
+		<main id="content" style="    width: 100%;
+		padding: 10rem;
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;" >
+			<div class="card" style="width: 100%;display: flex; flex-wrap: wrap; margin:auto">
 				<h2>Settings</h2>
 				<div style="display: flex; justify-content: space-between; align-items: center ">
 					<div style="display: flex; justify-content: space-between; align-items: center " id="div2FA">
@@ -35,23 +39,9 @@ export default  ()=> `
 						<button type="button" id="login42Button" class="btn btn-primary">Enable login 42</button>
 					</div>
 					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>Force delete of 42 User</span>
-						<button type="button" id="delete42Button" class="btn btn-primary">Delete 42 User</button>
-					</div>
-					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>Force delete of 2FA</span>
-						<button type="button" id="delete2faButton" class="btn btn-primary">Delete 2FA</button>
-					</div>
-					<hr></hr>
-					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>log info of the user</span>
-						<button type="button" id="UserButton" class="btn btn-primary">user</button>
-					</div>
 				</div>
 			</div>
-			<div class="card" style="width: 100%;display: flex;flex-direction: row; flex-wrap: wrap; margin: 5%">
+			<div class="card" style="width: 100%;display: flex;flex-direction: row; flex-wrap: wrap">
 				<div class="card-body">
 					<h3 class="card-title">Your Information</h3>
 					<form id="updateForm">
@@ -170,6 +160,7 @@ function fetchShowQR(id)
       const imageData = new Blob([buffer], { type: 'image/png' });
       const imageURL = URL.createObjectURL(imageData);
       const img = document.createElement('img');
+	  img.style.width = "100px"
 	  img.src = imageURL;
 	  document.getElementById("div2FA").appendChild(img);
     })
