@@ -26,19 +26,19 @@ export default  ()=> `
 		display: flex;
 		flex-direction: column;
 		gap: 3rem;" >
-			<div class="card" style="width: 100%;display: flex; flex-wrap: wrap; margin:auto">
-				<h2>Settings</h2>
-				<div style="display: flex; justify-content: space-between; align-items: center ">
+		<h2>Settings</h2>
+			<div class="card" style="width: 100%;display: flex; padding:1rem">
+				<h4>login options</h4>
+				<div style="display: flex; justify-content: space-between; align-items: center ;height:120px; padding:1rem">
 					<div style="display: flex; justify-content: space-between; align-items: center " id="div2FA">
-						<span>Enable two-factor authentication</span>
-						<button type="button" id="twofaButton" class="btn btn-primary">Enable 2FA</button>
+						<button type="button" id="twofaButton" class="btn btn-primary">
+							Enable two-factor authentication
+						</button>
 					</div>
 					<hr></hr>
 					<div style="display: flex; justify-content: space-between; align-items: center ">
-						<span>Enable login with 42</span>
-						<button type="button" id="login42Button" class="btn btn-primary">Enable login 42</button>
+						<button type="button" id="login42Button" class="btn btn-primary">Enable login with 42</button>
 					</div>
-					<hr></hr>
 				</div>
 			</div>
 			<div class="card" style="width: 100%;display: flex;flex-direction: row; flex-wrap: wrap">
@@ -203,14 +203,14 @@ function fetchUpdateUser(data, val, userdata)
 	button = data + "Button";
 	if (data === "twofa" && val === true)
 	{
-		buttonText = "Disable 2FA";
+		buttonText = "Disable 2 Factor authentication";
 		fun = fetchDisabletwofa;
 		prev_fun = fetchEnabletwofa;
 		field = "two_factor";
 	}
 	else if (data === "twofa" && val === false)
 	{
-		buttonText = "Enable 2FA";
+		buttonText = "Enable 2 Factor authentication";
 		fun = fetchEnabletwofa;
 		prev_fun = fetchDisabletwofa;
 		field = "two_factor";
@@ -501,13 +501,13 @@ export function actionSettings() {
 		console.log(data);
 		if (data.two_factor === true)
 		{
-			document.getElementById('twofaButton').textContent = "Disable 2FA";
+			document.getElementById('twofaButton').textContent = "Disable 2 Factor authentication";
 			document.getElementById('twofaButton').removeEventListener('click', fetchEnabletwofa);
 			document.getElementById('twofaButton').addEventListener('click', fetchDisabletwofa);
 		}
 		else
 		{
-			document.getElementById('twofaButton').textContent = "Enable 2FA";
+			document.getElementById('twofaButton').textContent = "Enable 2 Factor authentication";
 			document.getElementById('twofaButton').removeEventListener('click', fetchDisabletwofa);
 			document.getElementById('twofaButton').addEventListener('click', fetchEnabletwofa);
 		}
@@ -531,9 +531,6 @@ export function actionSettings() {
 		console.error('Error:', error);
 	});
 	document.getElementById("changeButton").addEventListener("click", enableUpdateForm);
-	document.getElementById('delete42Button').addEventListener('click', fetchDisableLogin42Button);
-	document.getElementById('delete2faButton').addEventListener('click', fetchDeleteQRCodeButton);
-	document.getElementById('UserButton').addEventListener('click', searchUser);
 	document.getElementById("imgUpdate").addEventListener("click",imgUpdate)
 
 	const code = getQueryParameter('code');
