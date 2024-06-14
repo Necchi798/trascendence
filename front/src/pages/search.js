@@ -19,7 +19,7 @@ function removeFriend(username) {
 			btn.innerHTML = "Add friend";
 			btn.removeEventListener("click", removeFriend);
 			btn.addEventListener("click", () => {
-				addFriend(user.username);
+				addFriend(username);
 			});
 		}
 		else {
@@ -47,7 +47,7 @@ function addFriend(username) {
 			btn.innerHTML = "Remove friend";
 			btn.removeEventListener("click", addFriend);
 			btn.addEventListener("click", () => {
-				removeFriend(user.username);
+				removeFriend(username);
 			});
 		}
 		else {
@@ -56,17 +56,56 @@ function addFriend(username) {
 	});
 }
 
+function createHistoryElement(user, history) {
+	const resultElement = document.createElement("div");
+	//for each element in the history array, create a table row and append it to the table
+	const table = document.createElement("table");
+	table.classList.add("table");
+	const tableHead = document.createElement("thead");
+	const tableHeadRow = document.createElement("tr");
+	tableHeadRow.innerHTML = `
+		<th scope="col">Date</th>
+		<th scope="col">Opponent</th>
+		<th scope="col">Result</th>
+	`
+	tableHead.appendChild(tableHeadRow);
+	table.appendChild(tableHead);
+	const tableBody = document.createElement("tbody");
+	table.appendChild(tableBody);
+	history.forEach(element => {
+		const tableRow = document.createElement("tr");
+		const date = new Date(element.ended_at)
+		const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+
+		// Utilizza Intl.DateTimeFormat per formattare la data
+		const formattedDate = new Intl.DateTimeFormat('it-IT', options).format(date);
+		tableRow.innerHTML = `
+			<td>${formattedDate}</td>
+			<td>${element.player1 === user.username ? element.player2 : element.player1}</td>
+			<td>${element.winner === user.id ? "win" : "loss"}</td>
+		`
+		tableBody.appendChild(tableRow);
+	});
+	resultElement.appendChild(table);
+	return resultElement;
+}
+
 function createResultElement(user) {
 	const resultElement = document.createElement("div");
 	resultElement.id = "result-" + user.username;
 	resultElement.classList.add("card");
-	resultElement.style.width = "18rem";
+	resultElement.style.width = "width: 100%";
 	resultElement.innerHTML = `
-		<div class="card-body">
+		<div class="card-body" style="width: 100%">
 			<button type="button" class="btn btn-primary"></button>
+			<a href="#history-${user.id}" class="btn" data-bs-toggle="collapse">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+					<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+				</svg>
+			</a>
 			<h5 class="card-title">${user.username}</h5>
-			<p class="card-text">${user.email}</p>
 		</div>
+		<div class="collapse" id="history-${user.id}"></div>
 	`;
 	//add event listener to the button to add the user as a friend
 	if (user.is_friend) {
@@ -81,6 +120,31 @@ function createResultElement(user) {
 		});
 		resultElement.querySelector("button").innerHTML = "Add friend";
 	}
+	// if a is clicked, fetch the user's history
+	resultElement.querySelector("a").addEventListener("click", async () => {
+		// if the history is already present, do not fetch it again
+		if (document.getElementById("history-" + user.id).innerHTML !== "") {
+			return;
+		}
+		console.log("Fetching user history");
+		const response = await fetch("https://127.0.0.1:9001/get-user-history/", {
+			method: "POST",
+			mode: "cors",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({username: user.username})
+		});
+		const data = await response.json();
+		console.log(data);
+		//append each result to the results div
+		const historyDiv = document.getElementById("history-" + user.id);
+		const history = data.history;
+		const historyElement = createHistoryElement(user, history);
+		historyDiv.appendChild(historyElement);
+	});
+
 	return resultElement;
 }
 
@@ -98,30 +162,48 @@ export default  ()=> `
 					</svg>
 				</button>
 			</div>
-			<div id="results">
+			<div id="results" style="padding: 3%">
 				<p>Results will appear here</p>
 			</div>
 		</main>
 	</div>
 `;
 
-export function actionSearch() {
-	document.getElementById("searchButton").addEventListener("click", async () => {
-		const search = document.getElementById("searchBar").value;
-		//send a GET request to the server using the search query
-		const response = await fetch("https://127.0.0.1:8000/users/?" + new URLSearchParams({usr: search}), {
+async function searchUsers(search) {
+	try {
+		const response = await fetch("https://127.0.0.1:8000/users/?usr=" + search, {
 			method: "GET",
 			mode: "cors",
 			credentials: "include"
 		});
-		const data = await response.json();
-		console.log(data);
-		//clear the results div
-		const results = document.getElementById("results");
-		results.innerHTML = "";
-		//append each result to the results div
-		data.forEach(user => {
-			results.appendChild(createResultElement(user));
-		});
-	})
+		if (response.ok) {
+			const data = await response.json();
+			const results = document.getElementById("results");
+			results.innerHTML = "";
+			data.forEach(user => {
+				results.appendChild(createResultElement(user));
+			});
+		} else {
+			console.log("Failed to fetch users");
+		}
+	} catch (error) {
+		console.log("An error occurred while fetching users:", error);
+	}
+}
+
+export function actionSearch() {
+	document.getElementById("searchButton").addEventListener("click", () => {
+		// change the history to add the query params using replaceState
+		const search = document.getElementById("searchBar").value;
+		// remove the text inside the search bar
+		document.getElementById("searchBar").value = "";
+		window.location.search = new URLSearchParams({usr: search});
+	});
+	const search = new URLSearchParams(window.location.search).get("usr");
+	// if no search query is provided, display an alert
+	if (search === null) {
+		console.log("No search query provided");
+		return;
+	}
+	searchUsers(search);
 }

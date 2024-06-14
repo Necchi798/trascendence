@@ -86,7 +86,7 @@ services:
     networks:
       - trancendence
     restart:
-      always   
+      always
 #otp
   otp_db:
     image: postgres

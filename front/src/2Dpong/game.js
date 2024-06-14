@@ -423,6 +423,33 @@ function loop()
 
 //window.addEventListener('resize', resizeCanvas);
 
+export function actionGame()
+{
+	console.log(history.state);
+	const state = history.state;
+	if (state)
+	{
+		const match_id = state.nextmatch.id;
+		const player1_id = state.nextmatch.player1;
+		const player2_id = state.nextmatch.player2;
+		for (let i = 0; i < state.playerNames.length; i++)
+		{
+			if (state.players_id[i] == player1_id)
+			{
+				var player1 = state.playerNames[i];
+			}
+			else if (state.players_id[i] == player2_id)
+			{
+				var player2 = state.playerNames[i];
+			}
+		}
+		makeGame(match_id, player1_id, player2_id, player1, player2);
+	}
+	else
+	{
+		console.error("No state found");
+	}
+}
 
 export function makeGame(match_id, player1_id, player2_id, player1, player2)
 {	
