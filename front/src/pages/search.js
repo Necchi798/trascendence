@@ -58,6 +58,9 @@ function addFriend(username) {
 
 function createHistoryElement(user, history) {
 	const resultElement = document.createElement("div");
+	resultElement.style.width = "100%";
+	resultElement.style.overflow = "auto";
+	resultElement.style.maxHeight = "200px";
 	//for each element in the history array, create a table row and append it to the table
 	const table = document.createElement("table");
 	table.classList.add("table");
@@ -96,14 +99,16 @@ function createResultElement(user) {
 	resultElement.classList.add("card");
 	resultElement.style.width = "width: 100%";
 	resultElement.innerHTML = `
-		<div class="card-body" style="width: 100%">
-			<button type="button" class="btn btn-primary"></button>
-			<a href="#history-${user.id}" class="btn" data-bs-toggle="collapse">
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
-				</svg>
-			</a>
+		<div class="card-body" style="width: 100%;  display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
 			<h5 class="card-title">${user.username}</h5>
+			<div style="display: flex; flex-direction: row; align-items: center;">
+				<button type="button" class="btn btn-primary"></button>
+				<a href="#history-${user.id}" class="btn" data-bs-toggle="collapse">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+					</svg>
+				</a>
+			</div>
 		</div>
 		<div class="collapse" id="history-${user.id}"></div>
 	`;

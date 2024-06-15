@@ -1,4 +1,3 @@
-import { makeGame } from "../2Dpong/game.js";
 import "./components/profile_card.js"
 import "./components/sidebar.js"
 
