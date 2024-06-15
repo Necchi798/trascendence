@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { router } from "../main.js";
 
 var renderer;
 var orbit;
@@ -19,6 +20,26 @@ var p2Offense = true;
 var acceleration = 0.5;
 var isAccelerated = false;
 
+function sendResult(winner_id, match_id){
+	let data = {
+		winner: winner_id,
+		match_id:match_id
+	}
+	fetch('https://127.0.0.1:9001/update-match-result/', { 
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json' 
+		},
+		body: JSON.stringify(data)
+	}
+	).then(()=>{
+		console.log("Result sent");
+		const state = history.state;
+		history.replaceState(state, "", "/3dpong");
+		router();
+	})
+}
+
 class Table {
 	constructor(width, height, depth, x, y, z) {
 		this.width = width;
@@ -32,11 +53,14 @@ class Table {
 }
 
 class Player {
-	constructor(width, height, depth, x, y, z, color) {
+	constructor(width, height, depth, x, y, z, color, match_id, player_id, player_name) {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
 		this.offsetmove = 1;
+		this.match_id = match_id;
+		this.player_id = player_id;
+		this.player_name = player_name;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -325,10 +349,61 @@ function animate() {
 		ball.update();
 		ball.collisionDetect();
 	}
+	if (score1.value == 1)
+	{
+		console.log('Player 1 wins!');
+		sendResult(p1.player_id, p1.match_id);
+		return;
+	}
+	else if (score2.value == 1)
+	{
+		console.log('Player 2 wins!');
+		sendResult(p2.player_id, p2.match_id);
+		return;
+	}
 	renderer.render(scene, camera);
 }
 
-export function makeGame3d() {
+export function actionGame3D()
+{
+	console.log(history.state);
+	const state = history.state;
+	if (state)
+	{
+		if (state.nextmatch)
+		{
+			var match_id = state.nextmatch.id;
+			var player1_id = state.nextmatch.player1;
+			var player2_id = state.nextmatch.player2;
+			for (let i = 0; i < state.playerNames.length; i++)
+			{
+				if (state.players_id[i] == player1_id)
+				{
+					var player1 = state.playerNames[i];
+				}
+				else if (state.players_id[i] == player2_id)
+				{
+					var player2 = state.playerNames[i];
+				}
+			}
+		}
+		else
+		{
+			var match_id = state.match_id;
+			var player1_id = state.players[0];
+			var player2_id = state.players[1];
+			var player1 = state.player_names[0];
+			var player2 = state.player_names[1];
+		}
+		makeGame3d(match_id, player1_id, player2_id, player1, player2);
+	}
+	else
+	{
+		console.error("No state found");
+	}
+}
+
+export function makeGame3d(match_id, player1_id, player2_id, player1, player2) {
 	renderer = new THREE.WebGLRenderer();
 	if (!renderer) {
 		console.log('Failed to create renderer');
@@ -404,14 +479,14 @@ export function makeGame3d() {
 	var player1PosY = 0;
 	var player1PosZ = playerDepth;
 	var player1PosX = width / 2 - playerWidth / 2 - playerDepth;
-	p1 = new Player(playerWidth, playerHeight, playerDepth, player1PosX, player1PosY, player1PosZ, "white");
+	p1 = new Player(playerWidth, playerHeight, playerDepth, player1PosX, player1PosY, player1PosZ, "white", match_id, player1_id, player1);
 	scene.add(p1.mesh);
 	console.log('Player 1 created');
 
 	var player2PosX = - player1PosX;
 	var player2PosY = 0;
 	var player2PosZ = playerDepth;
-	p2 = new Player(playerWidth, playerHeight, playerDepth, player2PosX, player2PosY, player2PosZ, "white");
+	p2 = new Player(playerWidth, playerHeight, playerDepth, player2PosX, player2PosY, player2PosZ, "white", match_id, player2_id, player2);
 	scene.add(p2.mesh);
 	console.log('Player 2 created');
 

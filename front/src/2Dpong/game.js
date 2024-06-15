@@ -140,20 +140,6 @@ class Player {
 	}
 }
 
-function getMatchInfo(match_id)
-{
-	fetch("https://127.0.0.1:9001/create-challenge/?" + new URLSearchParams({"match_id": match_id}), {
-		method: "GET",
-		mode: "cors"
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log(data);
-		console.log(data.match);
-	})
-	.catch(error => console.error(error));
-}
-
 function sendResult(winner_id, match_id){
 	let data = {
 		winner: winner_id,
@@ -169,21 +155,10 @@ function sendResult(winner_id, match_id){
 	}
 	).then(()=>{
 		//document.getElementById("canvas").remove();
-		document.getElementById("content").innerHTML = "<h1>Game Over</h1>";
 		console.log("Result sent");
-		// add a button to go back to the home page or to play another game
-		document.getElementById("content").innerHTML += '<button id="back" class="btn btn-primary">Home</button>';
-		document.getElementById("back").addEventListener("click", () => {
-			console.log("back to home");
-			history.pushState({}, "", "/");
-			router();
-		});
-		document.getElementById("content").innerHTML += '<button id="play" class="btn btn-primary">Play Again</button>';
-		document.getElementById("play").addEventListener("click", () => {
-			console.log("play again");
-			history.pushState({}, "", "/3dpong_tournament");
-			router();
-		});
+		const state = history.state;
+		history.replaceState(state, "", "/2dpong");
+		router();
 	})
 }
 
@@ -375,6 +350,11 @@ function loop()
 	ball.draw();
 	p1.draw();
 	p2.draw();
+	// write the name of the player
+	ctx.fillStyle = "white";
+	ctx.font = "30px Arial";
+	ctx.fillText(p1.player, width / 10, height / 10);
+	ctx.fillText(p2.player, 7 * width / 10, height / 10);
 	requestAnimationFrame(loop);
 }
 
@@ -429,19 +409,30 @@ export function actionGame()
 	const state = history.state;
 	if (state)
 	{
-		const match_id = state.nextmatch.id;
-		const player1_id = state.nextmatch.player1;
-		const player2_id = state.nextmatch.player2;
-		for (let i = 0; i < state.playerNames.length; i++)
+		if (state.nextmatch)
 		{
-			if (state.players_id[i] == player1_id)
+			var match_id = state.nextmatch.id;
+			var player1_id = state.nextmatch.player1;
+			var player2_id = state.nextmatch.player2;
+			for (let i = 0; i < state.playerNames.length; i++)
 			{
-				var player1 = state.playerNames[i];
+				if (state.players_id[i] == player1_id)
+				{
+					var player1 = state.playerNames[i];
+				}
+				else if (state.players_id[i] == player2_id)
+				{
+					var player2 = state.playerNames[i];
+				}
 			}
-			else if (state.players_id[i] == player2_id)
-			{
-				var player2 = state.playerNames[i];
-			}
+		}
+		else
+		{
+			var match_id = state.match_id;
+			var player1_id = state.players[0];
+			var player2_id = state.players[1];
+			var player1 = state.player_names[0];
+			var player2 = state.player_names[1];
 		}
 		makeGame(match_id, player1_id, player2_id, player1, player2);
 	}

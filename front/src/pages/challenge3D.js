@@ -9,7 +9,7 @@ export default  ()=> `
 		<side-bar></side-bar>
 		<main id="contentMain" style="width: 100%;height: 100vh;overflow:hidden">
 		<div style="display: flex; justify-content: center; align-items: center ">
-			<h1 style="font-family: 'Silkscreen', sans-serif; font-size: 100px;">Pong Game</h1>
+			<h1 style="font-family: 'Silkscreen', sans-serif; font-size: 100px;">Pong Game 3D</h1>
 		</div>
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
 			<div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
@@ -150,7 +150,7 @@ function updateTournamentElement(tournament_id, players_id, playerNames)
 function startTournamentMatch(tournament_id, matches, players_id, playerNames)
 {
 	let nextmatch = matches.filter((el)=>!el.has_ended)[0];
-	history.replaceState({tournament_id, nextmatch, playerNames, players_id}, "", "/game");
+	history.replaceState({tournament_id, nextmatch, playerNames, players_id}, "", "/game3d");
 	router();
 }
 
@@ -215,7 +215,7 @@ function startSingleMatch() {
 		startButton.textContent = "Start Match: " + playerNames[0] + " vs " + playerNames[1];
 		startButton.style.display = "block";
 		startButton.addEventListener("click", () => {
-			history.replaceState({ match_id: res.match_id, players: res.players, player_names: playerNames }, "", "/game");
+			history.replaceState({ match_id: res.match_id, players: res.players, player_names: playerNames }, "", "/game3d");
 			router();
 		});
 	});
@@ -263,7 +263,7 @@ function playTournament() {
 	tournamentButton.removeEventListener("click", playTournament);
 }
 
-export function actionChallenge() {
+export function actionChallenge3D() {
 	console.log("challenge page loaded");
 	const state = history.state;
 	if (state)

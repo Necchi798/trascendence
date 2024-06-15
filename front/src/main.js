@@ -1,4 +1,5 @@
 import game from "./pages/game.js";
+import game3d from "./pages/game3d.js";
 import home , { actionHome } from "./pages/home.js";
 import stats from "./pages/stats.js"
 import { actionGame } from "./2Dpong/game.js";
@@ -8,24 +9,26 @@ import twofa from "./pages/twofa.js";
 import { actionRegister } from "./pages/register.js";
 import { actionLogin } from "./pages/login.js";
 import search, { actionSearch } from "./pages/search.js";
-import { makeGame3d } from "./3Dpong/game.js";
+import { actionGame3D } from "./3Dpong/game.js";
 import settings, { actionSettings } from "./pages/settings.js";
 import tournamentpage from "./pages/tournamentpage.js";
 import challenge, {actionChallenge} from "./pages/challenge.js";
+import challenge3D, { actionChallenge3D } from "./pages/challenge3D.js";
 
 
 const routes = {
     "/": { title: "home", render: home, action: actionHome},
     "/home": { title: "home", render: home, action: actionHome },
     "/profile": { title: "profile", render: () => { }, action: () => { } },
-    "/2dpong": { title: "game", render: challenge, action:actionChallenge },
+    "/2dpong": { title: "game", render: challenge, action: actionChallenge },
+    "/3dpong": { title: "game", render: challenge3D, action: actionChallenge3D },
     "/game": { title: "game", render: game, action: actionGame },
+    "/game3d": { title: "game", render: game3d, action: actionGame3D },
     "/login": { title: "login", render: login, action: actionLogin },
     "/twofa": { title: "twofa", render: twofa, action: () => { } },
     "/register": { title: "register", render: register, action: actionRegister },
     "/search": { title: "search", render: search, action: actionSearch },
     "/settings": { title: "settings", render: settings, action: actionSettings },
-    "/3dpong": { title: "3dpong", render: game, action: makeGame3d },
     "/3dpong_tournament": { title: "tournament", render: tournamentpage, action: () => { } }
 }
 

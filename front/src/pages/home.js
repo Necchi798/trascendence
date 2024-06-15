@@ -1,4 +1,3 @@
-import { makeGame } from "../2Dpong/game.js";
 import "./components/profile_card.js"
 import "./components/sidebar.js"
 
@@ -72,7 +71,6 @@ function fetchUserData()
 		}).then(async resHistory => await resHistory.json()).then(res => {
 			const table = document.getElementById("table");
 			res.data.forEach(element => {
-				console.log(element)
 				const tableRow = document.createElement("tr");
 				const date = new Date(element.ended_at);
 				const options = { day: "2-digit", month: "2-digit", year: "numeric" };
