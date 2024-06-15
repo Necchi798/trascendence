@@ -47,10 +47,9 @@ class FriendsCard extends HTMLElement {
 	constructor(){
 		super();
 		this.innerHTML = /*html*/`
-		<div class="card" id="friendsDiv" style="display: flex; flex-direction: column; padding: 5%">
-			<div class="top" style="display: flex; align-items: center; justify-content: space-between;">
-				<input type="text" id="search-input" placeholder="Search for friends...">
-				<a class="btn" id="searchButton" href="/search">
+		<div class="card" id="friendsDiv" class="d-flex flex-column" style="padding: 2rem">
+			<div class="top" class="d-flex align-items-center justify-content-between">
+				<a class="btn d-flex align-items-center" style="gap:1rem" id="searchButton" href="/search">
 					Search new friends
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
 						<path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>

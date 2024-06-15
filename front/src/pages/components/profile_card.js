@@ -58,7 +58,6 @@ class ProfileCard extends HTMLElement {
         img.src = imgURL;
         img.alt = 'Immagine PNG';
         document.getElementById("image-container").src = imgURL
-        document.getElementById("image-container-sidebar").src = imgURL
         }catch{}
     }
     async fetchData() {
@@ -74,7 +73,6 @@ class ProfileCard extends HTMLElement {
                 nameSpan.textContent = data.username;
             }
             const mailSpan = this.querySelector('#email')
-            console.log("pippolo")
             if(mailSpan)
                 mailSpan.textContent= data.email;
             fetch("https://127.0.0.1:9001/get-history/",{

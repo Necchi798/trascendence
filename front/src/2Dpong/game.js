@@ -39,7 +39,7 @@ function togglePause() {
 
 function pu(event) {
 	if (event.key === ' ') {
-		ball.togglePause();
+		togglePause(); 
 	}
 }
 function addTogglePauseEventListener() {
