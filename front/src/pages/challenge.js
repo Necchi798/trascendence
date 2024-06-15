@@ -63,6 +63,15 @@ function updateTournamentElement(tournament_id, players_id, playerNames)
 	}).then(async res=>await res.json()).then(res=>{
 		if (res.message === "torneo finito")
 		{
+			var state = history.state;
+			let winners = [state.winner_id];
+			for (let i = 0; i < playerNames.length; i++)
+			{
+				if (winners.includes(players_id[i]))
+				{
+					document.getElementById("liplayer" + (i + 1)).style.backgroundColor = "#C1EBC5";
+				}
+			}
 			document.getElementById("startMatchButton").textContent = "Tournament ended";
 			const btn = document.getElementById("startMatchButton");
 			btn.removeEventListener("click", startTournamentMatch);

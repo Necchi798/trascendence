@@ -38,7 +38,8 @@ function sendResult3D(winner_id, match_id){
 	}
 	).then(()=>{
 		console.log("Result sent");
-		const state = history.state;
+		var state = history.state;
+		state.winner_id = winner_id;
 		history.replaceState(state, "", "/3dpong");
 		router();
 		return;
