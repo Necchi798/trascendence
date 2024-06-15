@@ -342,7 +342,6 @@ function updatePlayers() {
 }
 
 function animate() {
-	requestAnimationFrame(animate);
 	updatePlayers();
 	if (!paused)
 	{
@@ -362,6 +361,7 @@ function animate() {
 		return;
 	}
 	renderer.render(scene, camera);
+	requestAnimationFrame(animate);
 }
 
 export function actionGame3D()

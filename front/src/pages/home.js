@@ -24,16 +24,14 @@ import "./components/friends_card.js"
 import "./components/history_card.js"
 
 export default  ()=> `
-	<div style="display: flex;flex-direction: row;">
+	<div class="d-flex flex-row">
 		<side-bar>Trascendence</side-bar>
-		<main id="content" style="width: 100%;height: 100vh;display:flex; flex-direction: row">
-            <div style="display:flex; flex-direction: column;align-content: center;
-                    width: 60%; padding: 3%; gap: 5%">
+		<main id="content" class="d-flex w-100 vh-100 flex-row" >
+            <div class="d-flex flex-column align-content-center" style="display:flex; flex-direction: column;align-content: center; width: 60%; padding: 3%; gap: 5%">
 				<profile-card></profile-card>
                 <history-card></history-card>
             </div>
-            <div style="display:flex; flex-direction: column;align-content: center;
-                    width: 40%; padding: 3%; padding-left: 0%">
+            <div class="d-flex flex-column align-content-center" style="width: 40%; padding: 3%; padding-left: 0%">
 				<friends-card></friends-card>
             </div>
         </main>
@@ -69,7 +67,12 @@ function fetchUserData()
 				"Content-Type": "application/json"
 			}
 		}).then(async resHistory => await resHistory.json()).then(res => {
+			const wins = res.data.filter(el=>el.winner === userData.username).length
+			document.getElementById("wins").innerText= wins
+			document.getElementById("losses").innerText= res.data.length - wins
+
 			const table = document.getElementById("table");
+			
 			res.data.forEach(element => {
 				const tableRow = document.createElement("tr");
 				const date = new Date(element.ended_at);

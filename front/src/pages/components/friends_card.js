@@ -28,7 +28,7 @@ function createFriendElement(friend) {
 	friendElement.style = "display: flex; justify-content: space-between; flex-direction: col;";
 	friendElement.classList.add("card");
 	friendElement.innerHTML = `
-		<div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-direction: row;">
+		<div class="card-body d-flex flex-row align-items-center justify-content-between">
 			<div class="name d-flex align-items-center"  >
 				${friend.username}
 			</div>

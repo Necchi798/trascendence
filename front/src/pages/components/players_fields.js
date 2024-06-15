@@ -4,7 +4,7 @@ class PlayerFields extends HTMLElement {
 		this.tournament = "false";
 		// div with the 2 input fields for the player names ad a radio button for the logged in user
 		this.innerHTML = /*html*/`
-			<div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 30px;">
+			<div class="d-flex flex-row justify-content-center align-items-center" style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
 					<input type="text" id="player1" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 1">
 				</div>
@@ -13,7 +13,7 @@ class PlayerFields extends HTMLElement {
 					<label for="player1">logged in as user</label>
 				</div>
 			</div>
-			<div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 30px;">
+			<div class="d-flex flex-row justify-content-center align-items-center"  style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
 					<input type="text" id="player2" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 2">
 				</div>
@@ -33,7 +33,8 @@ class PlayerFields extends HTMLElement {
 		if (this.tournament == "true")
 		{
 			this.innerHTML = /*html*/`
-			<div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 30px;">
+			<div class="d-flex flex-row justify-content-center align-items-center"
+				style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
 					<input type="text" id="player1" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 1">
 				</div>
@@ -49,7 +50,7 @@ class PlayerFields extends HTMLElement {
 					<label for="player3">logged in as user</label>
 				</div>
 			</div>
-			<div style="display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 30px;">
+			<div class="d-flex flex-row justify-content-center align-items-center" style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
 					<input type="text" id="player2" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 2">
 				</div>
@@ -89,13 +90,20 @@ class PlayerFields extends HTMLElement {
 	getPlayers() {
 		const players = [];
 		const inputs = this.querySelectorAll("input[type='text']");
-		const creator_id = "#" + this.querySelector("input[type='radio']:checked").value;
-		const creator = this.querySelector(creator_id).value;
-		players.push(creator);
-		for (let input of inputs) {
-			if (input.value != creator)
+		try{
+			const creator_id = "#" + this.querySelector("input[type='radio']:checked").value;
+			const creator = this.querySelector(creator_id).value;
+			players.push(creator);
+			for (let input of inputs) {
+				if (input.value != creator)
 				players.push(input.value);
-		}
+			}
+		}catch{}
+		// const unique = new Set(players)
+		// if( unique.size !== players.length){
+		// 	console.log("cippalippa")
+		// 	return
+		// }
 		return players;
 	}
 

@@ -31,6 +31,7 @@ function createTournament() {
 	const playerFields = document.querySelector("players-fields");
 	const playerNames = playerFields.getPlayers();
 	console.log(playerNames);
+
 	const data = { names: playerNames };
 	fetch("https://127.0.0.1:9001/create-challenge/", {
 		method: "POST",
@@ -286,6 +287,7 @@ export function actionChallenge3D() {
 			startButton.addEventListener("click", () => {
 				history.replaceState({}, "", "/home");
 				router();
+				return;
 			});
 		}
 	}
@@ -302,5 +304,12 @@ export function actionChallenge3D() {
 export function checkFields() {
 	const startButton = document.getElementById("startButton");
 	const playerFields = document.querySelector("players-fields");
+	const playerNames = playerFields.getPlayers()
+	
+
 	startButton.disabled = playerFields.isFilled() ? false : true;
+	if(playerFields.getAttribute("tournament") && playerNames.length !==4)
+		startButton.disabled = true
+	else if(!playerFields.getAttribute("tournament") && playerNames.length !==2)
+		startButton.disabled = true
 }

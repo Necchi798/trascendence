@@ -2,10 +2,10 @@ class HistoryCard extends HTMLElement {
     constructor(){
         super();
         this.innerHTML = /*html*/`
-        <div class="card" style="width: 100%; display: flex; flex-direction: row; flex-wrap: wrap">
-    <div class="card-body" style="width: 100%;">
+        <div class="card" class="d-flex w-100 flex-row flex-wrap">
+    <div class="card-body" class="w-100">
         <h5 class="card-title">History</h5>
-        <div style="display: flex; margin-top: 1rem; flex-direction: column; flex-wrap: wrap;">
+        <div class="d-flex flex-column flex-wrap mt-4 flex-wrap">
             <div style="overflow-y: auto; max-height: 200px; width: 100%;">
                 <table class="table">
                     <thead>

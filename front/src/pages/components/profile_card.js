@@ -18,29 +18,30 @@ class ProfileCard extends HTMLElement {
     constructor(){
         super();
         this.innerHTML = /*html*/`
-        <div id="123" class="card" style=" width: 40rem;display: flex;flex-direction: row;">
+        <div id="123" class="card" style=" display: flex;flex-direction: row;">
             <img style="width:200px;height:200px" id="image-container"></img>
             <div class="card-body">
                 <h5 class="card-title">Profile</h5>
                 <div style="display: flex; gap:5rem;margin-top:2rem">
                     <div style="display: flex;flex-direction: column;gap:1rem">
-                        <span>e-Mail</span>
+                        <span>e-Mail:</span>
                         <span >name:</span>
                     </div>
                     <div id="userInfoDiv" style="display: flex;flex-direction: column;gap:1rem">
                         <span id="email" >loading...</span>
                         <span id="name">Loading...</span>
                     </div>
+                    <div id="userInfoDiv" style="display: flex;flex-direction: column;gap:1rem">
+                        <span >WINS: <span id="wins">no data</span></span>
+                        <span>LOSSES: <span id="losses">no data</span></span>
+                    </div>
                     </div>
             </div>
         </div>
         `
-        //this.fetchData()
         this.maufetch()
     }
     async maufetch(){
-       // "https://127.0.0.1:8000/avatar/" png 
-        //let data = {names:["player1","player2","player3","player4"]}
         try {
         const response = await fetch("https://127.0.0.1:8000/avatar/",{
             method: "GET",
@@ -73,6 +74,7 @@ class ProfileCard extends HTMLElement {
                 nameSpan.textContent = data.username;
             }
             const mailSpan = this.querySelector('#email')
+            console.log("pippolo")
             if(mailSpan)
                 mailSpan.textContent= data.email;
             fetch("https://127.0.0.1:9001/get-history/",{
@@ -84,9 +86,11 @@ class ProfileCard extends HTMLElement {
                   },
             }).then(async res=>await res.json()).then(res=>{
                 console.log(res.data)
-                const wins = res.data.filter(el=>el.winner === localStorage.getItem("user")).length
+                const wins = res.data.filter(el=>el.winner === data.username).length
                 document.getElementById("wins").innerText= wins
                 document.getElementById("losses").innerText= res.data.length - wins
+                console.log("qui",wins)
+                console.log(res.data.length - wins)
             });
 
         } catch (error) {

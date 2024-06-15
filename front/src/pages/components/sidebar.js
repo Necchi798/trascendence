@@ -35,9 +35,29 @@ class Sidebar extends HTMLElement {
 			</div>
 		</div>
 		`;
+		this.maufetch()
 		document.getElementById("name-sidebar").textContent=localStorage.getItem("user")
 		document.getElementById("logout").addEventListener("click",()=> { document.cookie = "jwt" + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';window.location="/login"})
 	}
+	async maufetch(){
+		 try {
+		 const response = await fetch("https://127.0.0.1:8000/avatar/",{
+			 method: "GET",
+			 mode: "cors",
+			 credentials: "include",
+			 headers: {
+				 'Content-Type': 'application/json', // Tipo di contenuto corretto
+			   },
+			 //body:JSON.stringify(data)
+		 })
+		 const blob = await response.blob()
+		 const imgURL = URL.createObjectURL(blob);
+		 const img = document.createElement('img');
+		 img.src = imgURL;
+		 img.alt = 'Immagine PNG';
+		 document.getElementById("image-container-sidebar").src = imgURL
+		 }catch{}
+	 }
 }
 
 customElements.define("side-bar", Sidebar);
