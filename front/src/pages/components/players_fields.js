@@ -6,7 +6,7 @@ class PlayerFields extends HTMLElement {
 		this.innerHTML = /*html*/`
 			<div class="d-flex flex-row justify-content-center align-items-center" style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
-					<input type="text" id="player1" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 1">
+					<input type="text" id="player1" style=" font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 1">
 				</div>
 				<div style="margin-right: 10px;">
 					<input type="radio" id="player1" name="player" value="player1">
@@ -15,7 +15,7 @@ class PlayerFields extends HTMLElement {
 			</div>
 			<div class="d-flex flex-row justify-content-center align-items-center"  style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
-					<input type="text" id="player2" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 2">
+					<input type="text" id="player2" style=" font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 2">
 				</div>
 				<div style="margin-right: 10px;">
 					<input type="radio" id="player2" name="player" value="player2">
@@ -36,14 +36,14 @@ class PlayerFields extends HTMLElement {
 			<div class="d-flex flex-row justify-content-center align-items-center"
 				style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
-					<input type="text" id="player1" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 1">
+					<input type="text" id="player1"  class="border-0 rounded" style=" font-size: 15px; padding: 10px 20px; background-color: #f1f1f1;  cursor: pointer;" placeholder="Player 1">
 				</div>
 				<div style="margin-right: 10px;">
 					<input type="radio" id="player1" name="player" value="player1">
 					<label for="player1">logged in as user</label>
 				</div>
 				<div style="margin-right: 10px;">
-					<input type="text" id="player3" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 3">
+					<input type="text" id="player3"  class="border-0 rounded" style=" font-size: 15px; padding: 10px 20px; background-color: #f1f1f1;  cursor: pointer;" placeholder="Player 3">
 				</div>
 				<div style="margin-right: 10px;">
 					<input type="radio" id="player3" name="player" value="player3">
@@ -52,14 +52,14 @@ class PlayerFields extends HTMLElement {
 			</div>
 			<div class="d-flex flex-row justify-content-center align-items-center" style="margin-top: 30px;">
 				<div style="margin-right: 10px;">
-					<input type="text" id="player2" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 2">
+					<input type="text" id="player2" class="border-0 rounded"  style="font-size: 15px; padding: 10px 20px; background-color: #f1f1f1;  cursor: pointer;" placeholder="Player 2">
 				</div>
 				<div style="margin-right: 10px;">
 					<input type="radio" id="player2" name="player" value="player2">
 					<label for="player2">logged in as user</label>
 				</div>
 				<div style="margin-right: 10px;">
-					<input type="text" id="player4" style="font-family: 'Silkscreen', sans-serif; font-size: 15px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;" placeholder="Player 4">
+					<input type="text" id="player4"  class="border-0 rounded" style=" font-size: 15px; padding: 10px 20px; background-color: #f1f1f1;  cursor: pointer;" placeholder="Player 4">
 				</div>
 				<div style="margin-right: 10px;">
 					<input type="radio" id="player4" name="player" value="player4">

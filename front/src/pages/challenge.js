@@ -303,9 +303,40 @@ export function checkFields() {
 	const playerNames = playerFields.getPlayers()
 	
 
-	startButton.disabled = playerFields.isFilled() ? false : true;
-	if(playerFields.getAttribute("tournament") && playerNames.length !==4)
-		startButton.disabled = true
-	if(!playerFields.getAttribute("tournament") && playerNames.length !==2)
-		startButton.disabled = true
+	startButton.disabled = false;
+	if (!playerFields.isFilled()){
+		console.log("notfilled")
+		startButton.disabled = true;
+	}
+	else
+	{
+		if (playerFields.getAttribute("tournament") === "true" ){
+			console.log("torneo")
+			var p1 = document.querySelector("#player1").value;
+			var p2 = document.querySelector("#player2").value;
+			var p3 = document.querySelector("#player3").value;
+			var p4 = document.querySelector("#player4").value;
+			if(p1 === p2 )
+				startButton.disabled = true;
+			if(p1 === p3 )
+				startButton.disabled = true;
+			if(p1 === p4 )
+				startButton.disabled = true;
+			if(p2 === p3 )
+				startButton.disabled = true;
+			if(p2 === p4 )
+				startButton.disabled = true;
+			if(p3 === p4 )
+				startButton.disabled = true;
+		}
+		if (playerFields.getAttribute("tournament") === "false"){
+			var p11 = document.querySelector("#player1").value;
+			var p22 = document.querySelector("#player2").value;
+			console.log(p11,p22, p11 === p22)
+			if(p11 === p22){
+				startButton.disabled = true;
+
+			}
+		}
+	}
 }

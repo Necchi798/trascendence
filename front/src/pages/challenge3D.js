@@ -308,12 +308,7 @@ export function actionChallenge3D() {
 export function checkFields() {
 	const startButton = document.getElementById("startButton");
 	const playerFields = document.querySelector("players-fields");
-	const playerNames = playerFields.getPlayers()
-
-	console.log(playerNames)
-
 	startButton.disabled = false;
-	//const players_filled =  ? false : true;
 	if (!playerFields.isFilled()){
 		console.log("notfilled")
 		startButton.disabled = true;
@@ -349,11 +344,5 @@ export function checkFields() {
 			}
 		}
 	}
-	/* if(playerFields.getAttribute("tournament") && playerNames.length !== 4)
-		startButton.disabled = true
-
-
-	if(!playerFields.getAttribute("tournament") && playerNames.length !== 2)
-		startButton.disabled = true; */
 
 }
