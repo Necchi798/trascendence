@@ -88,7 +88,7 @@ function imgUpdate(){
 
     fetch('https://127.0.0.1:8000/avatar/', requestOptions)
       .then(response => response.text())
-      .then(result => console.log(result))
+      .then(result => {document.getElementById("sidebar-component").maufetch()})
       .catch(error => console.error('Error:', error));
 }
 // add functions for settings (take them from home)

@@ -4,6 +4,7 @@ import "./sidebar_element.js";
 class Sidebar extends HTMLElement {
 	constructor() {
 		super();
+		this.id = "sidebar-component"
 		this.innerHTML = /*html*/`
 		<div style="display: flex;flex-direction: row;">
 			<div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;height: 100vh">
