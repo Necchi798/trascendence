@@ -190,6 +190,8 @@ class Ball {
 		this.alpha = alpha;
 		this.color = color;
 		this.size = size;
+		this.acceleration = acceleration;
+		this.isAccelerated = isAccelerated;
 	}
 
 	draw()
