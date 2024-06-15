@@ -217,6 +217,7 @@ function startSingleMatch() {
 		startButton.addEventListener("click", () => {
 			history.replaceState({ match_id: res.match_id, players: res.players, player_names: playerNames }, "", "/game3d");
 			router();
+			return;
 		});
 	});
 	
@@ -264,7 +265,7 @@ function playTournament() {
 }
 
 export function actionChallenge3D() {
-	console.log("challenge page loaded");
+	console.log("challenge page 3D loaded");
 	const state = history.state;
 	if (state)
 	{
@@ -275,11 +276,12 @@ export function actionChallenge3D() {
 		}
 		else
 		{
-			console.log("culo");
 			const matchElement = document.querySelector("match-element");
 			matchElement.style.display = "block";
 			matchElement.setPlayers(state.player_names);
 			const startButton = document.getElementById("startSingleMatchButton");
+			// if it has an event listener, remove it
+			startButton.removeEventListener("click", startSingleMatch);
 			startButton.style.display = "block";
 			document.getElementById("tournamentButton").style.display = "none";
 			startButton.textContent = "Home";
@@ -287,6 +289,7 @@ export function actionChallenge3D() {
 				history.replaceState({}, "", "/home");
 				router();
 			});
+			
 		}
 	}
 	const playButton = document.getElementById("playButton");

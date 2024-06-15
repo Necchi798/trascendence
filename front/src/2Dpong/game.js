@@ -23,57 +23,71 @@ let p2Offense = false;
 let acceleration = 5;
 let isAccelerated = false;
 
-document.addEventListener('keydown', function(event) {
-	if (event.key === ' ') {
-		paused = !paused;
-		if (paused) {
-			savedVel = ball.vel;
-			savedAlpha = ball.alpha;
-			ball.vel = 0;
-			ball.alpha = 0;
-		}
-		else {
-			ball.vel = savedVel;
-			ball.alpha = savedAlpha;
-		}
+function togglePause() {
+	paused = !paused;
+	if (paused) {
+		savedVel = ball.vel;
+		savedAlpha = ball.alpha;
+		ball.vel = 0;
+		ball.alpha = 0;
 	}
-});
-
-document.addEventListener('keydown', function(event)
-{
-	if (event.key === 'w')
-		player1Up = true;
-	else if (event.key === 's')
-		player1Down = true;
+	else {
+		ball.vel = savedVel;
+		ball.alpha = savedAlpha;
+	}
 }
-);
 
-document.addEventListener('keyup', function(event) {
-    if (event.key === 'w') {
-        player1Up = false;
-    } else if (event.key === 's') {
-        player1Down = false;
-    }
-});
+function addTogglePauseEventListener() {
+	document.addEventListener('keydown', function(event) {
+		if (event.key === ' ') {
+			togglePause();
+		}
+	});
+}
+
+function removeTogglePauseEventListener() {
+	document.removeEventListener('keydown', function(event) {
+		if (event.key === ' ') {
+			togglePause();
+		}
+	});
+}
+
+function handleKeyDown(event) {
+	if (event.key === 'w') {
+		player1Up = true;
+	} else if (event.key === 's') {
+		player1Down = true;
+	}
+}
+
+
+function handleKeyUp(event) {
+	if (event.key === 'w') {
+		player1Up = false;
+	} else if (event.key === 's') {
+		player1Down = false;
+	}
+}
 
 // Add event listeners for player 2 movement
-document.addEventListener('keydown', function(event)
-{
+function handleKeyDown2(event) {
 	if (event.key === 'ArrowUp') {
 		player2Up = true;
 	} else if (event.key === 'ArrowDown') {
 		player2Down = true;
 	}
-});
+}
 
-document.addEventListener('keyup', function(event)
-{
+
+function handleKeyUp2(event) {
 	if (event.key === 'ArrowUp') {
 		player2Up = false;
 	} else if (event.key === 'ArrowDown') {
 		player2Down = false;
 	}
-});
+}
+
 
 // Update player positions based on key states
 function updatePlayers() {
@@ -146,6 +160,12 @@ function sendResult(winner_id, match_id){
 		match_id:match_id
 	}
 	//localStorage.removeItem("match_id");
+	//remove the event listeners
+	document.removeEventListener('keydown', handleKeyDown);
+	document.removeEventListener('keyup', handleKeyUp);
+	document.removeEventListener('keydown', handleKeyDown2);
+	document.removeEventListener('keyup', handleKeyUp2);
+	removeTogglePauseEventListener();
 	fetch('https://127.0.0.1:9001/update-match-result/', { 
 		method: 'POST',
 		headers: {
@@ -159,11 +179,12 @@ function sendResult(winner_id, match_id){
 		const state = history.state;
 		history.replaceState(state, "", "/2dpong");
 		router();
+		return;
 	})
 }
 
 class Ball {
-	constructor(x, y, vel, alpha, color, size)
+	constructor(x, y, vel, alpha, color, size, acceleration, isAccelerated)
 	{
 		this.x = x;
 		this.y = y;
@@ -195,7 +216,7 @@ class Ball {
 		{
 			p1Score++;
 			paused = true;
-			isAccelerated = false;
+			this.isAccelerated = false;
 			player1Down = false;
 			player1Up = false;
 			player2Down = false;
@@ -210,7 +231,7 @@ class Ball {
 		else if (this.x <= 0)
 		{
 			p2Score++;
-			isAccelerated = false;
+			this.isAccelerated = false;
 			paused = true;
 			player1Down = false;
 			player1Up = false;
@@ -252,15 +273,15 @@ class Ball {
 		if (p2Offense && this.x <= p1.x + p1.width && this.y >= p1.y && this.y <= p1.y + p1.height)
 		{
 			this.alpha = Math.PI - this.alpha;
-			if ((player1Down || player1Up) && !isAccelerated)
+			if ((player1Down || player1Up) && !this.isAccelerated)
 			{	
-				this.vel += acceleration;
-				isAccelerated = true;
+				this.vel += this.acceleration;
+				this.isAccelerated = true;
 			}
-			else if (isAccelerated)
+			else if (this.isAccelerated)
 			{
-				this.vel -= acceleration;
-				isAccelerated = false;
+				this.vel -= this.acceleration;
+				this.isAccelerated = false;
 			}
 			p2Offense = false;
 			p1Offense = true;
@@ -271,15 +292,15 @@ class Ball {
 			this.alpha = Math.PI - this.alpha;
 			//console.log("p2: " + (player2Down || player2Up));
 			//console.log("isAccelerated: " + isAccelerated);
-			if ((player2Down || player2Up) && !isAccelerated)
+			if ((player2Down || player2Up) && !this.isAccelerated)
 			{	
-				this.vel += acceleration;
-				isAccelerated = true;
+				this.vel += this.acceleration;
+				this.isAccelerated = true;
 			}
-			else if (isAccelerated)
+			else if (this.isAccelerated)
 			{
-				this.vel -= acceleration;
-				isAccelerated = false;
+				this.vel -= this.acceleration;
+				this.isAccelerated = false;
 			}
 			//console.log("after p2: " + this.velX);
 			p2Offense = true;
@@ -407,6 +428,11 @@ export function actionGame()
 {
 	console.log(history.state);
 	const state = history.state;
+	document.addEventListener('keydown', handleKeyDown);
+	document.addEventListener('keyup', handleKeyUp);
+	document.addEventListener('keydown', handleKeyDown2);
+	document.addEventListener('keyup', handleKeyUp2);
+	addTogglePauseEventListener();
 	if (state)
 	{
 		if (state.nextmatch)
@@ -490,7 +516,7 @@ export function makeGame(match_id, player1_id, player2_id, player1, player2)
 
 	p1 = new Player(startingP1X, startingPY, playerWidth, playerHeight, player1, player1_id, match_id);
 	p2 = new Player(startingP2X, startingPY, playerWidth, playerHeight, player2, player2_id, match_id);
-	ball = new Ball(startingBallX, startingBallY, 0, 0, "white", ballSize);
+	ball = new Ball(startingBallX, startingBallY, 0, 0, "white", ballSize, 5, false);
 
  	paused = true;
 	savedVel = 10;

@@ -5,11 +5,11 @@ import stats from "./pages/stats.js"
 import { actionGame } from "./2Dpong/game.js";
 import login, { loginStyle } from "./pages/login.js";
 import register from "./pages/register.js";
-import twofa from "./pages/twofa.js";
+import twofa, {actionTwofa} from "./pages/twofa.js";
 import { actionRegister } from "./pages/register.js";
 import { actionLogin } from "./pages/login.js";
 import search, { actionSearch } from "./pages/search.js";
-import { actionGame3D } from "./3Dpong/game.js";
+import { actionGame3D } from "./3Dpong/game3D.js";
 import settings, { actionSettings } from "./pages/settings.js";
 import tournamentpage from "./pages/tournamentpage.js";
 import challenge, {actionChallenge} from "./pages/challenge.js";
@@ -19,17 +19,15 @@ import challenge3D, { actionChallenge3D } from "./pages/challenge3D.js";
 const routes = {
     "/": { title: "home", render: home, action: actionHome},
     "/home": { title: "home", render: home, action: actionHome },
-    "/profile": { title: "profile", render: () => { }, action: () => { } },
-    "/2dpong": { title: "game", render: challenge, action: actionChallenge },
-    "/3dpong": { title: "game", render: challenge3D, action: actionChallenge3D },
+    "/2dpong": { title: "match", render: challenge, action: actionChallenge },
+    "/3dpong": { title: "match3D", render: challenge3D, action: actionChallenge3D },
     "/game": { title: "game", render: game, action: actionGame },
-    "/game3d": { title: "game", render: game3d, action: actionGame3D },
+    "/game3d": { title: "game3D", render: game3d, action: actionGame3D },
     "/login": { title: "login", render: login, action: actionLogin },
-    "/twofa": { title: "twofa", render: twofa, action: () => { } },
+    "/twofa": { title: "twofa", render: twofa, action: actionTwofa },
     "/register": { title: "register", render: register, action: actionRegister },
     "/search": { title: "search", render: search, action: actionSearch },
-    "/settings": { title: "settings", render: settings, action: actionSettings },
-    "/3dpong_tournament": { title: "tournament", render: tournamentpage, action: () => { } }
+    "/settings": { title: "settings", render: settings, action: actionSettings }
 }
 
 /* export const router = ()=> {

@@ -1,5 +1,4 @@
 import {router} from "../main.js";
-import { twofaScript } from "./twofa.js";
 
 export function loginStyle()
 {
@@ -138,7 +137,6 @@ export function fetchDataLogin() {
 			console.log("cookie: ",document.cookie,"ce sta" ,document.cookie.includes("jwt"))
 			
 			document.getElementById("loginStyle").remove();
-			localStorage.setItem("user",name)
 			history.pushState({},"","/")
 			router();
 		}
@@ -149,9 +147,9 @@ export function fetchDataLogin() {
 			console.log(response_msg);
 			if (response_msg == "OTP required!")
 			{
-				history.pushState({},"","/twofa")
+				history.pushState({username: name, password: password, id: response_data.id},"","/twofa")
 				router();
-				twofaScript(data, response_data.id);
+				return;
 			}
 			else
 			{

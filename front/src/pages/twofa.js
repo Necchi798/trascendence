@@ -86,26 +86,34 @@ export default ()=> `
 </div>
 `;
 
-async function twofaMail(id)
+function twofaMail(id)
 {
 	console.log(id);
-	const response = await fetch("https://127.0.0.1:8001/send_mail/", {
+	fetch("https://127.0.0.1:8001/send_mail/", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify(id)
+	}).then((res) => {
+		if (res.ok)
+		{
+			console.log("mail sent");
+		}
+		else
+		{
+			console.log("error");
+		}
 	});
-	const data = await response.json();
-	console.log(data);
 }
 
-async function twofaLogin(userdata)
+function twofaLogin(userdata)
 {
+	console.log("twofalogin", userdata);
 	const username = userdata.username;
 	const password = userdata.password;
 	const otp = document.getElementById("otpField").value;
-	const response = await fetch("https://127.0.0.1:8000/login/", {
+	fetch("https://127.0.0.1:8000/login/", {
 		method: "POST",
 		credentials: "include",
 		mode:"cors",
@@ -113,27 +121,39 @@ async function twofaLogin(userdata)
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify({username: username, password: password, otp: otp})
+	}).then((res) => {
+		if (res.ok)
+		{
+			document.getElementById("twofaStyle").remove();
+			history.pushState({},"","/");
+			router();
+		}
+		else
+		{
+			console.log("error");
+		}
 	});
-	const data = await response.json();
-	if(data.jwt)
+}
+
+export function actionTwofa()
+{
+	var userdata = history.state;
+	console.log(history.state);
+	if (userdata == null)
 	{
-		document.getElementById("twofaStyle").remove();
-		history.pushState({},"","/");
+		history.pushState({},"","/login");
 		router();
+		return;
 	}
 	else
 	{
-		console.log(data);
+		console.log("debug:", userdata);
 	}
-}
-
-export function twofaScript(userdata, id)
-{
 	var style = document.getElementById("twofaStyle");
 	if (style == null)
 	{
 		document.head.appendChild(twofaStyle());
 	}
 	document.getElementById("loginButton").addEventListener("click", twofaLogin.bind(null, userdata));
-	document.getElementById("mailButton").addEventListener("click", twofaMail.bind(null, id));
+	document.getElementById("mailButton").addEventListener("click", twofaMail.bind(null, userdata.id));
 }
