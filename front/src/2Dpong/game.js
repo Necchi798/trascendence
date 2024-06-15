@@ -174,6 +174,7 @@ function sendResult(winner_id, match_id){
 		//document.getElementById("canvas").remove();
 		console.log("Result sent");
 		const state = history.state;
+		state.winner_id = winner_id;
 		history.replaceState(state, "", "/2dpong");
 		router();
 		return;
@@ -189,6 +190,8 @@ class Ball {
 		this.alpha = alpha;
 		this.color = color;
 		this.size = size;
+		this.acceleration = acceleration;
+		this.isAccelerated = isAccelerated;
 	}
 
 	draw()
