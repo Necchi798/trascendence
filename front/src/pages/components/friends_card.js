@@ -104,7 +104,6 @@ class FriendsCard extends HTMLElement {
 					document.getElementById("friend-" + friend.id).querySelector(".name").appendChild(status);
 				}
 			});
-			enableFriendCard();
 		}
 		catch(error) {
 			console.error(error);
@@ -112,23 +111,5 @@ class FriendsCard extends HTMLElement {
 	}
 }
 
-
-function enableFriendCard() {
-	const searchInput = document.getElementById('search-input');
-	const searchButton = document.getElementById('search-button');
-	const users = document.getElementById('friendsContainer').children;
-	const searchFriends = () => {
-		const searchText = searchInput.value.toLowerCase();
-		Array.from(users).forEach(user => {
-			const username = user.querySelector('.name').textContent.toLowerCase();
-			if (username.includes(searchText)) {
-				user.style.display = 'block';
-			} else {
-				user.style.display = 'none';
-			}
-		});
-	};
-	searchInput.addEventListener('input', searchFriends);
-}
 
 customElements.define("friends-card", FriendsCard);

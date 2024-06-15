@@ -301,7 +301,7 @@ export function actionChallenge3D() {
 				router();
 				return;
 			});
-			
+			return;
 		}
 	}
 	const playButton = document.getElementById("playButton");

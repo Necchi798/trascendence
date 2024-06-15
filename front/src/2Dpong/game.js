@@ -15,25 +15,18 @@ let player1Up = false;
 let player1Down = false;
 let player2Up = false;
 let player2Down = false;
-let paused = false;
-let savedVel = 0;
-let savedAlpha = 0;
-let p1Offense = true;
-let p2Offense = false;
-let acceleration = 5;
-let isAccelerated = false;
 
 function togglePause() {
-	paused = !paused;
-	if (paused) {
-		savedVel = ball.vel;
-		savedAlpha = ball.alpha;
+	ball.paused = !ball.paused;
+	if (ball.paused) {
+		ball.savedVel = ball.vel;
+		ball.savedAlpha = ball.alpha;
 		ball.vel = 0;
 		ball.alpha = 0;
 	}
 	else {
-		ball.vel = savedVel;
-		ball.alpha = savedAlpha;
+		ball.vel = ball.savedVel;
+		ball.alpha = ball.savedAlpha;
 	}
 }
 
@@ -119,7 +112,7 @@ function updatePlayers() {
 }
 
 class Player {
-	constructor(x, y, width, height, player, player_id, match_id)
+	constructor(x, y, width, height, player, player_id, match_id, offense)
 	{
 		this.x = x;
 		this.y = y;
@@ -127,6 +120,7 @@ class Player {
 		this.width = width;
 		this.height = height;
 		this.offsetmove = this.height / 10;
+		this.offense = offense;
 		this.player = player;
 		this.player_id = player_id;
 		this.match_id = match_id;
@@ -182,7 +176,7 @@ function sendResult(winner_id, match_id){
 }
 
 class Ball {
-	constructor(x, y, vel, alpha, color, size, acceleration, isAccelerated)
+	constructor(x, y, vel, alpha, color, size, acceleration, isAccelerated, savedVel, savedAlpha, paused)
 	{
 		this.x = x;
 		this.y = y;
@@ -192,6 +186,9 @@ class Ball {
 		this.size = size;
 		this.acceleration = acceleration;
 		this.isAccelerated = isAccelerated;
+		this.savedVel = savedVel;
+		this.savedAlpha = savedAlpha;
+		this.paused = paused;
 	}
 
 	draw()
@@ -215,33 +212,33 @@ class Ball {
 		if (this.x + this.size >= width)
 		{
 			p1Score++;
-			paused = true;
+			this.paused = true;
 			this.isAccelerated = false;
 			player1Down = false;
 			player1Up = false;
 			player2Down = false;
 			player2Up = false;
-			p1Offense = true;
-			p2Offense = false;
+			p1.offense = true;
+			p2.offense = false;
 			this.start();
-			savedVel = 10;
-			savedAlpha = -(Math.PI / 4);
+			this.savedVel = 10;
+			this.savedAlpha = -(Math.PI / 4);
 		}
 
 		else if (this.x <= 0)
 		{
 			p2Score++;
 			this.isAccelerated = false;
-			paused = true;
+			this.paused = true;
 			player1Down = false;
 			player1Up = false;
 			player2Down = false;
 			player2Up = false;
-			p2Offense = true;
-			p1Offense = false;
+			p2.offense = true;
+			p1.offense = false;
 			this.start();
-			savedVel = 10;
-			savedAlpha = Math.PI + Math.PI / 4;
+			this.savedVel = 10;
+			this.savedAlpha = Math.PI + Math.PI / 4;
 		}
 
 		if (this.y + this.size >= height)
@@ -270,7 +267,7 @@ class Ball {
 	}
 	collisionDetect()
 	{
-		if (p2Offense && this.x <= p1.x + p1.width && this.y >= p1.y && this.y <= p1.y + p1.height)
+		if (p2.offense && this.x <= p1.x + p1.width && this.y >= p1.y && this.y <= p1.y + p1.height)
 		{
 			this.alpha = Math.PI - this.alpha;
 			if ((player1Down || player1Up) && !this.isAccelerated)
@@ -283,10 +280,10 @@ class Ball {
 				this.vel -= this.acceleration;
 				this.isAccelerated = false;
 			}
-			p2Offense = false;
-			p1Offense = true;
+			p2.offense = false;
+			p1.offense = true;
 		}
-		if (p1Offense && this.x + this.size >= p2.x && this.y >= p2.y && this.y <= p2.y + p2.height)
+		if (p1.offense && this.x + this.size >= p2.x && this.y >= p2.y && this.y <= p2.y + p2.height)
 		{
 			//console.log("before p2: " + this.velX);
 			this.alpha = Math.PI - this.alpha;
@@ -303,10 +300,10 @@ class Ball {
 				this.isAccelerated = false;
 			}
 			//console.log("after p2: " + this.velX);
-			p2Offense = true;
-			p1Offense = false;
-			//console.log("p1Offense: " + p1Offense);
-			//console.log("p2Offense: " + p2Offense);
+			p2.offense = true;
+			p1.offense = false;
+			//console.log("p1.offense: " + p1.offense);
+			//console.log("p2.offense: " + p2.offense);
 		}
 	}
 }
@@ -353,7 +350,8 @@ function loop()
 	drawScore(line_width, 3 * width / 4, 0, p2Score);
 
 	updatePlayers();
-	if (!paused)
+	console.log(ball.paused);
+	if (!ball.paused)
 	{
 		ball.update();
 		ball.collisionDetect();
@@ -514,12 +512,8 @@ export function makeGame(match_id, player1_id, player2_id, player1, player2)
 	var startingBallX = width / 2 - ballSize / 2;
 	var startingBallY = height / 2 - ballSize / 2;
 
-	p1 = new Player(startingP1X, startingPY, playerWidth, playerHeight, player1, player1_id, match_id);
-	p2 = new Player(startingP2X, startingPY, playerWidth, playerHeight, player2, player2_id, match_id);
-	ball = new Ball(startingBallX, startingBallY, 0, 0, "white", ballSize, 5, false);
-
- 	paused = true;
-	savedVel = 10;
-	savedAlpha = - (Math.PI / 4);
+	p1 = new Player(startingP1X, startingPY, playerWidth, playerHeight, player1, player1_id, match_id, true);
+	p2 = new Player(startingP2X, startingPY, playerWidth, playerHeight, player2, player2_id, match_id, false);
+	ball = new Ball(startingBallX, startingBallY, 0, 0, "white", ballSize, 5, false, 10, -(Math.PI / 4), true);
 	loop();
 }
