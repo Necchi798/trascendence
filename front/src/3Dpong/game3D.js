@@ -16,8 +16,6 @@ var score1;
 var score2;
 var p1Offense = false;
 var p2Offense = true;
-var acceleration = 0.5;
-var isAccelerated = false;
 
 function sendResult3D(winner_id, match_id){
 	let data = {
@@ -82,12 +80,16 @@ class Player3D {
 }
 
 class Ball3D {
-	constructor(size, color, x, y, z, vel, alpha, paused) {
+	constructor(size, color, x, y, z, vel, alpha, paused, acceleration, isAccelerated, savedVel, savedAlpha) {
 		this.size = size;
 		this.geometry = new THREE.BoxGeometry(size, size, size);
 		this.material = new THREE.MeshLambertMaterial({ color: color });
 		this.mesh = new THREE.Mesh(this.geometry, this.material);
 		this.mesh.position.set(x, y, z);
+		this.acceleration = acceleration;
+		this.isAccelerated = isAccelerated;
+		this.savedVel = savedVel;
+		this.savedAlpha = savedAlpha;
 		this.vel = vel;
 		this.alpha = alpha;
 		this.paused = paused;
@@ -95,13 +97,13 @@ class Ball3D {
 	togglePause() {
 		this.paused = !this.paused;
 		if (this.paused) {
-			savedVel = this.vel;
-			savedAlpha = this.alpha;
+			this.savedVel = this.vel;
+			this.savedAlpha = this.alpha;
 			this.vel = 0;
 			this.alpha = 0;
 		} else {
-			this.vel = savedVel;
-			this.alpha = savedAlpha;
+			this.vel = this.savedVel;
+			this.alpha = this.savedAlpha;
 		}
 	}
 	update() {
@@ -120,8 +122,8 @@ class Ball3D {
 			p2Offense = true;
 			this.mesh.position.set(0, 0, 2);
 			this.paused = true;
-			savedVel = 1;
-			savedAlpha = Math.PI / 4;
+			this.savedVel = 1;
+			this.savedAlpha = Math.PI / 4;
 		}
 
 		else if (this.mesh.position.x <= - width / 2) {
@@ -137,8 +139,8 @@ class Ball3D {
 			p2Offense = false;
 			this.mesh.position.set(0, 0, 2);
 			this.paused = true;
-			savedVel = 1;
-			savedAlpha = Math.PI + Math.PI / 4;
+			this.savedVel = 1;
+			this.savedAlpha = Math.PI + Math.PI / 4;
 		}
 
 		if (this.mesh.position.y >= height / 2) {
@@ -162,13 +164,13 @@ class Ball3D {
 			console.log('Ball position: ' + this.mesh.position.x + ' ' + this.mesh.position.y);
 			console.log('Player 1 position: ' + p1.mesh.position.x + ' ' + p1.mesh.position.y);
 			this.alpha = Math.PI - this.alpha;
-			if ((player1Down || player1Up) && !isAccelerated) {
-				this.vel += acceleration;
-				isAccelerated = true;
+			if ((player1Down || player1Up) && !this.isAccelerated) {
+				this.vel += this.acceleration;
+				this.isAccelerated = true;
 			}
-			else if (isAccelerated) {
-				this.vel -= acceleration;
-				isAccelerated = false;
+			else if (this.isAccelerated) {
+				this.vel -= this.acceleration;
+				this.isAccelerated = false;
 			}
 			p2Offense = false;
 			p1Offense = true;
@@ -179,13 +181,13 @@ class Ball3D {
 			console.log('Ball position: ' + this.mesh.position.x + ' ' + this.mesh.position.y);
 			console.log('Player 2 position: ' + p2.mesh.position.x + ' ' + p2.mesh.position.y);
 			this.alpha = Math.PI - this.alpha;
-			if ((player2Down || player2Up) && !isAccelerated) {
-				this.vel += acceleration;
-				isAccelerated = true;
+			if ((player2Down || player2Up) && !this.isAccelerated) {
+				this.vel += this.acceleration;
+				this.isAccelerated = true;
 			}
-			else if (isAccelerated) {
-				this.vel -= acceleration;
-				isAccelerated = false;
+			else if (this.isAccelerated) {
+				this.vel -= this.acceleration;
+				this.isAccelerated = false;
 			}
 			p2Offense = true;
 			p1Offense = false;
@@ -290,8 +292,6 @@ let player1Up = false;
 let player1Down = false;
 let player2Up = false;
 let player2Down = false;
-let savedVel = 1;
-let savedAlpha = Math.PI / 4;
 
 /* function togglePause() {
 	paused = !paused;
@@ -505,8 +505,12 @@ export function makeGame3d(match_id, player1_id, player2_id, player1, player2) {
 	var ballPosY = 0;
 	var ballPosZ = ballSize;
 	var ballColor = "white";
+	var savedVel = 1;
+	var savedAlpha = Math.PI / 4;
+	var acceleration = 0.5;
+	var isAccelerated = false;
 
-	ball = new Ball3D(ballSize, ballColor, ballPosX, ballPosY, ballPosZ, 0, 0, true);
+	ball = new Ball3D(ballSize, ballColor, ballPosX, ballPosY, ballPosZ, 0, 0, true, acceleration, isAccelerated, savedVel, savedAlpha);
 	scene.add(ball.mesh);
 	console.log('Ball created');
 

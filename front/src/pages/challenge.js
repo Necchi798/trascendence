@@ -73,6 +73,8 @@ function updateTournamentElement(tournament_id, players_id, playerNames)
 				}
 			}
 			document.getElementById("startMatchButton").textContent = "Tournament ended";
+			const btnPlay = document.getElementById("playButton");
+			btnPlay.removeEventListener("click", playSingleMatch);
 			const btn = document.getElementById("startMatchButton");
 			btn.removeEventListener("click", startTournamentMatch);
 			btn.addEventListener("click", () => {
@@ -292,7 +294,9 @@ export function actionChallenge() {
 			startButton.addEventListener("click", () => {
 				history.replaceState({}, "", "/home");
 				router();
+				return;
 			});
+			return;
 		}
 	}
 	const playButton = document.getElementById("playButton");
