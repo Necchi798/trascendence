@@ -36,7 +36,6 @@ class Sidebar extends HTMLElement {
 		</div>
 		`;
 		this.maufetch()
-		document.getElementById("name-sidebar").textContent=localStorage.getItem("user")
 		document.getElementById("logout").addEventListener("click",()=> { document.cookie = "jwt" + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';window.location="/login"})
 	}
 	async maufetch(){
@@ -56,7 +55,15 @@ class Sidebar extends HTMLElement {
 		 img.src = imgURL;
 		 img.alt = 'Immagine PNG';
 		 document.getElementById("image-container-sidebar").src = imgURL
-		 }catch{}
+		 const res = await fetch("https://127.0.0.1:8000/user/",{
+			method: "GET",
+			mode: "cors",
+			credentials: "include"
+		});
+		const userData = await res.json()
+		document.getElementById("name-sidebar").innerText=userData.username
+
+		}catch{}
 	 }
 }
 

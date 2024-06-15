@@ -5,20 +5,20 @@ import "./components/singlematch_element.js"
 import { router } from "../main.js";
 
 export default  ()=> `
-	<div style="display: flex;flex-direction: row;">
+	<div class="d-flex ">
 		<side-bar></side-bar>
 		<main id="contentMain" style="width: 100%;height: 100vh;overflow:hidden">
-		<div style="display: flex; justify-content: center; align-items: center ">
-			<h1 style="font-family: 'Silkscreen', sans-serif; font-size: 100px;">Pong Game 3D</h1>
+		<div class="d-flex justify-content-center align-items-center" >
+			<h1 style=" font-size: 100px;">Pong Game 3D</h1>
 		</div>
-		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-			<div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-				<button id="playButton" style="font-family: 'Silkscreen', sans-serif; font-size: 20px; margin-top: 30px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px">Play Single Match</button>
-				<button id="tournamentButton" style="font-family: 'Silkscreen', sans-serif; font-size: 20px; margin-top: 30px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px">Play Tournament</button>
+		<div class="d-flex flex-column justify-content-center align-items-center" >
+			<div class="d-flex justify-content-center align-items-center">
+				<button id="playButton" style=" font-size: 20px; margin-top: 30px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer; margin-right: 5px">Play Single Match</button>
+				<button id="tournamentButton" style=" font-size: 20px; margin-top: 30px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer; margin-left: 5px">Play Tournament</button>
 			</div>
-			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+			<div class="d-flex flex-column justify-content-center align-items-center">
 				<players-fields style="display: none;" tournament="false"></players-fields>
-				<button id="startButton" disabled style="display: none;font-family: 'Silkscreen', sans-serif; font-size: 20px; margin-top: 50px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;">Start</button>
+				<button id="startButton" disabled style="display: none; font-size: 20px; margin-top: 50px; padding: 10px 20px; background-color: #f1f1f1; border: none; border-radius: 5px; cursor: pointer;">Start</button>
 				<tournament-element style="display: none;"></tournament-element>
 				<match-element style="display: none;"></match-element>
 			</div>

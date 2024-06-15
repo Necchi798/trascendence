@@ -11,7 +11,6 @@ import { actionLogin } from "./pages/login.js";
 import search, { actionSearch } from "./pages/search.js";
 import { actionGame3D } from "./3Dpong/game3D.js";
 import settings, { actionSettings } from "./pages/settings.js";
-import tournamentpage from "./pages/tournamentpage.js";
 import challenge, {actionChallenge} from "./pages/challenge.js";
 import challenge3D, { actionChallenge3D } from "./pages/challenge3D.js";
 

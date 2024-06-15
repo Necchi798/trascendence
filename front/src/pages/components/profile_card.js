@@ -18,9 +18,9 @@ class ProfileCard extends HTMLElement {
     constructor(){
         super();
         this.innerHTML = /*html*/`
-        <div id="123" class="card" style=" display: flex;flex-direction: row;">
+        <div id="123" class="card shadow" style=" display: flex;flex-direction: row;">
             <img style="width:200px;height:200px" id="image-container"></img>
-            <div class="card-body">
+            <div class="card-body ">
                 <h5 class="card-title">Profile</h5>
                 <div style="display: flex; gap:5rem;margin-top:2rem">
                     <div style="display: flex;flex-direction: column;gap:1rem">

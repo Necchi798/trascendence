@@ -171,6 +171,15 @@ function updateUserInfo()
 	const email = document.getElementById("emailChange").value;
 	const password = document.getElementById("passwordChange").value;
 	const username = document.getElementById("nameChange").value;
+	const data ={}
+	console.log(email,username,password)
+	if (email !== "")
+		data["email"] = email
+	if (username !== "")
+		data["username"] = username
+	if (password !== "")
+		data["password"] = password
+	console.log(data)
 	fetch("https://127.0.0.1:8000/updateuser/",{
 		method: "PATCH",
 		mode: "cors",
@@ -178,11 +187,12 @@ function updateUserInfo()
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({email, password, username})
+		body: JSON.stringify({...data})
 	})
 	.then(response => response.json())
 	.then(data => {
 		console.log(data);
+		document.getElementById("name-sidebar").innerText = data.user.username
 		disableUpdateForm();
 	})
 	.catch((error) => {
@@ -315,22 +325,6 @@ function fetchEnabletwofa() {
 	});
 }
 
-function searchUser() {
-	const jwt = getCookieValue("jwt");
-	fetch("https://127.0.0.1:8000/user/",{
-			method: "GET",
-			mode: "cors",
-			credentials: "include"
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log(data);
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-}
-
 function getOriginalUserInfo() {
 	const jwt = getCookieValue("jwt");
 	fetch("https://127.0.0.1:8000/user/",{
@@ -342,7 +336,7 @@ function getOriginalUserInfo() {
 	.then(data => {
 		console.log(data);
 		document.getElementById("emailChange").value = data.email;
-		document.getElementById("passwordChange").value = data.password;
+		//document.getElementById("passwordChange").value = data.password;
 		document.getElementById("nameChange").value = data.username;
 	})
 	.catch((error) => {
@@ -350,23 +344,6 @@ function getOriginalUserInfo() {
 	});
 }
 
-// function to search a 42 user in the db
-function fetchSearch42User()
-{
-	const jwt = getCookieValue("jwt");
-	fetch("https://127.0.0.1:8002/enable42/",{
-		method: "GET",
-		mode: "cors",
-		credentials: "include"
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log(data);
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-}
 
 // function to delete a 42 user in the db
 function fetchDisableLogin42(userdata)
@@ -381,24 +358,6 @@ function fetchDisableLogin42(userdata)
 	.then(data => {
 		console.log(data);
 		fetchUpdateUser("login42", false, userdata);
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-}
-
-function fetchDisableLogin42Button()
-{
-	const jwt = getCookieValue("jwt");
-	fetch("https://127.0.0.1:8002/disable42/",{
-		method: "POST",
-		mode: "cors",
-		credentials: "include",
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log(data);
-		fetchUpdateUser("login42", false, {id: 1});
 	})
 	.catch((error) => {
 		console.error('Error:', error);
@@ -423,23 +382,6 @@ function fetchCreate42User(userdata, code)
 		console.log(data);
 		fetchUpdateUser("login42", true, userdata);
 		window.location.href = "https://127.0.0.1:4430/settings";
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-	});
-}
-
-function searchUsertoDisable42() {
-	const jwt = getCookieValue("jwt");
-	fetch("https://127.0.0.1:8000/user/",{
-			method: "GET",
-			mode: "cors",
-			credentials: "include"
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log(data);
-		fetchDisableLogin42(data);
 	})
 	.catch((error) => {
 		console.error('Error:', error);

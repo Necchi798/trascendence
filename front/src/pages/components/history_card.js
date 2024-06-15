@@ -2,7 +2,7 @@ class HistoryCard extends HTMLElement {
     constructor(){
         super();
         this.innerHTML = /*html*/`
-        <div class="card" class="d-flex w-100 flex-row flex-wrap">
+        <div class="card shadow" class="d-flex w-100 flex-row flex-wrap">
     <div class="card-body" class="w-100">
         <h5 class="card-title">History</h5>
         <div class="d-flex flex-column flex-wrap mt-4 flex-wrap">

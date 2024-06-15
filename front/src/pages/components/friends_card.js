@@ -47,7 +47,7 @@ class FriendsCard extends HTMLElement {
 	constructor(){
 		super();
 		this.innerHTML = /*html*/`
-		<div class="card" id="friendsDiv" class="d-flex flex-column" style="padding: 2rem">
+		<div class="card" id="friendsDiv" class="d-flex flex-column shadow" style="padding: 2rem">
 			<div class="top" class="d-flex align-items-center justify-content-between">
 				<a class="btn d-flex align-items-center" style="gap:1rem" id="searchButton" href="/search">
 					Search new friends
@@ -104,7 +104,7 @@ class FriendsCard extends HTMLElement {
 					document.getElementById("friend-" + friend.id).querySelector(".name").appendChild(status);
 				}
 			});
-			enableFriendCard();
+			
 		}
 		catch(error) {
 			console.error(error);
@@ -113,22 +113,22 @@ class FriendsCard extends HTMLElement {
 }
 
 
-function enableFriendCard() {
-	const searchInput = document.getElementById('search-input');
-	const searchButton = document.getElementById('search-button');
-	const users = document.getElementById('friendsContainer').children;
-	const searchFriends = () => {
-		const searchText = searchInput.value.toLowerCase();
-		Array.from(users).forEach(user => {
-			const username = user.querySelector('.name').textContent.toLowerCase();
-			if (username.includes(searchText)) {
-				user.style.display = 'block';
-			} else {
-				user.style.display = 'none';
-			}
-		});
-	};
-	searchInput.addEventListener('input', searchFriends);
-}
+// function enableFriendCard() {
+// 	const searchInput = document.getElementById('search-input');
+// 	const searchButton = document.getElementById('search-button');
+// 	const users = document.getElementById('friendsContainer').children;
+// 	const searchFriends = () => {
+// 		const searchText = searchInput.value.toLowerCase();
+// 		Array.from(users).forEach(user => {
+// 			const username = user.querySelector('.name').textContent.toLowerCase();
+// 			if (username.includes(searchText)) {
+// 				user.style.display = 'block';
+// 			} else {
+// 				user.style.display = 'none';
+// 			}
+// 		});
+// 	};
+// 	searchInput.addEventListener('input', searchFriends);
+// }
 
 customElements.define("friends-card", FriendsCard);

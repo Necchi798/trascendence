@@ -27,7 +27,7 @@ export default  ()=> `
 	<div class="d-flex flex-row">
 		<side-bar>Trascendence</side-bar>
 		<main id="content" class="d-flex w-100 vh-100 flex-row" >
-            <div class="d-flex flex-column align-content-center" style="display:flex; flex-direction: column;align-content: center; width: 60%; padding: 3%; gap: 5%">
+            <div class="d-flex flex-column align-content-center" style=" width: 60%; padding: 3%; gap: 5%">
 				<profile-card></profile-card>
                 <history-card></history-card>
             </div>
