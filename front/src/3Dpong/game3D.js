@@ -20,11 +20,16 @@ var p2Offense = true;
 var acceleration = 0.5;
 var isAccelerated = false;
 
-function sendResult(winner_id, match_id){
+function sendResult3D(winner_id, match_id){
 	let data = {
 		winner: winner_id,
 		match_id:match_id
 	}
+	document.removeEventListener('keydown', handleKeyDown);
+	document.removeEventListener('keyup', handleKeyUp);
+	document.removeEventListener('keydown', handleKeyDown2);
+	document.removeEventListener('keyup', handleKeyUp2);
+	removeTogglePauseEventListener();
 	fetch('https://127.0.0.1:9001/update-match-result/', { 
 		method: 'POST',
 		headers: {
@@ -37,6 +42,7 @@ function sendResult(winner_id, match_id){
 		const state = history.state;
 		history.replaceState(state, "", "/3dpong");
 		router();
+		return;
 	})
 }
 
@@ -52,7 +58,7 @@ class Table {
 	}
 }
 
-class Player {
+class Player3D {
 	constructor(width, height, depth, x, y, z, color, match_id, player_id, player_name) {
 		this.width = width;
 		this.height = height;
@@ -75,7 +81,7 @@ class Player {
 	}
 }
 
-class Ball {
+class Ball3D {
 	constructor(size, color, x, y, z, vel, alpha) {
 		this.size = size;
 		this.geometry = new THREE.BoxGeometry(size, size, size);
@@ -274,53 +280,69 @@ let player2Down = false;
 let savedVel = 1;
 let savedAlpha = Math.PI / 4;
 
-document.addEventListener('keydown', function (event) {
-	if (event.key === ' ') {
-		paused = !paused;
-		if (paused) {
-			savedVel = ball.vel;
-			savedAlpha = ball.alpha;
-			ball.vel = 0;
-			ball.alpha = 0;
-		}
-		else {
-			ball.vel = savedVel;
-			ball.alpha = savedAlpha;
-		}
+function togglePause() {
+	paused = !paused;
+	if (paused) {
+		savedVel = ball.vel;
+		savedAlpha = ball.alpha;
+		ball.vel = 0;
+		ball.alpha = 0;
+	} else {
+		ball.vel = savedVel;
+		ball.alpha = savedAlpha;
 	}
-});
+}
 
-document.addEventListener('keydown', function (event) {
+function addTogglePauseEventListener() {
+	document.addEventListener('keydown', function(event) {
+		if (event.key === ' ') {
+			togglePause();
+		}
+	});
+}
+
+function removeTogglePauseEventListener() {
+	document.removeEventListener('keydown', function(event) {
+		if (event.key === ' ') {
+			togglePause();
+		}
+	});
+}
+
+function handleKeyDown(event) {
 	if (event.key === 'w') {
 		player1Up = true;
 	} else if (event.key === 's') {
 		player1Down = true;
 	}
-});
+}
 
-document.addEventListener('keyup', function (event) {
+
+function handleKeyUp(event) {
 	if (event.key === 'w') {
 		player1Up = false;
 	} else if (event.key === 's') {
 		player1Down = false;
 	}
-});
+}
 
-document.addEventListener('keydown', function (event) {
+function handleKeyDown2(event) {
 	if (event.key === 'ArrowUp') {
 		player2Up = true;
 	} else if (event.key === 'ArrowDown') {
 		player2Down = true;
 	}
-});
+}
 
-document.addEventListener('keyup', function (event) {
+
+function handleKeyUp2(event) {
 	if (event.key === 'ArrowUp') {
 		player2Up = false;
 	} else if (event.key === 'ArrowDown') {
 		player2Down = false;
 	}
-});
+}
+
 
 function updatePlayers() {
 	if (player1Up) {
@@ -351,21 +373,26 @@ function animate() {
 	if (score1.value == 1)
 	{
 		console.log('Player 1 wins!');
-		sendResult(p1.player_id, p1.match_id);
+		sendResult3D(p1.player_id, p1.match_id);
 		return;
 	}
 	else if (score2.value == 1)
 	{
 		console.log('Player 2 wins!');
-		sendResult(p2.player_id, p2.match_id);
+		sendResult3D(p2.player_id, p2.match_id);
 		return;
 	}
 	renderer.render(scene, camera);
 	requestAnimationFrame(animate);
 }
-
+		
 export function actionGame3D()
 {
+	document.addEventListener('keydown', handleKeyDown);
+	document.addEventListener('keydown', handleKeyDown2);
+	document.addEventListener('keyup', handleKeyUp2);
+	document.addEventListener('keyup', handleKeyUp);
+	addTogglePauseEventListener();
 	console.log(history.state);
 	const state = history.state;
 	if (state)
@@ -469,7 +496,7 @@ export function makeGame3d(match_id, player1_id, player2_id, player1, player2) {
 	var ballPosZ = ballSize;
 	var ballColor = "white";
 
-	ball = new Ball(ballSize, ballColor, ballPosX, ballPosY, ballPosZ);
+	ball = new Ball3D(ballSize, ballColor, ballPosX, ballPosY, ballPosZ, 0, 0);
 	scene.add(ball.mesh);
 	console.log('Ball created');
 
@@ -479,14 +506,14 @@ export function makeGame3d(match_id, player1_id, player2_id, player1, player2) {
 	var player1PosY = 0;
 	var player1PosZ = playerDepth;
 	var player1PosX = width / 2 - playerWidth / 2 - playerDepth;
-	p1 = new Player(playerWidth, playerHeight, playerDepth, player1PosX, player1PosY, player1PosZ, "white", match_id, player1_id, player1);
+	p1 = new Player3D(playerWidth, playerHeight, playerDepth, player1PosX, player1PosY, player1PosZ, "white", match_id, player1_id, player1);
 	scene.add(p1.mesh);
 	console.log('Player 1 created');
 
 	var player2PosX = - player1PosX;
 	var player2PosY = 0;
 	var player2PosZ = playerDepth;
-	p2 = new Player(playerWidth, playerHeight, playerDepth, player2PosX, player2PosY, player2PosZ, "white", match_id, player2_id, player2);
+	p2 = new Player3D(playerWidth, playerHeight, playerDepth, player2PosX, player2PosY, player2PosZ, "white", match_id, player2_id, player2);
 	scene.add(p2.mesh);
 	console.log('Player 2 created');
 

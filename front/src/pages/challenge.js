@@ -79,7 +79,6 @@ function updateTournamentElement(tournament_id, players_id, playerNames)
 		// update the tournament element (if none is ended)
 		if (res.matches.length == 2 && res.matches.filter((el)=>!el.has_ended).length == 2)
 		{
-			console.log("ciao1");
 			res.matches.forEach((el) => {
 				list_ids.push(el.player1)
 				list_ids.push(el.player2);
@@ -128,9 +127,7 @@ function updateTournamentElement(tournament_id, players_id, playerNames)
 		}
 		let nextmatch = res.matches.filter((el)=>!el.has_ended)[0];
 		const startButton = document.getElementById("startMatchButton");
-		console.log("ciao");
 		tournamentElement.setPlayers(list_names);
-		console.log("ciao");
 		for (let i = 0; i < playerNames.length; i++)
 		{
 			if (players_id[i] == nextmatch.player1)
