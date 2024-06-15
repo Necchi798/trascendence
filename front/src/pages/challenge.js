@@ -300,4 +300,12 @@ export function checkFields() {
 	const startButton = document.getElementById("startButton");
 	const playerFields = document.querySelector("players-fields");
 	startButton.disabled = playerFields.isFilled() ? false : true;
+	const playerNames = playerFields.getPlayers()
+	
+
+	startButton.disabled = playerFields.isFilled() ? false : true;
+	if(playerFields.getAttribute("tournament") && playerNames.length !==4)
+		startButton.disabled = true
+	if(!playerFields.getAttribute("tournament") && playerNames.length !==2)
+		startButton.disabled = true
 }

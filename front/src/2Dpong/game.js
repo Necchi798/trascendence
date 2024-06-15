@@ -37,20 +37,17 @@ function togglePause() {
 	}
 }
 
+function pu(event) {
+	if (event.key === ' ') {
+		ball.togglePause();
+	}
+}
 function addTogglePauseEventListener() {
-	document.addEventListener('keydown', function(event) {
-		if (event.key === ' ') {
-			togglePause();
-		}
-	});
+	document.addEventListener('keydown', pu);
 }
 
 function removeTogglePauseEventListener() {
-	document.removeEventListener('keydown', function(event) {
-		if (event.key === ' ') {
-			togglePause();
-		}
-	});
+	document.removeEventListener('keydown', pu);
 }
 
 function handleKeyDown(event) {

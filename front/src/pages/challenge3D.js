@@ -64,6 +64,7 @@ function updateTournamentElement(tournament_id, players_id, playerNames)
 	}).then(async res=>await res.json()).then(res=>{
 		if (res.message === "torneo finito")
 		{
+			tournamentElement.setPlayers(playerNames) 
 			document.getElementById("startMatchButton").textContent = "Tournament ended";
 			const btn = document.getElementById("startMatchButton");
 			btn.removeEventListener("click", startTournamentMatch);
@@ -308,11 +309,51 @@ export function checkFields() {
 	const startButton = document.getElementById("startButton");
 	const playerFields = document.querySelector("players-fields");
 	const playerNames = playerFields.getPlayers()
-	
 
-	startButton.disabled = playerFields.isFilled() ? false : true;
-	if(playerFields.getAttribute("tournament") && playerNames.length !==4)
+	console.log(playerNames)
+
+	startButton.disabled = false;
+	//const players_filled =  ? false : true;
+	if (!playerFields.isFilled()){
+		console.log("notfilled")
+		startButton.disabled = true;
+	}
+	else
+	{
+		if (playerFields.getAttribute("tournament") === "true" ){
+			console.log("torneo")
+			var p1 = document.querySelector("#player1").value;
+			var p2 = document.querySelector("#player2").value;
+			var p3 = document.querySelector("#player3").value;
+			var p4 = document.querySelector("#player4").value;
+			if(p1 === p2 )
+				startButton.disabled = true;
+			if(p1 === p3 )
+				startButton.disabled = true;
+			if(p1 === p4 )
+				startButton.disabled = true;
+			if(p2 === p3 )
+				startButton.disabled = true;
+			if(p2 === p4 )
+				startButton.disabled = true;
+			if(p3 === p4 )
+				startButton.disabled = true;
+		}
+		if (playerFields.getAttribute("tournament") === "false"){
+			var p11 = document.querySelector("#player1").value;
+			var p22 = document.querySelector("#player2").value;
+			console.log(p11,p22, p11 === p22)
+			if(p11 === p22){
+				startButton.disabled = true;
+
+			}
+		}
+	}
+	/* if(playerFields.getAttribute("tournament") && playerNames.length !== 4)
 		startButton.disabled = true
-	else if(!playerFields.getAttribute("tournament") && playerNames.length !==2)
-		startButton.disabled = true
+
+
+	if(!playerFields.getAttribute("tournament") && playerNames.length !== 2)
+		startButton.disabled = true; */
+
 }

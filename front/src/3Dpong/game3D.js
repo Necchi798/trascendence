@@ -12,7 +12,6 @@ var width;
 var height;
 var p1;
 var p2;
-var paused;
 var score1;
 var score2;
 var p1Offense = false;
@@ -82,7 +81,7 @@ class Player3D {
 }
 
 class Ball3D {
-	constructor(size, color, x, y, z, vel, alpha) {
+	constructor(size, color, x, y, z, vel, alpha, paused) {
 		this.size = size;
 		this.geometry = new THREE.BoxGeometry(size, size, size);
 		this.material = new THREE.MeshLambertMaterial({ color: color });
@@ -90,6 +89,19 @@ class Ball3D {
 		this.mesh.position.set(x, y, z);
 		this.vel = vel;
 		this.alpha = alpha;
+		this.paused = paused;
+	}
+	togglePause() {
+		this.paused = !this.paused;
+		if (this.paused) {
+			savedVel = this.vel;
+			savedAlpha = this.alpha;
+			this.vel = 0;
+			this.alpha = 0;
+		} else {
+			this.vel = savedVel;
+			this.alpha = savedAlpha;
+		}
 	}
 	update() {
 		if (this.mesh.position.x >= (table.width / 2)) {
@@ -106,7 +118,7 @@ class Ball3D {
 			p1Offense = false;
 			p2Offense = true;
 			this.mesh.position.set(0, 0, 2);
-			paused = true;
+			this.paused = true;
 			savedVel = 1;
 			savedAlpha = Math.PI / 4;
 		}
@@ -123,7 +135,7 @@ class Ball3D {
 			p1Offense = true;
 			p2Offense = false;
 			this.mesh.position.set(0, 0, 2);
-			paused = true;
+			this.paused = true;
 			savedVel = 1;
 			savedAlpha = Math.PI + Math.PI / 4;
 		}
@@ -280,7 +292,7 @@ let player2Down = false;
 let savedVel = 1;
 let savedAlpha = Math.PI / 4;
 
-function togglePause() {
+/* function togglePause() {
 	paused = !paused;
 	if (paused) {
 		savedVel = ball.vel;
@@ -291,22 +303,20 @@ function togglePause() {
 		ball.vel = savedVel;
 		ball.alpha = savedAlpha;
 	}
-}
+} */
 
+
+function pu(event) {
+	if (event.key === ' ') {
+		ball.togglePause();
+	}
+}
 function addTogglePauseEventListener() {
-	document.addEventListener('keydown', function(event) {
-		if (event.key === ' ') {
-			togglePause();
-		}
-	});
+	document.addEventListener('keydown', pu);
 }
 
 function removeTogglePauseEventListener() {
-	document.removeEventListener('keydown', function(event) {
-		if (event.key === ' ') {
-			togglePause();
-		}
-	});
+	document.removeEventListener('keydown', pu);
 }
 
 function handleKeyDown(event) {
@@ -365,7 +375,7 @@ function updatePlayers() {
 
 function animate() {
 	updatePlayers();
-	if (!paused)
+	if (!ball.paused)
 	{
 		ball.update();
 		ball.collisionDetect();
@@ -393,7 +403,6 @@ export function actionGame3D()
 	document.addEventListener('keyup', handleKeyUp2);
 	document.addEventListener('keyup', handleKeyUp);
 	addTogglePauseEventListener();
-	console.log(history.state);
 	const state = history.state;
 	if (state)
 	{
@@ -496,7 +505,7 @@ export function makeGame3d(match_id, player1_id, player2_id, player1, player2) {
 	var ballPosZ = ballSize;
 	var ballColor = "white";
 
-	ball = new Ball3D(ballSize, ballColor, ballPosX, ballPosY, ballPosZ, 0, 0);
+	ball = new Ball3D(ballSize, ballColor, ballPosX, ballPosY, ballPosZ, 0, 0, true);
 	scene.add(ball.mesh);
 	console.log('Ball created');
 
@@ -532,8 +541,6 @@ export function makeGame3d(match_id, player1_id, player2_id, player1, player2) {
 	score2 = new Score(scoreWidth, scoreHeight, scoreDepth, scoreUnit, score2PosX, score2PosY, score2PosZ);
 
 	orbit.update();
-
-	paused = true;
 
 	animate();
 }

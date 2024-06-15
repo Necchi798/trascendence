@@ -28,7 +28,7 @@ function createFriendElement(friend) {
 	friendElement.style = "display: flex; justify-content: space-between; flex-direction: col;";
 	friendElement.classList.add("card");
 	friendElement.innerHTML = `
-		<div class="card-body d-flex flex-row align-items-center justify-content-between">
+		<div class="card-body d-flex flex-row align-items-center justify-content-between" >
 			<div class="name d-flex align-items-center"  >
 				${friend.username}
 			</div>
@@ -59,7 +59,7 @@ class FriendsCard extends HTMLElement {
 				</a>
 			</div>
 			<div class ="scroll-container" style="flex: 1; overflow-y: auto; height: 100%;">
-				<div class="container" id="friendsContainer">
+				<div class="container" id="friendsContainer" >
 				</div>
 			</div>
 		</div>
