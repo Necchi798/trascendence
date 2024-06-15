@@ -71,19 +71,19 @@ class PlayerFields extends HTMLElement {
 	}
 
 	get player1() {
-		return this.querySelector("#player1").value;
+		return this.querySelector("#player1").value.trim();
 	}
 
 	get player2() {
-		return this.querySelector("#player2").value;
+		return this.querySelector("#player2").value.trim();
 	}
 
 	get player3() {
-		return this.querySelector("#player3").value;
+		return this.querySelector("#player3").value.trim();
 	}
 
 	get player4() {
-		return this.querySelector("#player4").value;
+		return this.querySelector("#player4").value.trim();
 	}
 
 	// get the player names
