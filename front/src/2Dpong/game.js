@@ -350,7 +350,6 @@ function loop()
 	drawScore(line_width, 3 * width / 4, 0, p2Score);
 
 	updatePlayers();
-	console.log(ball.paused);
 	if (!ball.paused)
 	{
 		ball.update();
